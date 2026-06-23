@@ -1,6 +1,7 @@
-# NAS + Proxmox VM Audit & Optimization Prompt — v7.3
+# NAS + Proxmox VM Audit & Optimization Prompt — v7.4
 > Synology DVA1622 trên Proxmox 8.x · Cập nhật từ phiên 2026-06-23
-> **v7.3:** Audit 2026-06-23 — score 81→83/100. Phát hiện CT108 "9router" + CT111 "open-webui" chưa có trong kiến trúc; thêm cả 2 vào backup job Sunday. Pin open-webui image sang `v0.9.6` + tạo compose file. Xác nhận vmbr0 drops=1.15M là BENIGN (multicast snooping — không phải lỗi). Xác nhận `10_Frigate_Alert_Night.yaml` đã `mode:single` từ v8. VM101 KVM swap leo 1.36→2.46GB (watch). Camera ngoai_troi RTSP crash 23:45 Jun22 (watchdog recovered). Bổ sung kiến trúc CT108/111 + script count note.
+> **v7.4:** Audit 2026-06-23 (tự động) — score **96/100**. SMART 3/3 PASSED UDMA_CRC frozen 18/65/0. DSM vol 4/56/12% OK. Backup VM100 Jun23 03:00 OK; CT102 Jun22 13:49 OK. 0 failed units mọi node. Host swap 3.9GB (VM101 KVM=2.24GB, down từ 2.46GB, PSI=0). VM103 vẫn running. CT111 open-webui vẫn chạy `:main` tag (compose v0.9.6 tạo từ v7.3 nhưng chưa recreate container). CT108 "9router" = Next.js v16.2.1 healthy. HA 955 stale_restored (integration reconfigure artifact). Backup job vmid OK (có 108/111). Journal 832.7MB.
+> **v7.3 (2026-06-23):** +CT108/111 kiến trúc; backup job +108/111; pin open-webui v0.9.6 compose; vmbr0 drops=BENIGN; VM101 swap baseline 2.46GB; 5 cameras.
 > **v7.2 (2026-06-22):** Fix vzdump CT102 global exclude-path; xác nhận backup VM100 snapshot OK; dọn 2 stale_restored HA entities; baseline swap VM101=1.36GB; camera phong_ngu RTSP timeout.
 > **v7.1:** Sửa 3 lỗi prompt live audit; ghi baseline mới.
 > **v7.0:** Gộp toàn bộ thông tin trùng lặp; bổ sung 3 mảng audit; thêm rubric chấm điểm.
@@ -158,7 +159,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | DSM net buffer (rmem/wmem) | **16777216** (16MB, trong DSM) | check bằng `dsm_run`, KHÔNG host (host=212992 mặc định OK) |
 | NCQ kernel cmdline | `libata.force=noncq` **hiện ABSENT** (chỉ 2/3 lớp) | queue_depth=1 vẫn giữ qua udev+rc.d; thêm vào GRUB nếu muốn đủ 3 lớp |
 | Camera Frigate | `ngoai_troi`(AI,5fps) + `phong_ngu`(5fps) + `phong_khach` + `ban_hang` + `ban_hang_2` | 5 cameras total; "No new valid recording segments" lặp = NFS volume3 rớt |
-| VM101 KVM swap | **2.46GB** (2026-06-23, up từ 1.36GB) | Tăng tiếp → xem xét tăng RAM VM101 |
+| VM101 KVM swap | **2.24GB** (2026-06-23 audit v7.4, down từ 2.46GB; PSI avg300=0) | Tăng tiếp hoặc >3GB → tăng RAM VM101 lên 12GB |
 | vmbr0 RX dropped | ~1.15M — **BENIGN** (multicast snooping) | KHÔNG phải lỗi mạng; multicast_snooping=1 |
 | open-webui image | `ghcr.io/open-webui/open-webui:v0.9.6` (pinned 2026-06-23) | `:main` = floating = nguy hiểm |
 | MariaDB size | **470MB** dir, **277.66 MiB** HA estimate | >500MB dir = kiểm tra purge policy |
@@ -473,35 +474,40 @@ tmpdir: /var/tmp/vzdump-tmp
 
 ---
 
-## 📌 TRẠNG THÁI PHIÊN GẦN NHẤT (2026-06-23) — Audit 81/100 → sau fix **83/100**
+## 📌 TRẠNG THÁI PHIÊN GẦN NHẤT (2026-06-23 tự động) — Audit **96/100**
 
-**Fix đã làm phiên này:**
-1. **✅ Fix [3]: Thêm CT108 + CT111 vào backup job Sunday** — `pvesh set /cluster/backup/backup-ba3eae41-f29f --vmid "101,102,104,105,106,107,108,110,111,113"`. Xác nhận OK.
-2. **✅ Fix [4]: Pin open-webui image** — Tạo `/opt/open-webui/docker-compose.yml` với `image: v0.9.6`; tag local image `sha256:7f1b0a1a50cf` → `v0.9.6`; tạo `.env` template. **Cần làm thêm:** điền `ANTHROPIC_API_KEY` + `WEBUI_SECRET_KEY` vào `.env`; next restart dùng compose.
-3. **✅ Fix [5]: vmbr0 drops = BENIGN** — Điều tra xác nhận: multicast_snooping=1, ebtables/nftables = không có rule, 10 MDB entries temp (mDNS/SSDP/UPnP). Drops là multicast pruning bình thường. Hạ từ MEDIUM → INFO.
-4. **✅ Fix [2]: Đã done từ v8 (2026-06-10)** — `10_Frigate_Alert_Night.yaml` đang `mode:single` + `max_exceeded:silent` đúng rồi.
+**Fix đã làm phiên trước (v7.3):**
+1. **✅ Thêm CT108 + CT111 vào backup job Sunday** — vmid `101,102,104,105,106,107,108,110,111,113` confirmed.
+2. **✅ Compose file open-webui tạo với v0.9.6** — `/opt/open-webui/docker-compose.yml` tồn tại.
+3. **✅ vmbr0 drops = BENIGN** — confirmed multicast snooping, không flag.
+4. **✅ 10_Frigate_Alert_Night mode:single** — confirmed từ v8.
 
-**Snapshot baseline xác nhận (2026-06-23 08:11):**
-Host RAM avail 5.3Gi (VM103 đang chạy) · swap 4.0Gi (VM101 KVM=2.46GB, pvedaemon workers) · PSI avg300=0.16 (thấp) · 0 OOM · load 4.64/4.16/3.07 · failed units 0 host+0 CT · LVM 52.97% · ZFS ARC 4GiB · SMART 3/3 PASSED UDMA_CRC 18/65/0 · temp 38/39/33°C · NFS 55%/local 57%/lvm 52%. DSM vol 4/56/12% · mdstat UUUU · NCQ sata1-4=1 · net buffer 16MB. CT tất cả active · cloudflared 4 conns · MariaDB 470MB · Frigate (healthy) 5 cameras · HA 2026.6.4 healthy · 0 repairs · 0 stale_restored.
+**Phiên này không fix** (tự động audit, không có user confirm).
+
+**Snapshot baseline xác nhận (2026-06-23 10:23):**
+Host RAM avail 7.4Gi (VM103 đang chạy) · swap 3.9Gi (VM101 KVM=2.24GB down từ 2.46GB, PSI avg300=0.00) · 0 OOM · load 3.17/2.47/2.38 · failed units 0 mọi node · LVM 53.23% (45.99% sau fstrim Jun21) · ZFS ARC 4GiB · SMART 3/3 PASSED UDMA_CRC 18/65/0 · temp 38/39/33°C · NFS 55%/local 57%/lvm 53%. DSM vol 4/56/12% · mdstat UUUU · NCQ sata1-4=1 · net buffer 16MB. CT tất cả active · cloudflared 4 conns · MariaDB 470MB · Frigate (healthy) 5 cameras up 42h · HA 2026.6.4 · 0 repairs · backup VM100 Jun23 03:00 OK · backup CT102 Jun22 13:49 OK · backup sensor OK/3.71GB · Journal 832.7MB.
 
 ### ⏳ Watch items (monitor phiên sau)
-1. **VM103 Windows đang RUNNING** — nếu không dùng thì `qm stop 103` để giải phóng RAM.
-2. **VM101 (HA) KVM swap 2.46GB** — tăng từ 1.36GB. Nếu >3GB → tăng RAM VM101 lên 12GB.
-3. **Camera `ngoai_troi` RTSP timeout** — sporadic crash 23:45 Jun22. Watchdog recovered. Monitor tần suất.
-4. **LVM data% 52.97%** — ngưỡng action 70%. fstrim tuần tới.
-5. **CT111 open-webui** `.env` cần điền key; `WEBUI_SECRET_KEY` hiện rỗng (security risk).
-6. **backup-all.sh** ctids chưa có CT108/111 — service data backup chưa phủ 2 CT mới.
-7. **CT108 "9router"** — chưa rõ mục đích. Làm rõ hoặc remove.
+1. **[ACTION NEEDED] CT111 open-webui `:main` tag** — compose file `v0.9.6` tạo từ v7.3 nhưng container chưa recreate. Fix: `cd /opt/open-webui && docker compose up -d --force-recreate`
+2. **[ACTION NEEDED] CT111 `.env` WEBUI_SECRET_KEY** — cần xác nhận đã điền (security risk nếu rỗng).
+3. **[ACTION NEEDED] HA 955 stale_restored** — cleanup qua Settings→Entities; ưu tiên `_2` suffix (synology_dsm cameras, upnp, esphome), iphone (1 entity), tuya scenes (3). Nhóm lớn (glances ~200, frigate ~100) điều tra riêng.
+4. **VM103 Windows đang RUNNING** — nếu không dùng `qm stop 103` (giải phóng ~4GB RAM).
+5. **VM101 (HA) KVM swap 2.24GB** — giảm nhẹ, PSI=0. Nếu >3GB → tăng RAM lên 12GB.
+6. **Camera `ngoai_troi` RTSP timeout** — sporadic 01:43 Jun23. Watchdog recover ~7s. Monitor tần suất.
+7. **LVM data% 53.23%** — action 70%. fstrim scheduled Chủ Nhật.
+8. **backup-all.sh** ctids=(102 104 106 107 110 113) — CT108/111 chưa có. Thêm nếu cần.
+9. **CT108 "9router"** — chạy Next.js v16.2.1, healthy. Mục đích chưa rõ.
 
 ### Next steps phiên sau
-1. Stop VM103 nếu không dùng (giải phóng ~5.7GB RAM)
-2. Điền `ANTHROPIC_API_KEY` + `WEBUI_SECRET_KEY` vào `/opt/open-webui/.env` CT111
-3. Monitor VM101 swap trend
-4. Monitor camera ngoai_troi RTSP crash frequency
-5. Thêm CT108/111 vào `backup-all.sh` ctids nếu có service data cần backup
-6. Làm rõ mục đích CT108 "9router"
-7. (Tùy) thêm `libata.force=noncq` vào GRUB đủ 3 lớp NCQ
-8. **Cập nhật file này** sau phiên tiếp theo
+1. **Recreate CT111**: `cd /opt/open-webui && docker compose up -d --force-recreate` → xác nhận image `v0.9.6`
+2. **Điền WEBUI_SECRET_KEY** vào `/opt/open-webui/.env` CT111
+3. **Cleanup 955 stale_restored** — Settings→Entities lọc "unavailable", xóa `_2` suffix + iphone + tuya scenes
+4. Stop VM103 nếu không dùng
+5. Monitor VM101 swap + camera ngoai_troi RTSP
+6. Thêm CT108/111 vào `backup-all.sh` ctids
+7. Làm rõ mục đích CT108 "9router" (Next.js app)
+8. (Tùy) `journalctl --vacuum-size=200M` dọn journal 832.7MB
+9. (Tùy) thêm `libata.force=noncq` vào GRUB đủ 3 lớp NCQ
 
 ---
 
@@ -509,6 +515,7 @@ Host RAM avail 5.3Gi (VM103 đang chạy) · swap 4.0Gi (VM101 KVM=2.46GB, pveda
 
 | Version | Thay đổi chính |
 |---|---|
+| v7.4 | Audit tự động 96/100; CT111 :main chưa recreate; HA 955 stale_restored phát hiện; VM101 swap 2.24GB (giảm); backup OK; SMART frozen; CT108=Next.js v16.2.1; Journal 832.7MB |
 | v7.3 | +CT108/111 kiến trúc; backup job +108/111; pin open-webui v0.9.6; vmbr0 drops=BENIGN; VM101 swap baseline 2.46GB; 5 cameras |
 | v7.2 | Fix vzdump CT102 exclude-path; snapshot backup OK; dọn stale_restored; baseline swap VM101=1.36GB |
 | v7.1 | Sửa net-buffer/Frigate API/synobios; +bài học wtmpdb/parse/mosquitto-key/mode-stop |
