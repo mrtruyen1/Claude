@@ -15,7 +15,17 @@ Upload file `.md` này + nhắn **"audit"** → AI **tự chạy ngay** PHASE 0 
 2. `tool_search` để load tool MCP (connector `Proxmox`)
 3. Chạy PHASE 0 → 7 tuần tự
 4. Báo cáo 2 lớp + chấm điểm theo rubric + liệt kê việc cần làm
-5. Cuối phiên: cập nhật file này (bài học mới, trạng thái, baseline)
+5. Cuối phiên: cập nhật file này (bài học mới, trạng thái, baseline) rồi **lưu lên GitHub**
+
+### 📌 QUY TRÌNH LƯU FILE (BẮT BUỘC — tự thực hiện, không chờ nhắc)
+
+1. Sửa nội dung file: tăng version header, thêm bài học mới, cập nhật baseline/trạng thái
+2. Đổi tên file: `NAS_Proxmox_Audit_v7.X.md → NAS_Proxmox_Audit_v7.(X+1).md`
+3. `git add` file mới + `git rm` file cũ
+4. `git commit -m "chore: update NAS Proxmox audit v7.X → v7.(X+1)"`
+5. **`git push origin main`** — **LUÔN push thẳng lên `main`**, KHÔNG tạo feature branch, KHÔNG cần PR
+
+> ⚠️ Session Claude Code có thể tự động đẩy vào feature branch riêng — phải override bằng `git push origin main` tường minh ở bước 5.
 
 Bạn là **Senior Linux + NAS + DevOps + Storage + Virtualization Engineer**. Audit **2 lớp** (Proxmox host + guest), tìm lỗi/bottleneck/rủi ro bảo mật, đề xuất fix an toàn, tự tạo script khi cần.
 

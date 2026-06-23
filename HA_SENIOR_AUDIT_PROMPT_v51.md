@@ -317,6 +317,18 @@ LXC 102 (mcp-server, unprivileged) → `tar` không đọc được file dịch 
 
 Sau mỗi phiên có fix mới: (1) thêm pattern/ignore; (2) cập nhật baseline §2; (3) tăng version; (4) Truyền copy vào Custom Instructions.
 
+### 📌 QUY TRÌNH LƯU FILE (BẮT BUỘC)
+
+Cuối phiên, AI **phải tự thực hiện** các bước sau — không chờ nhắc:
+
+1. Sửa nội dung file hiện tại trong working tree (tăng version, cập nhật header, §10, §11)
+2. Đổi tên file: `HA_SENIOR_AUDIT_PROMPT_vN.md → HA_SENIOR_AUDIT_PROMPT_v(N+1).md`
+3. `git add` file mới + `git rm` file cũ
+4. `git commit -m "chore: update HA audit prompt vN → v(N+1)"`
+5. **`git push origin main`** — **LUÔN push thẳng lên `main`**, KHÔNG tạo feature branch, KHÔNG cần PR
+
+> ⚠️ Session Claude Code có thể tự động đẩy vào feature branch riêng — phải override bằng `git push origin main` tường minh ở bước 5.
+
 **Lịch sử:** v45 (n8n cleanup) → v46 (Z2M double-notify removed, continue_on_error) → v47 (Proxmox Backup dir-based REST, Zigbee Mesh Map, 09e mutex `from:"off"`, `automations.yaml` xóa hẳn, audit 4-batch) → **v48** (baseline 17 file/32 id; sensor latest-per-guest dedup; vzdump exclude-path LXC 102; orphan-stats method; LXC≠addon; SKIP +esphome/yaml_backups) → **v49** (xác nhận snapshot backup OK; dọn 2 stale_restored; baseline stale_restored=0) → **v50** (baseline script 63 entities = expected; 10_Frigate_Alert_Night confirmed mode:single; camera ngoai_troi RTSP watch; DB 277MB; Broadlink transient) → **v51** (audit 32 automations full; HA MCP Tools → v7.8.0 + restart, 0 repairs; Broadlink 3 remotes reloaded; xác nhận SmartHub/weather `failed_conditions` là ĐÚNG thiết kế; bổ sung ignore list infrared/rf entity unknown + weather.forecast_home không tồn tại).
 
 **Trạng thái:** ✅ v51 · DIR-ONLY automation · backup REST native (dedup) · LXC topology rõ · audit 4 batch (System / File+Storage / Logic / Infra) · vzdump global exclude-path đầy đủ · stale_restored=0 · script baseline 63 entities · HA MCP Tools v7.8.0 · 0 repairs · 32 automations ON.
