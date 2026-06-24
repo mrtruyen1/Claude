@@ -329,9 +329,9 @@ Sau mỗi phiên có fix mới: (1) thêm pattern/ignore; (2) cập nhật basel
 Cuối phiên, AI **phải tự thực hiện** các bước sau — không chờ nhắc:
 
 1. Sửa nội dung file hiện tại trong working tree (tăng version, cập nhật header, §10, §11)
-2. Đổi tên file: `HA_SENIOR_AUDIT_PROMPT_vN.md → HA_SENIOR_AUDIT_PROMPT_v(N+1).md`
+2. Đổi tên file: `HA_v7.X.md → HA_v7.(X+1).md`
 3. `git add` file mới + `git rm` file cũ
-4. `git commit -m "chore: update HA audit prompt vN → v(N+1)"`
+4. `git commit -m "chore: update HA audit prompt v7.X → v7.(X+1)"`
 5. **`git push origin HEAD:main`** — **LUÔN push thẳng lên `main`**, KHÔNG tạo feature branch, KHÔNG cần PR
 
 > ⚠️ Nếu push bị từ chối vì behind remote: `git fetch origin && git rebase origin/main && git push origin HEAD:main`
