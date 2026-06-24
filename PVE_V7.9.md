@@ -1,5 +1,6 @@
-# NAS + Proxmox VM Audit & Optimization Prompt — v7.8
+# NAS + Proxmox VM Audit & Optimization Prompt — v7.9
 > Synology DVA1622 trên Proxmox 8.x · Cập nhật từ phiên 2026-06-24
+> **v7.9:** Audit 2026-06-24 (scheduled full PHASE 0→7) — score **99/100** (−1 LOW). Tất cả baseline PVE khớp: SMART 3/3 PASSED UDMA_CRC 18/65/0 ✅ · Btrfs scrub **0 errors** vol1/vol2(2.11TiB)/vol3 ✅ · 0 failed units ✅ · LVM thin **50.73%** · DSM vol 4%/61%/16% · NCQ all=1 · ZFS ARC 4GiB · net buffer 16MB ✅. VM/CT: 8/8 CT running · VM100/101 running · VM103/105 stopped · 0 OOM · PSI 0.00. KVM swap VM101: **2.54GB** (↑ từ 2.49GB, ổn định). Frigate (healthy) record:false snapshots:true retain 7d · storage 96K ✅ · RTSP ngoai_troi sporadic (watchdog recover). open-webui v0.9.6 (healthy) df 52% ✅. cloudflared 4/4 · Tailscale OK · NFS Synology online. Backup sensor OK (VM100 daily ✅). **🟡 LOW: Broadlink RM mini T1 `.7` offline** — Network timeout [x3] (HA integration error; package `broadlink_mini_t1`). **WATCH:** KVM swap 2.54GB (↑, action >3GB) · vm-100-disk-1 LVM 68.71% (Watch zone; 3.49G small disk VM100) · journal 921MB (↑ từ 865MB) · vol2 61% (drift từ 56%, ngưỡng 70%).
 > **v7.8 (cải tiến phương pháp — nghiên cứu best-practice online, KHÔNG phải audit run):** Bổ sung 3 mảng audit dựa tài liệu chuẩn: (1) **Toàn vẹn dữ liệu** — DSM volume là Btrfs → thêm `btrfs scrub status` verify **0 errors** (đã xác nhận vol1/2/3 = 0 error, vol2 2.11TiB; scrub bắt bit-rot, bổ trợ SMART). Host **KHÔNG có ZFS pool** (`zpool list` empty, storage=LVM-thin) → KHÔNG cần `zpool scrub`, ARC 4GiB chỉ phòng hờ. (2) **Hardening nâng cao** — Lynis (agentless, Hardening Index 0–100, CHƯA cài, tùy chọn); 2FA `root@pam` hiện **TẮT** (LOW, chỉ LAN+Tailscale); API token ✅; notification target builtin (alerting thực qua HA Telegram). (3) **Backup RESTORE test** định kỳ (best-practice: đừng phát hiện backup hỏng lúc cần restore). Nguồn: CISOfy/Lynis · Proxmox VE best-practice · Klara/DATAZONE (scrub+SMART). Baseline vận hành GIỮ NGUYÊN.
 > **v7.7:** Audit 2026-06-24 (scheduled full PHASE 0→7) — score audit **93/100** (1 HIGH + 1 MEDIUM); **3 fix ĐÃ APPLY** (Truyền duyệt hướng xử lý) → sau fix **100/100**. **🔴 HIGH (RESOLVED): NFS Frigate rớt → recordings/snapshots ghi nhầm vào đĩa ROOT host.** Nguyên nhân gốc: thư mục chia sẻ DSM `/volume3/frigate` bị xóa/đổi tên → thay bằng `/volume3/frigate_new` (rỗng, tạo Jun 18), rule NFS export biến mất khỏi DSM (`showmount` chỉ còn `/volume2/Proxmox`, `/etc/exports` đồng bộ). Host mount fail từ boot 13:13 (`access denied by server`) → bind mount CT104 `optional` rớt xuống `/opt/frigate/storage` = host `/mnt/frigate-nas` = `/dev/mapper/pve-root`. ⚠️ Lưu ý: `/media/frigate` KHÔNG tồn tại — Frigate ghi thẳng `/opt/frigate/storage` (bind→host root), KHÔNG dùng đĩa riêng CT104. **Truyền xác nhận: "Frigate chỉ live + chạy AI, KHÔNG lưu trữ (recordings)"** — bỏ NFS đúng chủ đích, NHƯNG **GIỮ snapshots** (ảnh AI) với retain 7d. **✅ FIX:** (1) comment dòng fstab NFS chết (`#DISABLED-20260624`, backup `/etc/fstab.bak-20260624`); (2) **`record: enabled: false`** (KHÔNG ghi video 24/7 — đây là "không lưu trữ"); (3) **`snapshots: enabled: true` + `retain: default: 7` (mode motion)** — Truyền giữ lại ảnh AI, tự xóa sau 7 ngày (backup `config.yml.bak-20260624-noStorage`). Kết quả xác nhận qua `/api/config`: `record=False`, `snapshots=True`, `retain={default:7, mode:motion}`. **AI chạy**: detect chỉ bật `ngoai_troi` (`detect_fps` active, cpu1 ~27ms) → MQTT → HA; 5 camera live (cam_fps ~5.0). Snapshots + `frigate.db` ghi `/opt/frigate/storage` (bind→host root) + `/opt/frigate/config` (đĩa CT) — retain 7d giới hạn ~<1GB. Restart Frigate **(healthy)**. ⚠️ Lưu ý: từng thử tắt snapshots (hiểu nhầm "không lưu trữ" = tắt hết) — Truyền yêu cầu GIỮ snapshots, đã khôi phục. **🟠 MEDIUM (RESOLVED): failed unit `zigbee2mqtt-reattach.service`** (boot race `pct ipcc_send_rec failed: Connection refused`, pmxcfs chưa sẵn sàng; Z2M CT110 active/healthy) → `systemctl reset-failed` (cùng `mnt-frigate-nas.mount`) + **thêm `After=pve-cluster.service pve-guests.service` & `Wants=pve-cluster.service`** vào unit (backup `.bak-20260624`, `systemd-analyze verify` OK) chống tái diễn → **0 failed units**. **Baseline:** Host RAM avail 15Gi · swap 4.7Gi (VM101 kvm **2.49GB** ổn định + pvedaemon, PSI 0.00, 0 OOM) · LVM **50.69%** · SMART 3/3 PASSED UDMA_CRC **18/65/0** temp 38/40/33°C Reallocated 0 · NCQ=1 · ZFS ARC 4GiB. DSM vol **4/61/15%** (vol2 drift ↑56→61% vẫn <70) · SMART sata1-4 Reallocated 0 temp 31°C · NCQ=1 · net buffer 16MB · mdstat UUUU. CT 8/8 active · cloudflared 4/200 · open-webui `v0.9.6` (healthy) · 9router 20128 active · MariaDB 470MB. Backup VM100 daily snapshot OK · weekly vmid `101,102,104,106,107,108,110,111,113`. HA core sạch (HA_v55). vmbr0 drops BENIGN.
 > **v7.6:** Audit 2026-06-24 (scheduled full PHASE 0→7) — score **98/100** tại thời điểm audit; **2 fix ĐÃ APPLY trong phiên** (Truyền duyệt "sửa tất cả"). **✅ FIX #1 CT111 open-webui** — container `:main` được `docker run` thủ công (compose down không gỡ được do xung đột tên) → `docker stop/rm open-webui` rồi `docker compose up -d` → nay chạy `v0.9.6` **(healthy)**, data giữ nguyên trên named volume `open-webui` (cả container cũ & compose dùng chung). MEDIUM RESOLVED → score thực **100/100**. **✅ FIX #3 backup-all.sh** ctids `(102 104 106 107 110 113)` → **`(102 104 106 107 108 110 111 113)`** (backup `.bak-20260624`, `bash -n` OK). **✅ CT108 DOCUMENTED = 9Router AI Gateway v0.5.8** (LLM API proxy OpenAI-compat `/v1` port 20128, open-webui là client) — Truyền xác nhận. **Bảo mật (LOW):** Require-API-key TẮT nhưng **Tunnel public TẮT** + app có guard chặn bật tunnel khi chưa require-key → KHÔNG phơi internet; phơi nhiễm chỉ LAN + Tailscale tailnet (mạng tin cậy). Hardening tùy chọn: bật require-key (đã có key `open-webui`). **Backup job vmid = `101,102,104,106,107,108,110,111,113`** — VM105(n8n) ĐÃ GỠ (decommissioned). VM101 KVM swap **2.45GB ổn định** (2446196 kB). LVM data% **49.82%**. SMART 3/3 PASSED (UDMA_CRC 18/65/0, temp 38/39/33°C). DSM sata1-4 Reallocated=0, vol 4/56/14%, mdstat UUUU, NCQ 1, net buffer 16MB. 0 OOM, PSI 0.00, snapshots sạch, 0 failed units. cloudflared 4 conns/200. vmbr0 drops BENIGN. CT108 next-server v16.2.1 port 20128. Camera ngoai_troi RTSP sporadic. HA stale_restored 959→4. CT114 vẫn absent ✅.
@@ -162,7 +163,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | ZFS ARC max | `4294967296` (4 GiB) | Khác = sai config |
 | LVM thin `data%` | ~**50.69%** (v7.7) | >70 fstrim · >80 urgent |
 | DSM volume1 / volume2 / volume3 | **4% / 61% / 15%** (v7.7) | vol2 drift ↑56→61%, vol3 14→15% (benign); >80 action |
-| Frigate storage (v7.7) | LIVE+AI, KHÔNG lưu recordings · **`record:false`** + **`snapshots:true` retain 7d (mode motion)** (Truyền giữ ảnh AI) · snapshots+`frigate.db` → `/opt/frigate/storage` (bind→host root) | retain 7d giữ <~1GB; nếu storage phình >2GB = retain không kick, kiểm tra; NFS `/volume3/frigate` đã bỏ (fstab `#DISABLED`) |
+| Frigate storage (v7.9) | LIVE+AI, KHÔNG lưu recordings · **`record:false`** + **`snapshots:true` retain 7d (mode motion)** · storage `/opt/frigate/storage` (bind→host root): clips **96K**, no snapshots dir yet | v7.9: storage minimal 96K ✅; nếu phình >2GB = retain không kick; NFS `/volume3/frigate` bỏ (fstab `#DISABLED`) |
 | **DSM Btrfs scrub** (v7.8) | **0 errors** mọi volume · vol2 2.11TiB scrubbed | >0 error = HIGH (bit-rot) → check SMART + cân nhắc replace disk |
 | **ZFS pool host** (v7.8) | **none** (`zpool list` empty) — storage = LVM-thin | KHÔNG cần `zpool scrub`; ARC 4GiB chỉ phòng hờ |
 | **2FA `root@pam`** (v7.8) | **TẮT** (tfa.cfg rỗng) — LOW (LAN+Tailscale) | bật TOTP = hardening tùy chọn |
@@ -175,7 +176,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | DSM net buffer (rmem/wmem) | **16777216** (16MB, trong DSM) | check bằng `dsm_run`, KHÔNG host (host=212992 mặc định OK) |
 | NCQ kernel cmdline | `libata.force=noncq` **hiện ABSENT** (chỉ 2/3 lớp) | queue_depth=1 vẫn giữ qua udev+rc.d; thêm vào GRUB nếu muốn đủ 3 lớp |
 | Camera Frigate | `ngoai_troi`(AI,5fps) + `phong_ngu`(5fps) + `phong_khach` + `ban_hang` + `ban_hang_2` | 5 cameras total; "No new valid recording segments" lặp = NFS volume3 rớt |
-| VM101 KVM swap | **2.49GB** (v7.7: ỔN ĐỊNH, 2607404 kB) | Tăng tiếp >3GB → xem xét tăng RAM VM101 |
+| VM101 KVM swap | **2.54GB** (v7.9: 2598560 kB, ↑ nhẹ từ 2.49GB, ổn định) | Tăng tiếp >3GB → xem xét tăng RAM VM101 |
 | vmbr0 RX dropped | ~1.15M — **BENIGN** (multicast snooping) | KHÔNG phải lỗi mạng; multicast_snooping=1 |
 | open-webui image | **`v0.9.6` (v7.6 ĐÃ FIX, healthy)** — running qua compose, KHÔNG còn `:main` | Nếu thấy lại `:main`: `docker stop/rm open-webui` (container run thủ công) rồi `cd /opt/open-webui && docker compose up -d` |
 | Backup job vmid | **`101,102,104,106,107,108,110,111,113`** (v7.6: VM105 gỡ — n8n decommissioned) | Thiếu CT mới = backup gap |
@@ -534,36 +535,37 @@ tmpdir: /var/tmp/vzdump-tmp
 
 ---
 
-## 📌 TRẠNG THÁI PHIÊN GẦN NHẤT (2026-06-24 v7.7) — Audit **93/100** → sau fix **100/100**
+## 📌 TRẠNG THÁI PHIÊN GẦN NHẤT (2026-06-24 v7.9) — Audit **99/100** (−1 LOW)
 
-**Phiên này ĐÃ APPLY 3 fix (Truyền duyệt hướng xử lý Frigate):**
-- **🔴→✅ HIGH FIX — Frigate NFS rớt:** DSM bỏ share `/volume3/frigate` (→`frigate_new` rỗng) + mất NFS export → Frigate ghi nhầm vào host root. Truyền xác nhận **"Frigate chỉ live + AI, không lưu trữ"** → (1) comment fstab NFS chết (backup `fstab.bak-20260624`); (2) `record:false` (đã sẵn); (3) thêm `snapshots: retain default 7` (backup `config.yml.bak-20260624`) → restart Frigate **(healthy)**. RESOLVED.
-- **🟠→✅ MEDIUM FIX — failed unit `zigbee2mqtt-reattach.service`:** boot race (pmxcfs chưa sẵn sàng), Z2M vẫn healthy → `systemctl reset-failed` (+ `mnt-frigate-nas.mount`) → **0 failed units**. RESOLVED.
-- **CT114 vẫn absent** (resolved) ✅ · open-webui `v0.9.6` healthy giữ vững · backup vmid OK.
-- Score audit 93/100 (−5 HIGH −2 MEDIUM); sau 3 fix → **100/100**.
+**Phiên v7.9 — Không có fix mới (audit-only):**
+- Score **99/100** (−1 LOW Broadlink Mini T1 `.7` offline)
+- Tất cả baseline PVE khớp. Không có action bắt buộc.
 
-**Snapshot baseline xác nhận (2026-06-24 ~08:00 local):**
-Host RAM avail 11Gi (VM103+105 stopped) · swap 4.0Gi (VM101 KVM=2.45GB/2446196 kB ỔN ĐỊNH + pvedaemon) · PSI mem avg300=0.00 · 0 OOM · load 3.31/2.31/1.95 · failed units 0 host+0 CT · LVM **49.82%** · ZFS ARC 4GiB · SMART 3/3 PASSED UDMA_CRC 18/65/0 · temp 38/39/33°C · NFS 55.73%/local 58.43%/lvm 49.82%. DSM vol 4/56/**14%** · mdstat UUUU · NCQ sata1-4=1 · net buffer 16MB · DSM sata1-4 Reallocated=0. CT 8/8 active (CT114 deleted) · cloudflared 4 conns/200 · MariaDB 470MB · Frigate (healthy 2d) GPU card0+renderD128 · backup sensor=OK size 3.72GB · vmbr0 drops 1.34M BENIGN · CT108 next-server v16.2.1 port 20128 · snapshots sạch · journal 865MB · time synced. Backup job vmid OK per-guest. HA stale_restored giảm còn 4 (Glances veth114/dm_20).
+**Snapshot baseline (2026-06-24 ~19:10 local):**
+Host RAM avail 14Gi (VM103+105 stopped) · swap 4.0Gi (VM101 KVM=**2.54GB**/2598560 kB ↑nhẹ · pvedaemon) · PSI mem avg300=0.00 · 0 OOM · load 1.30/1.61/1.77 · **0 failed units** host+CT ✅ · LVM **50.73%** · ZFS ARC 4GiB · SMART 3/3 PASSED UDMA_CRC 18/65/0 · temp 39/40/34°C · NFS 60.76%/local 54.48%/lvm 50.73%. DSM vol 4%/61%/**16%** · mdstat UUUU · NCQ all=1 · net buffer 16MB · Btrfs scrub **0 errors** vol1/2/3 ✅. CT 8/8 active · cloudflared 4/4 · MariaDB 470MB · Frigate (healthy 5h) GPU card0+renderD128 · storage 96K ✅ · backup sensor=OK size 3.72GB · journal **921MB** (↑) · time synced. vm-100-disk-1 LVM **68.71%** (Watch, 3.49G small disk).
 
 ### ⏳ Watch items (monitor phiên sau)
-1. ✅ **Frigate NFS/storage** — FIXED v7.7 (record off = không lưu recordings; **snapshots ON retain 7d** — Truyền giữ ảnh AI). Monitor `/opt/frigate/storage` (host root) giữ <~1GB nhờ retain 7d. Nếu phình >2GB → retain không kick, kiểm tra. DSM `/volume3/frigate_new` rỗng — Truyền tự xóa qua DSM UI nếu không dùng.
-2. **VM101 (HA) KVM swap 2.49GB** — ỔN ĐỊNH. Nếu >3GB → tăng RAM VM101 lên 12GB.
-3. **Camera `ngoai_troi` RTSP timeout/404** — sporadic (camera `.4` flaky). Watchdog recover. Monitor tần suất.
-4. **LVM data% 50.69%** — ngưỡng action 70%. fstrim định kỳ.
+1. ✅ **Frigate NFS/storage** — RESOLVED v7.7. v7.9: storage **96K** (clips only, no snapshots dir yet) ✅. Monitor nếu phình >2GB.
+2. **VM101 (HA) KVM swap 2.54GB** — ↑ nhẹ từ 2.49GB (v7.7). Nếu >3GB → tăng RAM VM101 lên 12GB.
+3. **Camera `ngoai_troi` RTSP timeout** — sporadic (camera `.4` flaky). Watchdog recover. Monitor tần suất.
+4. **LVM data% 50.73%** — ngưỡng action 70%. fstrim định kỳ.
 5. **DSM volume2 61%** — drift ↑ từ 56%, ngưỡng 70%.
-5. **CT108 9Router AI Gateway — hardening (LOW):** `Require API key` = TẮT, nghe `0.0.0.0:20128`. **Tunnel public TẮT** (app có guard: chặn bật tunnel khi chưa require-key) → KHÔNG phơi internet. Phơi nhiễm chỉ LAN + Tailscale tailnet. Tùy chọn bật require-key (đã có key `open-webui`) để defense-in-depth — không khẩn cấp.
-6. ✅ **backup-all.sh** ctids — FIXED v7.6, đã gồm 108/111.
-7. **vol3 DSM 14%** — drift nhỏ, theo dõi.
+6. **CT108 9Router AI Gateway — hardening (LOW):** Tunnel public TẮT (app guard) → KHÔNG phơi internet. Tùy chọn bật require-key.
+7. ✅ **backup-all.sh** ctids — FIXED v7.6, đã gồm 108/111.
+8. **vol3 DSM 16%** — drift nhỏ từ 14→15→16%, theo dõi.
+9. **vm-100-disk-1 LVM 68.71%** (Watch zone, 3.49G small disk VM100). Investigate nếu tăng tiếp.
+10. **Journal 921MB** — up từ 865MB (v7.7). Consider `journalctl --vacuum-time=2weeks` nếu vượt 1GB.
+11. **🟡 LOW: Broadlink RM mini T1 `.7` offline** — Network timeout [x3] lúc 15:13. Kiểm tra device có bị mất điện/reset không.
 
 ### Next steps phiên sau
-1. **Verify Frigate storage bounded**: `/opt/frigate/storage` giữ <~1GB nhờ snapshots retain 7d (record off). Nếu phình → kiểm tra retain.
-2. **(Tùy) dọn DSM `/volume3/frigate_new` rỗng** qua DSM UI nếu xác định không dùng.
-3. **CT108 hardening (tùy chọn, LOW)**: bật `Require API key` defense-in-depth (Tunnel public TẮT + app guard → không khẩn cấp)
-4. Monitor VM101 swap trend (2.49GB) + DSM vol2 (61%)
-5. Monitor camera ngoai_troi RTSP frequency
-6. Verify open-webui CT111 vẫn `v0.9.6` healthy sau update tự động
-7. (Tùy) thêm `libata.force=noncq` vào GRUB đủ 3 lớp NCQ
-8. **Cập nhật file này** sau phiên tiếp theo
+1. Verify Broadlink Mini T1 `.7` có online không (check HA logs).
+2. Monitor vm-100-disk-1 LVM% (68.71% Watch).
+3. Monitor VM101 KVM swap trend (2.54GB → action >3GB).
+4. Monitor journal size (921MB → vacuum nếu >1GB).
+5. Monitor Frigate storage bounded <2GB (retain 7d).
+6. (Tùy) dọn DSM `/volume3/frigate_new` rỗng qua DSM UI.
+7. (Tùy) CT108 hardening: bật `Require API key`.
+8. (Tùy) thêm `libata.force=noncq` vào GRUB đủ 3 lớp NCQ.
 
 ---
 
@@ -571,6 +573,7 @@ Host RAM avail 11Gi (VM103+105 stopped) · swap 4.0Gi (VM101 KVM=2.45GB/2446196 
 
 | Version | Thay đổi chính |
 |---|---|
+| v7.9 | **Audit 2026-06-24 (scheduled full PHASE 0→7), score 99/100.** Tất cả baseline PVE khớp. 🟡 LOW: Broadlink RM mini T1 `.7` offline (Network timeout [x3]). WATCH: KVM swap 2.54GB (↑), vm-100-disk-1 68.71%, journal 921MB. Btrfs scrub confirmed 0 errors vol1/2/3 ✅. Frigate storage 96K ✅. Không có fix, không có action bắt buộc. Cập nhật baseline KVM swap 2.54GB, Frigate storage 96K, vol3 16%. |
 | v7.8 | **CẢI TIẾN PHƯƠNG PHÁP (nghiên cứu best-practice online, không phải audit run):** +PHASE 2 **Btrfs scrub** DSM (verify 0 errors — đã xác nhận vol1/2/3, vol2 2.11TiB; bổ trợ SMART chống bit-rot); xác nhận host KHÔNG ZFS pool (LVM-thin). +PHASE 6 **hardening**: Lynis (Hardening Index, agentless, chưa cài, tùy chọn), 2FA root@pam TẮT (LOW), API token ✅, notification qua HA Telegram; **backup RESTORE test** định kỳ. +4 baseline rows + lesson group "Toàn vẹn dữ liệu & Hardening". Nguồn: CISOfy/Lynis, Proxmox VE best-practice, Klara/DATAZONE. Baseline vận hành giữ nguyên. |
 | v7.7 | **FIX APPLY:** 🔴 HIGH Frigate NFS rớt (DSM bỏ share `/volume3/frigate`→`frigate_new` rỗng + mất export → ghi nhầm host root); Truyền: "live+AI, không lưu recordings nhưng GIỮ snapshots" → fstab `#DISABLED` (backup) + **`record:false` + `snapshots:true` retain 7d** (mode motion, backup) → AI detect ngoai_troi chạy, Frigate healthy. 🟠 MEDIUM failed unit `zigbee2mqtt-reattach` (boot race) → reset-failed + thêm `After/Wants=pve-cluster.service` → 0 failed. Baseline: swap 4.7Gi (VM101 kvm 2.49GB), LVM 50.69%, SMART 18/65/0, DSM vol 4/61/15%, CT 8/8 active, open-webui v0.9.6 healthy. Score 93→100/100 |
 | v7.6 | **2 FIX APPLY:** CT111 open-webui `:main`→`v0.9.6` healthy; backup-all.sh ctids +108/111 (`.bak-20260624`). **CT108 DOCUMENTED = 9Router AI Gateway v0.5.8** (LLM API proxy /v1 port 20128, open-webui là client) + bảo mật LOW: Require-API-key TẮT nhưng Tunnel public TẮT (app guard chặn bật tunnel khi chưa require-key) → không phơi internet, chỉ LAN+tailnet. Backup job gỡ VM105 (n8n); LVM 49.82%; VM101 swap 2.45GB; SMART 18/65/0; HA stale_restored 959→4; score audit 98 → sau fix 100/100 |
