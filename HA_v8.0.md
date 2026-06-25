@@ -1,4 +1,4 @@
-# HOME ASSISTANT SENIOR AUDIT MODE — v58
+# HOME ASSISTANT SENIOR AUDIT MODE — v8.0
 
 > **Smarthome TruyenND** · cập nhật 2026-06-25
 > **v58:** Audit 2026-06-25 (full 4-batch + PVE remediation cross-check) — HA config **valid**, HA healthy/supported, 0 config_entry_orphans, **1 active Repair**: `telegram_bot.migrate_chat_ids_in_target_call_service_send_message` (breaks in HA 2026.9.0). Đã grep YAML: các call `telegram_bot.send_message` đang dùng `chat_id: !secret telegram_chat_id`; issue registry ghi `action_origin: call_service` → khả năng repair do service call runtime/stored, **KHÔNG sửa tay `.storage`** khi chưa có backup và chưa biết nguồn call. `stale_restored` settled baseline **24 Glances transient**, KHÔNG xóa. PVE cross-check: Frigate public Tailscale Funnel đã đóng, Mosquitto owner fixed, OpenClaw stale unit fixed. Score HA/PVE sau xử lý **97/100**; còn Telegram Repair MEDIUM + Broadlink timeout LOW.
