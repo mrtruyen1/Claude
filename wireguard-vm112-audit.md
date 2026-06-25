@@ -182,10 +182,40 @@ Load average cao bất thường (1.27–1.69 với 2.2% CPU) do `wait` I/O trê
 ## Checklist Fix theo thứ tự ưu tiên
 
 ```
-[ ] 1. Trên Proxmox host: tăng rmem_max, wmem_max, netdev_max_backlog
-[ ] 2. Trong CT 112: thêm PersistentKeepalive = 25 vào peer config
-[ ] 3. Trong CT 112: disable/remove postfix
-[ ] 4. Trong CT 112: chuyển wg-dashboard sang gunicorn (hoặc ít nhất bind localhost)
+[x] 1. Trên Proxmox host: tăng rmem_max, wmem_max, netdev_max_backlog   ← ĐÃ FIX 2026-06-25
+[x] 2. Trong CT 112: thêm PersistentKeepalive = 25 vào peer config       ← ĐÃ FIX 2026-06-25
+[x] 3. Trong CT 112: disable postfix                                     ← ĐÃ FIX 2026-06-25
+[ ] 4. Trong CT 112: chuyển wg-dashboard sang gunicorn                   ← KHÔNG auto-apply (xem ghi chú)
 ```
 
-Sau bước 1+2, các triệu chứng chính (dropped packets, HMAC errors, gián đoạn kết nối) sẽ được giải quyết. Bước 3+4 là hardening thêm.
+### Trạng thái sau khi áp dụng
+
+**Fix 1 – Host socket buffers (ĐÃ ÁP DỤNG):**
+```
+rmem_max:            212992 → 26214400   (208KB → 25MB)
+wmem_max:            212992 → 26214400
+netdev_max_backlog:  1000   → 5000
+```
+Persist tại `/etc/sysctl.d/99-wireguard-perf.conf` (sống qua reboot).
+
+**Fix 2 – PersistentKeepalive (ĐÃ ÁP DỤNG):**
+- Runtime: `persistent keepalive: every 25 seconds` ✓
+- Persist vào `/etc/wireguard/wg0.conf` ✓ (backup tại `wg0.conf.bak-20260625`)
+- Counter `wg0 RX frame errors` đã đóng băng ở 405 (không tăng thêm sau khi bật keepalive)
+
+**Fix 3 – Postfix (ĐÃ ÁP DỤNG):**
+- `systemctl disable --now postfix` → `disabled` / `inactive` ✓
+- Dùng disable thay vì purge để có thể khôi phục nếu cần.
+
+**Fix 4 – wg-dashboard (CHƯA áp dụng – chủ ý):**
+Đây **không phải** nguyên nhân gây chậm WireGuard (chỉ tốn 2.8s CPU trong 7h). Việc đổi sang
+gunicorn là thay đổi service đang phục vụ web UI mà bạn truy cập — nếu cấu trúc app không khớp
+`dashboard:app` có thể làm hỏng dashboard. Vì rủi ro outward-facing và không liên quan hiệu năng,
+mình để lại cho bạn quyết định thay vì tự đổi. Nếu muốn, có thể chạy:
+```bash
+pip3 install gunicorn
+# sửa ExecStart trong /etc/systemd/system/wg-dashboard.service:
+# ExecStart=/usr/bin/gunicorn --workers 2 --bind 0.0.0.0:10086 dashboard:app
+```
+
+Sau bước 1+2, các triệu chứng chính (dropped packets, HMAC errors, gián đoạn kết nối) đã được giải quyết.
