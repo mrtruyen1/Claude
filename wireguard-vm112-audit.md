@@ -338,3 +338,40 @@ Persist vào `wg0.conf` PostUp/PreDown → sống qua reboot.
 [x] 10. CT112: TCP MSS clamping (fix đơ khi vào Home Assistant từ ngoài)
 [ ] 4.  wg-dashboard → gunicorn (tuỳ chọn, không liên quan tốc độ)
 ```
+
+---
+
+## Vòng 4 – Rà soát sâu toàn hệ thống & xác minh (2026-06-25)
+
+### Đã verify SẠCH (không cần fix)
+
+| Hạng mục | Kết quả |
+|----------|---------|
+| MSS clamp live | Đã bắt 36 packet ngay sau khi bật → đang hoạt động thực tế ✓ |
+| Conntrack (CT112 NAT) | 35 / 262144 — thừa headroom |
+| Conntrack (host) | 237 / 262144 — thừa headroom |
+| WireGuard module | Kernel-native (`wireguard` + curve25519/chacha20) — fast path ✓ |
+| RAM / swap | 74MB/512MB dùng, swap 0, swappiness=10 — không áp lực |
+| unattended-upgrades | Không bật auto-reboot — không gây rớt tunnel đột ngột |
+| UPnP port mapping | Refresh mỗi ~10 phút, tất cả SUCCESS — external reachability OK |
+| pve-firewall | **disabled** toàn cục → `firewall=1` trên HA không filter gì |
+| Data path tới HA (tap101i0) | **0 drops** — sạch hoàn toàn |
+
+### Làm rõ topology
+- `192.168.31.111` = **VM 101 "Hassio" (Home Assistant thật)**, MAC `92:DF:44:5F:8C:C7` — xác nhận đúng.
+- (CT 111 hostname "open-webui" có IP khác qua DHCP — đừng nhầm CTID với IP.)
+
+### Về drops "lạ" — đã xác định vô hại
+- `eth0` (CT112) creep ~4 drop/phút và `fwbr101i0` 267K drops: đều là **IPv6 RA / multicast / STP**
+  ở tầng bridge/veth mà guest không có listener. Bằng chứng: `RX errors length/crc/frame/fifo/overrun = 0`.
+  Không ảnh hưởng hiệu năng.
+
+### Giới hạn — các lever còn lại NẰM NGOÀI WireGuard box (không tự đụng)
+1. **BBR congestion control** sẽ giúp throughput HA→client qua CGNAT, NHƯNG:
+   - WG box chỉ *forward* (không terminate TCP) nên BBR ở đây vô tác dụng.
+   - Endpoint gửi thật là HA OS — là **appliance immutable**, không nên chỉnh sysctl. → Bỏ qua.
+2. **Bufferbloat** khi uplink bão hoà hình thành ở **router WAN** (192.168.31.1), không phải ở
+   eth0 của WG box (gigabit LAN, không nghẽn). → fq_codel trên WG box không giúp; cần làm ở router.
+
+**Kết luận: WireGuard box đã được tối ưu hết mức. Nguyên nhân "đơ" khi vào HA = thiếu MSS clamp
+(đã fix ở vòng 3).** Mọi tầng khác đều sạch.
