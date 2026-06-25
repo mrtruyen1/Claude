@@ -290,3 +290,51 @@ phải bottleneck, giữ nguyên.
 
 **Tất cả tối ưu tốc độ đã áp dụng + persist qua reboot.** Hạng mục duy nhất còn lại (gunicorn cho
 dashboard) chỉ là hardening, không ảnh hưởng throughput WireGuard.
+
+---
+
+## Vòng 3 – Fix "đơ" khi vào Home Assistant từ ngoài mạng (2026-06-25)
+
+### 10. 🔴 CRITICAL – Thiếu TCP MSS Clamping → trang web đơ/treo
+
+**Triệu chứng:** Truy cập `192.168.31.111` (Home Assistant) qua WireGuard từ ngoài mạng
+→ đôi khi load được, đôi khi trang đứng im, đặc biệt khi dùng HA web UI.
+
+**Nguyên nhân:**
+```
+WireGuard MTU    = 1420
+Path MTU ngoài  = 1480 (đo được từ audit trước)
+TCP MSS mặc định = 1460 (Ethernet 1500 - 40 byte IP+TCP headers)
+
+Gói TCP lớn: 1460 payload + 60 byte WireGuard overhead = 1520 > 1480 path MTU
+→ Packet bị drop âm thầm (ICMP fragmentation needed bị chặn bởi nhiều ISP)
+→ TCP sender chờ ACK mãi không đến → trình duyệt đơ
+```
+HA web UI tải nhiều file JS/CSS/API response lớn nên bị ảnh hưởng nặng hơn
+các tác vụ nhỏ (ping, SSH).
+
+**Xác nhận:** FORWARD chain hoàn toàn trống — không có MSS clamping rule nào.
+
+**Fix (ĐÃ ÁP DỤNG):**
+```
+PostUp  = iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+PreDown = iptables -D FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+```
+`--clamp-mss-to-pmtu` tự tính MSS phù hợp với path MTU thực tế → không cần hardcode.
+Mỗi TCP SYN đi qua tunnel sẽ bị giảm MSS xuống ≤ 1380 bytes (1420 − 40).
+Persist vào `wg0.conf` PostUp/PreDown → sống qua reboot.
+
+---
+
+## Checklist hoàn chỉnh
+
+```
+[x] 1.  Host: socket buffers 208KB→25MB, netdev_max_backlog 1000→5000
+[x] 2.  CT112: PersistentKeepalive = 25 (chặn CGNAT port churn)
+[x] 3.  CT112: disable postfix
+[x] 7.  Host: RPS/RFS trải single-queue NIC r8169 ra 7 core
+[x] 8.  MTU 1420: đã xác nhận tối ưu (path MTU = 1480) — giữ nguyên
+[x] 9.  CT112: wg0 txqueuelen 1000→10000
+[x] 10. CT112: TCP MSS clamping (fix đơ khi vào Home Assistant từ ngoài)
+[ ] 4.  wg-dashboard → gunicorn (tuỳ chọn, không liên quan tốc độ)
+```
