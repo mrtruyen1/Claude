@@ -219,3 +219,74 @@ pip3 install gunicorn
 ```
 
 Sau bước 1+2, các triệu chứng chính (dropped packets, HMAC errors, gián đoạn kết nối) đã được giải quyết.
+
+---
+
+## Vòng 2 – Tối ưu tốc độ chuyên sâu (2026-06-25)
+
+### 7. 🔴 BOTTLENECK CHÍNH – NIC host single-queue (r8169)
+
+**Phát hiện quyết định:**
+```
+Driver: r8169 (Realtek RTL8168h - consumer NIC)
+RX queues: 1  |  IRQ: 36 (chỉ 1)  →  toàn bộ packet RX dồn vào 1 CPU core
+Ring buffer: 256/256 (đã kịch max phần cứng)
+RPS: 0000000 (TẮT)
+```
+NIC chỉ có **1 hàng đợi nhận + 1 IRQ**, nên mọi packet đi qua host đều xử lý trên **một core duy nhất**.
+Đây là gốc rễ của eth0 drops và load average cao — không phải do CPU yếu (host có 28 core nhưng chỉ 1 core làm việc mạng).
+
+**Fix (ĐÃ ÁP DỤNG) – bật RPS/RFS trải softirq ra 7 core:**
+```bash
+# Runtime + persist
+echo 000000fe > /sys/class/net/enp6s0/queues/rx-0/rps_cpus      # CPU 1-7
+echo 32768    > /sys/class/net/enp6s0/queues/rx-0/rps_flow_cnt
+echo 000000fe > /sys/class/net/veth112i0/queues/rx-0/rps_cpus   # veth CT112
+sysctl -w net.core.rps_sock_flow_entries=32768
+```
+- Persist: `/etc/sysctl.d/99-wireguard-perf.conf` + systemd `rps-tune.service`
+  (chạy sau `pve-guests.service` để veth112i0 đã tồn tại) + `/usr/local/sbin/rps-tune.sh`
+
+### 8. ✅ MTU đã TỐI ƯU SẴN – không cần đổi
+
+Đo path MTU thực tế từ server ra Internet:
+```
+Gói IP 1492 → FAIL (fragment)
+Gói IP 1480 → OK     →  Path MTU thực = 1480 (KHÔNG phải 1500!)
+```
+WireGuard overhead IPv4 = 60 byte → MTU tối ưu = 1480 − 60 = **1420**.
+Config hiện tại đang đúng **1420** → chính xác tuyệt đối, giữ nguyên.
+(Nếu ai đó "sửa" thành 1440 theo giả định 1500 sẽ gây fragment → chậm.)
+
+### 9. 🟢 txqueuelen wg0 (ĐÃ ÁP DỤNG)
+
+```
+wg0 txqueuelen: 1000 → 10000   (giảm TX drop khi burst, baseline có 25 drop)
+```
+Persist qua `PostUp = ip link set %i txqueuelen 10000` trong wg0.conf (wg-quick).
+Đã validate `wg-quick strip wg0` → config hợp lệ.
+
+### Ghi chú: GSO/TSO không áp dụng
+NIC r8169 có GRO=on (tốt). GSO/TSO offload **không giúp** cho traffic WireGuard vì packet
+đã được mã hoá + phân mảnh sẵn ở MTU 1420 (UDP opaque), nên bỏ qua — tránh rủi ro với driver r8169.
+
+### Ghi chú: wireguard-upnp-refresh
+Có timer tự refresh UPnP port mapping qua router mỗi vài giờ — hoạt động bình thường, không
+phải bottleneck, giữ nguyên.
+
+---
+
+## Checklist cuối cùng
+
+```
+[x] 1. Host: socket buffers 208KB→25MB, netdev_max_backlog 1000→5000
+[x] 2. CT112: PersistentKeepalive = 25 (chặn CGNAT port churn / HMAC errors)
+[x] 3. CT112: disable postfix
+[x] 7. Host: RPS/RFS trải single-queue NIC ra 7 core (bottleneck chính)
+[x] 8. MTU: xác nhận 1420 tối ưu (đo path MTU = 1480) — giữ nguyên
+[x] 9. CT112: wg0 txqueuelen 1000→10000
+[ ] 4. wg-dashboard → gunicorn (tuỳ chọn, không liên quan tốc độ)
+```
+
+**Tất cả tối ưu tốc độ đã áp dụng + persist qua reboot.** Hạng mục duy nhất còn lại (gunicorn cho
+dashboard) chỉ là hardening, không ảnh hưởng throughput WireGuard.
