@@ -1,6 +1,8 @@
-# WireGuard & External-Access Performance Audit — v1.2
+# WireGuard & External-Access Performance Audit — v1.3
 
 > Smarthome TruyenND · Audit 2026-06-26 (live) · WireGuard + đường truy cập ngoài
+>
+> **v1.3 (2026-06-26) — ĐỔI SỐ CT114 → CT112 (Truyền yêu cầu):** WG mới giờ mang lại **CTID 112** (số gốc). Cách: `vzdump 114` (stop mode, 540MB) → CT112 cũ Debian 11 đã không còn (config/LV trống) nên restore thẳng backup thành **CT112** (Debian 13, giữ nguyên IP static `192.168.31.143` + MAC `9A:FB:FE:7D:9F:45` + WG keys/peers + WGDashboard v4) → start → peer bắt tay lại (đường ngoài OK) → `pct destroy 114` + dọn file backup. onboot=1. **Rollback Debian 11 không còn** (đã đồng ý). Forward tĩnh Deco `51820→.143` không cần đụng.
 > **Kết luận nhanh:** Server WireGuard **đã gần như tối ưu** (kernel module in-kernel, MTU khớp path-MTU, MSS clamp, txqueuelen 10000, NAT/forward đúng). Trần tốc độ truy cập từ ngoài bị giới hạn bởi **upload WAN ~60 Mbps** — WireGuard tuning KHÔNG vượt được trần này. Lợi ích thực sự nằm ở **client-side (split-tunnel)**, **chọn 1 đường thay vì chạy trùng**, **BBR trên server nội dung**, và **DDNS** (IP nhà động). Điểm hạ tầng WG: **94 → 96/100**.
 >
 > **v1.2 (2026-06-26) — MIGRATION OS (Truyền duyệt "tự làm"):** Làm mới WireGuard từ container cũ (Debian 11 bullseye, sắp hết LTS 8/2026, WGDashboard v3.0.6 từ 2022) sang **CT114 Debian 13 (trixie)** + **WGDashboard v4** (commit 2026-06-05).
