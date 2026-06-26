@@ -375,3 +375,105 @@ Persist vào `wg0.conf` PostUp/PreDown → sống qua reboot.
 
 **Kết luận: WireGuard box đã được tối ưu hết mức. Nguyên nhân "đơ" khi vào HA = thiếu MSS clamp
 (đã fix ở vòng 3).** Mọi tầng khác đều sạch.
+
+---
+
+## Vòng 5 – Hai máy chậm hơn khi cùng kết nối & DNS latency (2026-06-26)
+
+### 11. 🔴 CRITICAL – Hai thiết bị dùng chung keypair → tunnel tranh giành endpoint
+
+**Triệu chứng:** Khi cả 2 thiết bị cùng bật WireGuard, cả hai đều chậm hơn hẳn.
+
+**Nguyên nhân:**
+```
+Trước: wg0.conf chỉ có 1 [Peer] cho cả 2 thiết bị (chung PublicKey + AllowedIPs = 10.6.0.2/32)
+→ Thiết bị B kết nối → "chiếm" endpoint từ thiết bị A
+→ Server gửi traffic cho A đến endpoint của B (sai địa chỉ)
+→ TX drops tăng liên tục (từ 25 lên 300+), cả 2 thiết bị gián đoạn liên tục
+```
+
+**Fix (ĐÃ ÁP DỤNG):** Tạo keypair riêng cho device2, thêm Peer thứ 2 vào wg0.conf:
+```ini
+### begin device2 ###
+[Peer]
+PublicKey = xKCIBkjqq/OdMfqzU1ChSATq9alPik3P0L06GXBBgyI=
+PresharedKey = 0brZ23dqyFhtbfRpFcQG4db6mIBL0yPo3JzTjljoznk=
+AllowedIPs = 10.6.0.3/32
+PersistentKeepalive = 25
+### end device2 ###
+```
+Mỗi thiết bị có IP tunnel riêng (10.6.0.2, 10.6.0.3) → không còn tranh giành.
+
+### 12. 🔴 BOTTLENECK – IRQ 36 bị kẹt trên CPU 23 (719 triệu ngắt)
+
+**Phát hiện:**
+```
+cat /proc/interrupts | grep enp6s0
+→ IRQ 36: CPU 23 = 719,000,000  (tất cả trên 1 core)
+→ CPU 23 chiếm ~40% softirq load — bottleneck thực sự của NIC r8169
+```
+
+**Nguyên nhân:** RPS đã trải packet sang CPU 1–7, nhưng bản thân IRQ (NIC→kernel) vẫn ép vào
+CPU 23 theo smp_affinity mặc định. Khi CPU 23 quá tải xử lý ngắt, ring buffer đầy → drop.
+
+**Fix (ĐÃ ÁP DỤNG):**
+```bash
+# Runtime
+echo 4 > /proc/irq/36/smp_affinity     # CPU 2 (bit 2 = 0b100 = 4)
+# RPS mask cập nhật sang CPU 3–9 (tránh CPU 2 mới xử lý IRQ)
+echo 000003f8 > /sys/class/net/enp6s0/queues/rx-0/rps_cpus
+echo 000003f8 > /sys/class/net/veth112i0/queues/rx-0/rps_cpus
+```
+
+**Persist:** Thêm vào `/usr/local/sbin/rps-tune.sh`:
+```bash
+# Persist IRQ 36 affinity to CPU 2
+if [ -f /proc/irq/36/smp_affinity ]; then
+  echo 4 > /proc/irq/36/smp_affinity
+fi
+```
+`rps-tune.service` chạy sau `pve-guests.service` → áp dụng tự động sau reboot.
+
+### 13. 🟡 DNS latency – cài dnsmasq caching trên 10.6.0.1
+
+**Vấn đề:** VPN client resolve DNS thẳng ra 1.1.1.1 qua tunnel → mỗi DNS query tốn 1 RTT
+xuyên mạng nhà (thường 30–80ms) → cảm giác web duyệt "chậm".
+
+**Fix (ĐÃ ÁP DỤNG):** Cài dnsmasq trên CT 112, lắng nghe tại `wg0` port 53:
+```
+interface=wg0
+listen-address=10.6.0.1
+port=53
+cache-size=1000
+server=1.1.1.1
+server=8.8.8.8
+```
+DNS query lặp lại được trả từ cache cục bộ (~0.1ms) thay vì ra internet.
+Mở port: `iptables -A INPUT -i wg0 -p udp --dport 53 -j ACCEPT`
+
+**Cập nhật client config:** Cả 2 thiết bị cần đổi DNS sang `10.6.0.1`:
+- `/etc/wireguard/configs/truyen.conf` → `DNS = 10.6.0.1` ✓
+- `/etc/wireguard/configs/device2.conf` → `DNS = 10.6.0.1` ✓
+
+**Đã test:** `dig @10.6.0.1 google.com` → resolve 142.250.197.110 ✓
+
+---
+
+## Checklist hoàn chỉnh (cuối cùng)
+
+```
+[x] 1.  Host: socket buffers 208KB→25MB, netdev_max_backlog 1000→5000
+[x] 2.  CT112: PersistentKeepalive = 25 (chặn CGNAT port churn)
+[x] 3.  CT112: disable postfix
+[x] 7.  Host: RPS/RFS trải single-queue NIC r8169 — cập nhật CPU 3-9
+[x] 8.  MTU 1420: đã xác nhận tối ưu (path MTU = 1480) — giữ nguyên
+[x] 9.  CT112: wg0 txqueuelen 1000→10000
+[x] 10. CT112: TCP MSS clamping (fix đơ khi vào Home Assistant từ ngoài)
+[x] 11. CT112/wg0.conf: keypair riêng cho device2 (10.6.0.3) — chấm dứt tunnel tranh giành
+[x] 12. Host: IRQ 36 pinned CPU 2, RPS mask 000003f8, persist trong rps-tune.sh
+[x] 13. CT112: dnsmasq cache DNS trên wg0:53, client configs cập nhật DNS=10.6.0.1
+[ ] 4.  wg-dashboard → gunicorn (tuỳ chọn, không liên quan tốc độ)
+```
+
+**Trạng thái hệ thống 2026-06-26:** Tất cả bottleneck đã được xử lý. Hai peer đang kết nối
+với handshake mới nhất < 20 giây, transfer lần lượt 66 MiB / 200 KiB nhận, 1.74 GB / 4.3 MB gửi.
