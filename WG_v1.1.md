@@ -1,7 +1,15 @@
-# WireGuard & External-Access Performance Audit — v1.0
+# WireGuard & External-Access Performance Audit — v1.1
 
-> Smarthome TruyenND · Audit 2026-06-26 (read-only, live) · WireGuard CT112 + đường truy cập ngoài
-> **Kết luận nhanh:** Server WireGuard **đã gần như tối ưu** (kernel module in-kernel, MTU khớp path-MTU, MSS clamp, txqueuelen 10000, NAT/forward đúng). Trần tốc độ truy cập từ ngoài bị giới hạn bởi **upload WAN ~60 Mbps** — WireGuard tuning KHÔNG vượt được trần này. Lợi ích thực sự nằm ở **client-side (split-tunnel)**, **chọn 1 đường thay vì chạy trùng**, **BBR trên server nội dung**, và **DDNS** (IP nhà động). Điểm hạ tầng WG: **94/100** (−4 bảo mật WGDashboard, −2 thiếu DDNS/redundancy).
+> Smarthome TruyenND · Audit 2026-06-26 (live) · WireGuard CT112 + đường truy cập ngoài
+> **Kết luận nhanh:** Server WireGuard **đã gần như tối ưu** (kernel module in-kernel, MTU khớp path-MTU, MSS clamp, txqueuelen 10000, NAT/forward đúng). Trần tốc độ truy cập từ ngoài bị giới hạn bởi **upload WAN ~60 Mbps** — WireGuard tuning KHÔNG vượt được trần này. Lợi ích thực sự nằm ở **client-side (split-tunnel)**, **chọn 1 đường thay vì chạy trùng**, **BBR trên server nội dung**, và **DDNS** (IP nhà động). Điểm hạ tầng WG: **94/100** → **96/100** (sau khi khóa WGDashboard).
+>
+> **v1.1 (2026-06-26) — ĐÃ ÁP DỤNG (Truyền duyệt):**
+> 1. ✅ **BBR + fq trên Proxmox host** (`/etc/sysctl.d/99-network-tune.conf` + `/etc/modules-load.d/bbr.conf`, `tc qdisc replace enp6s0 root fq`). Backup `/root/.audit_backups/`.
+> 2. ✅ **BBR per-CT** cho CT104/108/111/113 (cc per-netns, host change không tự lan; unprivileged CT ghi được) — `/etc/sysctl.d/99-bbr.conf` mỗi CT. Phục vụ open-webui / frigate UI / 9router / **cloudflared** ra ngoài.
+> 3. ✅ **WGDashboard khóa LAN**: `app_ip 0.0.0.0 → 192.168.31.143` (backup `.bak`), restart dashboard (KHÔNG đụng tunnel wg0). Vẫn truy cập từ LAN + WG client (route 192.168.31.0/24).
+> 4. ⛔ **Ring buffer enp6s0**: đã ở **max phần cứng 256/256** → không nâng được.
+> 5. ⛔ **BBR trên HAOS (VM101) & DSM/NAS (VM100)**: kernel không có module BBR (HAOS 6.18 chỉ reno/cubic; DSM 4.4 dùng `westwood`) — là appliance, không can thiệp.
+> 6. 🔲 **Còn lại cho Truyền (client/router, ngoài tầm server):** split-tunnel `AllowedIPs` trên app client · DDNS cho IP nhà động · xác nhận router KHÔNG forward 10086 · chọn 1 đường WG/Tailscale tránh trùng.
 
 ---
 
