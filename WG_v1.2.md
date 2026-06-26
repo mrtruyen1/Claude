@@ -1,7 +1,14 @@
-# WireGuard & External-Access Performance Audit — v1.1
+# WireGuard & External-Access Performance Audit — v1.2
 
-> Smarthome TruyenND · Audit 2026-06-26 (live) · WireGuard CT112 + đường truy cập ngoài
-> **Kết luận nhanh:** Server WireGuard **đã gần như tối ưu** (kernel module in-kernel, MTU khớp path-MTU, MSS clamp, txqueuelen 10000, NAT/forward đúng). Trần tốc độ truy cập từ ngoài bị giới hạn bởi **upload WAN ~60 Mbps** — WireGuard tuning KHÔNG vượt được trần này. Lợi ích thực sự nằm ở **client-side (split-tunnel)**, **chọn 1 đường thay vì chạy trùng**, **BBR trên server nội dung**, và **DDNS** (IP nhà động). Điểm hạ tầng WG: **94/100** → **96/100** (sau khi khóa WGDashboard).
+> Smarthome TruyenND · Audit 2026-06-26 (live) · WireGuard + đường truy cập ngoài
+> **Kết luận nhanh:** Server WireGuard **đã gần như tối ưu** (kernel module in-kernel, MTU khớp path-MTU, MSS clamp, txqueuelen 10000, NAT/forward đúng). Trần tốc độ truy cập từ ngoài bị giới hạn bởi **upload WAN ~60 Mbps** — WireGuard tuning KHÔNG vượt được trần này. Lợi ích thực sự nằm ở **client-side (split-tunnel)**, **chọn 1 đường thay vì chạy trùng**, **BBR trên server nội dung**, và **DDNS** (IP nhà động). Điểm hạ tầng WG: **94 → 96/100**.
+>
+> **v1.2 (2026-06-26) — MIGRATION OS (Truyền duyệt "tự làm"):** Làm mới WireGuard từ container cũ (Debian 11 bullseye, sắp hết LTS 8/2026, WGDashboard v3.0.6 từ 2022) sang **CT114 Debian 13 (trixie)** + **WGDashboard v4** (commit 2026-06-05).
+> - **Cách làm (zero-touch client):** dựng CT114 song song → copy nguyên `wg0.conf` qua `pct pull/push` (**giữ keys + 2 peers**, client KHÔNG phải cấu hình lại) + copy `rules.v4` (NAT MASQUERADE). Test wg0 trên IP tạm → **cutover**: stop CT112, gán CT114 **static `192.168.31.143` + MAC cũ `9A:FB:FE:7D:9F:45`** (router thấy client y hệt, port-forward UDP 51820 không cần đổi) → reboot CT114.
+> - **Verify:** peer `truyen` tự bắt tay lại qua port-forward (endpoint `14.255.21.183`, đã truyền 43MiB) ✅. wg0 MTU 1420 / qlen 10000 / cc **bbr** / NAT OK / LAN thông. Autostart: `wg-quick@wg0`, `netfilter-persistent`, `wg-dashboard.service` đều enabled.
+> - **WGDashboard v4:** gunicorn, bind **`192.168.31.143:10086`** (LAN/WG only). ⚠️ Đăng nhập lần đầu đặt mật khẩu mới (cài fresh).
+> - **ROLLBACK (nếu cần):** CT112 vẫn còn, chỉ `stopped` + `onboot=0`. Khôi phục: `pct stop 114; pct set 112 -onboot 1; pct start 112` (CT112 dhcp lấy lại .143 qua MAC cũ — nhưng MAC giờ trùng CT114, nên stop 114 trước). Sau khi yên tâm vài ngày → `pct destroy 112`.
+> - **Lưu ý:** performance KHÔNG đổi (WG dùng kernel module host, không phụ thuộc tuổi container) — migration thuần **bảo trì/bảo mật** (OS còn support + dashboard mới).
 >
 > **v1.1 (2026-06-26) — ĐÃ ÁP DỤNG (Truyền duyệt):**
 > 1. ✅ **BBR + fq trên Proxmox host** (`/etc/sysctl.d/99-network-tune.conf` + `/etc/modules-load.d/bbr.conf`, `tc qdisc replace enp6s0 root fq`). Backup `/root/.audit_backups/`.
