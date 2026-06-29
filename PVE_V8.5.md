@@ -114,7 +114,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
     ├── CT 108 — 9router (9Router AI Gateway v0.5.8) 192.168.31.108  Next.js · LLM API proxy OpenAI-compat /v1 port 20128 · open-webui CT111 là client
     ├── CT 110 — zigbee2mqtt (Node.js) 512M, nesting=1
     ├── CT 111 — open-webui            Docker open-webui v0.9.6 · port 3000→8080 · 2GB RAM · ANTHROPIC_API_KEY
-    ├── CT 112 — Wireguard             STOPPED (thay bằng Tailscale, giữ làm fallback)
+    ├── CT 112 — Wireguard VPN cá nhân ĐANG CHẠY (onboot=1, active+enabled) · remote-access VPN của Truyền · server 10.6.0.1/24 UDP 51820 (port-forward router) · 2 peer: "truyen" 10.6.0.2 + "device2" 10.6.0.3 (PresharedKey) · NAT masquerade eth0 → LAN+internet · CHỦ ĐÍCH (confirmed 2026-06-29)
     ├── CT 113 — cloudflared (Debian 13) 512M, nesting=1, swap 512M · native binary + systemd
     └── [CT 114 — openclaw: ĐÃ XÓA 2026-06-23, resolved v7.5]
 ```
@@ -327,7 +327,7 @@ done
 ### PHASE 6 — Security & Backup verification
 **Checklist bảo mật:**
 - [ ] NIC virtio? (VM100/101/103/105 ✅) · discard=on mọi VM? · balloon driver bật + min config?
-- [ ] ZFS ARC giới hạn 4 GiB? · Failed units = 0? · NFS online? · CT112 Wireguard stopped?
+- [ ] ZFS ARC giới hạn 4 GiB? · Failed units = 0? · NFS online? · CT112 Wireguard VPN **active = CHỦ ĐÍCH** (VPN cá nhân Truyền — KHÔNG flag là lỗi)?
 - [ ] Tailscale: HOST advertise exit + `192.168.31.0/24`? IP forwarding = 1?
 - [ ] **Public exposure matrix:** Frigate CT104 Funnel off/tailnet-only; cloudflared CT113 đúng service; 9router CT108 không public khi require-key off; không endpoint public nào thiếu auth.
 - [ ] SSH log có IP lạ? (`192.168.31.19` = VM103 = bình thường — bài học #21)
@@ -571,7 +571,7 @@ Host RAM avail ~10Gi · swap (KVM VM101 **1.76GB** ↑↑↑ + VM100 ~200MB + pv
 4. ✅ **HA Telegram Bot repair** — RESOLVED v8.1.
 5. ✅ **Broadlink timeout** — RESOLVED v8.3 (4/4 remote ON, không còn log timeout).
 6. **VM101 KVM swap 1.76 GB** (v8.4 MEDIUM) — ↑↑↑ từ 172MB; theo dõi chặt, action nếu >3GB → xem xét tăng RAM VM101.
-7. **CT112 Wireguard RUNNING** (v8.3/v8.4) — onboot=1, 2 active peers, 1.29 GiB sent; cần Truyền confirm chủ đích.
+7. ✅ **CT112 Wireguard** — **CONFIRMED 2026-06-29 = VPN remote-access cá nhân của Truyền** (2 thiết bị "truyen" 10.6.0.2 + "device2" 10.6.0.3, PresharedKey, server UDP 51820 port-forward router, NAT masquerade → LAN+internet). Đang chạy chủ đích, đã trong backup job. **KHÔNG flag lại** ở các phiên sau.
 8. **CT102 postfix.service FAILED** (v8.4 LOW) — kiểm tra và reset-failed; postfix không cần thiết nếu chỉ dùng MCP.
 9. **vzdump id=114 status=OK** (v8.3/v8.4) — task tại 23:07 Jun 26 local; CT114.conf ABSENT; xác định nguồn gốc job.
 10. **DSM volume2 62%** — dưới ngưỡng; action khi >70%.
@@ -582,7 +582,7 @@ Host RAM avail ~10Gi · swap (KVM VM101 **1.76GB** ↑↑↑ + VM100 ~200MB + pv
 15. **journal 993MB** (↑) — xem xét `journalctl --vacuum-size=500M` nếu >1GB.
 
 ### Next steps phiên sau
-1. Confirm CT112 Wireguard chạy có chủ đích không → update kiến trúc nếu yes.
+1. ✅ XONG — CT112 Wireguard confirmed VPN cá nhân Truyền (2 peer truyen/device2), kiến trúc đã update v8.5.
 2. Điều tra vzdump id=114 status=OK: xem log backup job hoặc pvesh tasks detail để tìm job nào trigger.
 3. Monitor VM101 KVM swap (MEDIUM — action >3GB).
 4. Dọn CT102 postfix.service FAILED.
