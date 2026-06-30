@@ -5,7 +5,7 @@ SmartIR code generator for Gree SK air conditioner (Broadlink RM Pro).
 Reverse-engineered from stored Broadlink IR codes on HA (remote.rm_pro_remote).
 Generates /config/custom_components/smartir/codes/climate/1199.json
 
-Protocol: 16-byte NEC-like, no inter-block gap, LSB-first per byte.
+Protocol: 16-byte data + 7-bit checksum, LSB-first per byte.
 
 Byte layout:
   [0]  0x06 | (fan<<4) | (mode<<6)
@@ -17,6 +17,9 @@ Byte layout:
   [6-9]  0x00
   [10] byte[5] >> 4   (0x00 = on, 0x0C = off)
   [11-15] 0x00
+  checksum (7 bits, bit 7 is the terminal long-gap mark):
+    = (byte[0]>>4) + (byte[0]&0xF) + (byte[1]>>4) + (byte[1]&0xF)
+    max value = 33 < 128, so bit 7 is always 0 (covered by end-of-frame gap)
 
 Mode (bits 7-6 of byte 0): Auto=0, Cool=1, Dry=2, Fan=3
 Fan  (bits 5-4 of byte 0): Auto=0, Low=1, Medium=2, High=3
@@ -25,7 +28,8 @@ Timing constants (extracted from stored Broadlink codes, 32.84 µs/tick):
   Header: 276 / 140 ticks
   Bit mark: 17 ticks  |  Zero space: 18 ticks  |  One space: 53 ticks
 
-Verified: OFF code at 23°C Cool Fan-Low matches stored code bytes 0-15.
+Verified: OFF code at 23°C Cool Fan-Low — all 16 data bytes and 7-bit
+  checksum (0x12) match the stored Broadlink code exactly.
 """
 import base64, struct, json, sys
 
@@ -46,11 +50,20 @@ def _to_broadlink(timings):
     return base64.b64encode(hdr + data + bytes([0x0D, 0x05])).decode()
 
 
+def _checksum(data_bytes):
+    b0, b1 = data_bytes[0], data_bytes[1]
+    return (b0 >> 4) + (b0 & 0xF) + (b1 >> 4) + (b1 & 0xF)
+
+
 def _build_timings(data_bytes):
     t = [HDR_MARK, HDR_SPACE]
     for b in data_bytes:
         for bp in range(8):
             t += [BIT_MARK, ONE_SPACE if (b >> bp) & 1 else ZERO_SPACE]
+    # 7-bit checksum (bit 7 always 0 → covered by the terminal mark+gap below)
+    chk = _checksum(data_bytes)
+    for bp in range(7):
+        t += [BIT_MARK, ONE_SPACE if (chk >> bp) & 1 else ZERO_SPACE]
     t += [BIT_MARK, 0]
     return t
 
