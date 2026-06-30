@@ -81,7 +81,7 @@ def generate(output_path='/tmp/1199.json'):
     smartir = {
         'manufacturer': 'Gree',
         'supportedModels': ['SK'],
-        'supportedController': 'Broadlink',
+        'supportedController': 'BroadlinkIP',
         'commandsEncoding': 'Base64',
         'minTemperature': 16,
         'maxTemperature': 30,
