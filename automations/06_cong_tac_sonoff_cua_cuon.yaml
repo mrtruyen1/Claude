@@ -1,0 +1,61 @@
+##################################################################
+# FILE: automations/06_cong_tac_sonoff_cua_cuon.yaml
+# Nút Zigbee SONOFF SNZB-01 (Công tắc Sonoff) điều khiển cửa cuốn:
+#   - Ấn 1 lần  → Mở cửa cuốn   (script.cuacuon_mo)
+#   - Ấn 2 lần  → Đóng cửa cuốn (script.cuacuon_dong)
+#   - Ấn giữ    → Dừng cửa cuốn (script.cuacuon_stop)
+##################################################################
+
+- alias: Công tắc Sonoff - Điều khiển cửa cuốn
+  id: cong_tac_sonoff_cua_cuon
+  mode: single
+  max_exceeded: silent
+
+  trigger:
+    - platform: mqtt
+      topic: "zigbee2mqtt/Công tắc Sonoff"
+      id: an_mot_lan
+      value_template: "{{ value_json.action }}"
+      payload: "single"
+    - platform: mqtt
+      topic: "zigbee2mqtt/Công tắc Sonoff"
+      id: an_hai_lan
+      value_template: "{{ value_json.action }}"
+      payload: "double"
+    - platform: mqtt
+      topic: "zigbee2mqtt/Công tắc Sonoff"
+      id: an_giu
+      value_template: "{{ value_json.action }}"
+      payload: "long"
+
+  action:
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.nguoi_dieu_khien_cua_cuon
+      data:
+        value: "Công tắc Sonoff"
+
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: an_mot_lan
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: script.cuacuon_mo
+
+        - conditions:
+            - condition: trigger
+              id: an_hai_lan
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: script.cuacuon_dong
+
+        - conditions:
+            - condition: trigger
+              id: an_giu
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: script.cuacuon_stop
