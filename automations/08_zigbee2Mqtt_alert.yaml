@@ -1,0 +1,39 @@
+- id: z2m_mat_ket_noi_telegram
+  alias: "Z2M - Cảnh báo Telegram khi Zigbee mất kết nối"
+  description: "Gửi cảnh báo Telegram khi Zigbee2MQTT Bridge offline"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.zigbee2mqtt_bridge_connection_state_2
+      to: "off"
+      for:
+        seconds: 15
+  action:
+    - action: telegram_bot.send_message
+      data:
+        chat_id: !secret telegram_chat_id
+        message: >-
+          ⚠️ CẢNH BÁO: Zigbee2MQTT mất kết nối!
+          Bridge offline lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+          Tất cả thiết bị Zigbee sẽ không phản hồi.
+          Vào Settings -> Add-ons -> Zigbee2MQTT để kiểm tra log.
+
+- id: z2m_ket_noi_lai_telegram
+  alias: "Z2M - Thông báo Telegram khi Zigbee kết nối lại"
+  description: "Gửi thông báo Telegram khi Zigbee2MQTT Bridge online trở lại"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.zigbee2mqtt_bridge_connection_state_2
+      from: "off"
+      to: "on"
+      for:
+        seconds: 5
+  action:
+    - action: telegram_bot.send_message
+      data:
+        chat_id: !secret telegram_chat_id
+        message: >-
+          ✅ Zigbee2MQTT đã kết nối trở lại!
+          Bridge online lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+          Tất cả thiết bị Zigbee đang khôi phục kết nối.

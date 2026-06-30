@@ -1,0 +1,113 @@
+# 08b - Theo dõi sóng & độ ổn định từng thiết bị Zigbee
+# Bổ sung cho 08 (chỉ báo bridge offline/online). File này báo theo TỪNG thiết bị:
+#  - Mất kết nối (entity -> unavailable, Z2M đã hết timeout availability)
+#  - Kết nối lại
+#  - Tín hiệu yếu / không ổn định (linkquality thấp kéo dài)
+# Guard: chỉ báo khi bridge KHÔNG offline (binary_sensor...connection_state_2),
+#        tránh trùng cảnh báo khi cả bridge sập (đã có 08 lo).
+
+- id: zigbee_thiet_bi_mat_ket_noi
+  alias: "Zigbee - Cảnh báo Telegram khi 1 thiết bị mất kết nối"
+  description: "Báo khi 1 thiết bị Zigbee bất kỳ rớt mạng (unavailable >5 phút)"
+  mode: queued
+  max: 10
+  trigger:
+    - platform: state
+      to: "unavailable"
+      for:
+        minutes: 5
+      entity_id:
+        - switch.o_cam_xiaomi
+        - switch.cau_thang_1
+        - switch.cau_thang_2
+        - sensor.cau_thang_3_linkquality
+        - sensor.cau_thang_4_linkquality
+        - sensor.o_cam_zigbee_20a_linkquality
+        - sensor.0xa4c138e81699efa4_linkquality
+        - sensor.cam_bien_nhiet_do_sonoff_humidity
+        - sensor.o_cam_tuya_linkquality
+        - sensor.0xa4c138159e4ff542_linkquality
+  condition:
+    - condition: template
+      value_template: "{{ states('binary_sensor.zigbee2mqtt_bridge_connection_state_2') != 'off' }}"
+  action:
+    - action: telegram_bot.send_message
+      continue_on_error: true
+      data:
+        chat_id: !secret telegram_chat_id
+        message: >-
+          🔴 ZIGBEE MẤT KẾT NỐI
+          Thiết bị: {{ trigger.to_state.attributes.friendly_name | replace(' Linkquality','') | replace(' Humidity','') | replace(' Độ ẩm','') }}
+          Entity: {{ trigger.entity_id }}
+          Trạng thái: mất kết nối (offline >5 phút).
+          Lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+          Kiem tra nguon/vi tri thiet bi hoac log Zigbee2MQTT.
+
+- id: zigbee_thiet_bi_ket_noi_lai
+  alias: "Zigbee - Thông báo Telegram khi 1 thiết bị kết nối lại"
+  description: "Báo khi thiết bị Zigbee online trở lại sau khi mất kết nối"
+  mode: queued
+  max: 10
+  trigger:
+    - platform: state
+      from: "unavailable"
+      for:
+        minutes: 1
+      entity_id:
+        - switch.o_cam_xiaomi
+        - switch.cau_thang_1
+        - switch.cau_thang_2
+        - sensor.cau_thang_3_linkquality
+        - sensor.cau_thang_4_linkquality
+        - sensor.o_cam_zigbee_20a_linkquality
+        - sensor.0xa4c138e81699efa4_linkquality
+        - sensor.cam_bien_nhiet_do_sonoff_humidity
+        - sensor.o_cam_tuya_linkquality
+        - sensor.0xa4c138159e4ff542_linkquality
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.state not in ['unavailable','unknown'] }}"
+  action:
+    - action: telegram_bot.send_message
+      continue_on_error: true
+      data:
+        chat_id: !secret telegram_chat_id
+        message: >-
+          🟢 ZIGBEE KẾT NỐI LẠI
+          Thiết bị: {{ trigger.to_state.attributes.friendly_name | replace(' Linkquality','') | replace(' Humidity','') | replace(' Độ ẩm','') }}
+          Entity: {{ trigger.entity_id }}
+          Đã online trở lại.
+          Lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+
+- id: zigbee_thiet_bi_tin_hieu_yeu
+  alias: "Zigbee - Cảnh báo Telegram khi tín hiệu yếu / không ổn định"
+  description: "Báo khi linkquality (LQI) của 1 thiết bị xuống dưới 12 kéo dài 30 phút"
+  mode: queued
+  max: 10
+  trigger:
+    - platform: numeric_state
+      below: 12
+      for:
+        minutes: 30
+      entity_id:
+        - sensor.cau_thang_3_linkquality
+        - sensor.cau_thang_4_linkquality
+        - sensor.o_cam_zigbee_20a_linkquality
+        - sensor.0xa4c138e81699efa4_linkquality
+        - sensor.o_cam_tuya_linkquality
+        - sensor.0xa4c138159e4ff542_linkquality
+  condition:
+    - condition: template
+      value_template: "{{ states('binary_sensor.zigbee2mqtt_bridge_connection_state_2') != 'off' }}"
+  action:
+    - action: telegram_bot.send_message
+      continue_on_error: true
+      data:
+        chat_id: !secret telegram_chat_id
+        message: >-
+          🟡 ZIGBEE TÍN HIỆU YẾU
+          Thiết bị: {{ trigger.to_state.attributes.friendly_name | replace(' Linkquality','') }}
+          Entity: {{ trigger.entity_id }}
+          LQI hien tai: {{ trigger.to_state.state }} (nguong canh bao duoi 12, keo dai 30 phut).
+          Tin hieu yeu keo dai co the gay mat ket noi - kiem tra vi tri thiet bi / them repeater.
+          Lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}

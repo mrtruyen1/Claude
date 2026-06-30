@@ -103,7 +103,7 @@ command_line: !include_dir_merge_list command_line/
 |---|---|
 | scripts files | **16** |
 | scripts entities (HA) | **63** (16 files + 47 từ packages — bình thường) |
-| automations (dir) | **17 file / 32 id** |
+| automations (dir) | **18 file / 35 id** (v8.10: +`08b_zigbee_theo_doi_thiet_bi.yaml` 3 id) |
 | automations.yaml (UI) | **0 — đã xóa** |
 | packages | **19** |
 | command_line | **1** |
@@ -111,7 +111,7 @@ command_line: !include_dir_merge_list command_line/
 | repairs | **0** (v8.1 resolved Telegram Bot repair; 1 dismissed) |
 | sensor domain | **199** entities (stable v8.3/v8.4) |
 | switch domain | **110** entities (v8.4: ↑ từ 108 — entity mới) |
-| automation domain | **32** (tất cả ON) |
+| automation domain | **35** (tất cả ON; v8.10 +3 Zigbee per-device) |
 | recorder (v56) | `purge_keep_days:14` · `auto_purge/repack:true` · `commit_interval:60` · DB **~281 MiB** (bảng `statistics` ~111MB chi phối; `states` ~20MB) — xem §8.2 |
 
 > 📌 v47→v48: automations **18→17 file**, **33→32 id** sau khi gỡ `06_cong_tac_xiaomi_phong_ngu`.
@@ -255,7 +255,7 @@ STRAY = [r"192\.168\.31\.105", r"\bn8n\b", r"aircon_sk", r"ten_thiet_bi_"]
 - **[Đọc hvac_mode khi AC off]** → `state_attr('climate.aircon','last_on_operation')`; SmartHub không có → `input_text.smarthub_last_mode`. `states('climate.aircon')='off'` khi tắt → KHÔNG dùng detect mode.
 - **[SmartIR same-value re-emit guard]** — SmartIR **silently drop `set_temperature` khi `fan_mode=night`** → set `fan_mode=night` trước để reset IR cache.
 - **[Mutex 2 cluster IR cùng dàn Daikin]** `09e_dieu_hoa_phong_ngu_mutex.yaml` (`mode: single`): climate entity **KHÔNG có attribute `hvac_mode`** — state CHÍNH là mode. Dùng **`from: "off"`** trên cả 2 trigger (`climate.aircon` + `climate.ir_smart_hub_dieu_hoa_daikin`) để chỉ fire khi `off→on`, **KHÔNG** dùng `attribute: hvac_mode` (fire mỗi ~15s theo `current_temperature`).
-- **[Z2M notify duy nhất]** chỉ `08_zigbee2Mqtt_alert.yaml` gửi bridge offline/online; `07` chỉ lo cửa cuốn (Telegram, debounce).
+- **[Z2M notify]** `08_zigbee2Mqtt_alert.yaml` gửi **bridge** offline/online; `08b_zigbee_theo_doi_thiet_bi.yaml` (v8.10) gửi cảnh báo theo **TỪNG thiết bị** (mất kết nối / kết nối lại / tín hiệu yếu LQI<12 30 phút); `07` chỉ lo cửa cuốn (Telegram, debounce). 08b guard bằng `binary_sensor.zigbee2mqtt_bridge_connection_state_2` (≠ `off`) để không trùng cảnh báo khi bridge sập. **✅ FIX v8.10:** entity bridge gốc `binary_sensor.zigbee2mqtt_bridge_connection_state` (KHÔNG `_2`) **không tồn tại state object** (None) → trigger của `08` không bao giờ chạy; đã đổi cả 2 trigger của `08` sang bản live `..._state_2` (`on`, backup `.mcp_backups/`).
 - **[continue_on_error: true]** cho action chạm entity có thể tạm unavailable (Z2M/MQTT/LAN).
 - **[Telegram Bot 2026.9]** `telegram_bot.send_message` dùng `chat_id:` hoặc notify entity; **KHÔNG dùng `target:`**. Repair `migrate_chat_ids_in_target_call_service_send_message` với `action_origin: call_service` có thể đến từ runtime service call, không nhất thiết do YAML.
 
