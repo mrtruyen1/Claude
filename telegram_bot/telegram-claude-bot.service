@@ -1,0 +1,18 @@
+[Unit]
+Description=Telegram Claude Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/telegram-claude-bot
+EnvironmentFile=/opt/telegram-claude-bot/.env
+ExecStart=/opt/telegram-claude-bot/venv/bin/python bot.py
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
