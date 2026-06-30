@@ -362,15 +362,9 @@ grep -E "CTS=|ctids=|PHASE 5b" /opt/backup-all.sh
 # Chỉ verify "khôi phục được"; KHÔNG đụng CT/VM thật, KHÔNG trùng vmid đang dùng.
 ```
 
-### PHASE 7 — Reporting
+### PHASE 7 — Reporting & Auto-Fix
 
-**Format severity:**
-```
-[Proxmox] HIGH    — RAM áp lực khi VM103 chạy (available < 6 GiB)
-[DSM VM]  HIGH    — volume2 > 80%
-[Proxmox] MEDIUM  — vm-103-disk-1 > 80%
-[CT113]   LOW     — cloudflared image cần update
-```
+> Sau PHASE 0→6: in summary → lần lượt in error box rồi **fix ngay từng lỗi** HIGH→MEDIUM→LOW — không đợi nhắc. Chỉ pause khi fix có thể gây mất data / downtime service chính.
 
 **Rubric chấm điểm (tái lập được) — bắt đầu 100 điểm:**
 - HIGH (rủi ro data / service down / lỗ hổng bảo mật): **−5** mỗi finding
@@ -379,7 +373,44 @@ grep -E "CTS=|ctids=|PHASE 5b" /opt/backup-all.sh
 - Watch item (đã biết, đang theo dõi, chưa cần hành động): **−0**
 - Thang: **≥97 = healthy** · 90–96 = minor issues · <90 = cần hành động.
 
-Báo cáo 2 lớp (host / DSM / containers+VMs), liệt kê watch items, ghi việc cần làm phiên sau.
+**A — Score Summary (in 1 lần đầu):**
+
+```
+════════════════════════════════════════════════
+  📊 PVE AUDIT  ·  Score: XX/100  ·  YYYY-MM-DD
+════════════════════════════════════════════════
+  🔴 HIGH   × N  =  −X đ
+  🔶 MEDIUM × N  =  −X đ
+  🟡 LOW    × N  =  −X đ
+  👁 Watch   × N  =   0 đ
+  ✅ Baseline: khớp / [danh sách lệch nếu có]
+════════════════════════════════════════════════
+```
+
+**B — Error Box (lặp cho mỗi lỗi, theo thứ tự severity):**
+
+```
+━━━ 🔴 [1/N] HIGH · [Proxmox|DSM|CT-NNN] <tiêu đề ngắn> ━━━━━━━━━
+  📍 Vị trí     : <host / VM / CT / disk / service cụ thể>
+  🔎 Nguyên nhân: <1 câu — WHAT went wrong + tại sao>
+  ⚠️  Tác động  : <hậu quả thực tế nếu không sửa>
+  🔧 Fix        : <lệnh shell / thay đổi config cụ thể>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Ngay sau khi in box → **thực thi fix** → in output verify → `→ Tiếp: [2/N] …` rồi in box kế tiếp.
+
+- Fix an toàn (vacuum journal, xóa file rác, sửa quyền, cập nhật config): tự chạy, không hỏi.
+- Fix nguy hiểm (restart service chính, fstrim chủ động, reboot, xóa data): thêm dòng `⚡ CẦN XÁC NHẬN` cuối box và dừng chờ Truyền.
+
+**C — Kết thúc báo cáo (in sau lỗi cuối cùng):**
+
+```
+👁  WATCH (theo dõi — chưa hành động):
+    • [item] — giá trị / xu hướng / ngưỡng cần theo dõi
+✅  BASELINE KHỚP: [mục OK quan trọng]
+📋  PHIÊN SAU: [việc cần làm nếu có]
+```
 
 ---
 
