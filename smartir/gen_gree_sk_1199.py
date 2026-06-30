@@ -5,7 +5,7 @@ SmartIR code generator for Gree SK air conditioner (Broadlink RM Pro).
 Reverse-engineered from stored Broadlink IR codes on HA (remote.rm_pro_remote).
 Generates /config/custom_components/smartir/codes/climate/1199.json
 
-Protocol: 14-byte NEC-like, no inter-block gap, LSB-first per byte.
+Protocol: 16-byte NEC-like, no inter-block gap, LSB-first per byte.
 
 Byte layout:
   [0]  0x06 | (fan<<4) | (mode<<6)
@@ -14,8 +14,9 @@ Byte layout:
   [3]  0x00
   [4]  0x33  (swing/display flags, fixed)
   [5]  0x00 (power on) / 0xC0 (power off)
-  [6-12] 0x00
-  [13] byte[5] >> 1   (0x00 = on, 0x60 = off)
+  [6-9]  0x00
+  [10] byte[5] >> 4   (0x00 = on, 0x0C = off)
+  [11-15] 0x00
 
 Mode (bits 7-6 of byte 0): Auto=0, Cool=1, Dry=2, Fan=3
 Fan  (bits 5-4 of byte 0): Auto=0, Low=1, Medium=2, High=3
@@ -24,7 +25,7 @@ Timing constants (extracted from stored Broadlink codes, 32.84 µs/tick):
   Header: 276 / 140 ticks
   Bit mark: 17 ticks  |  Zero space: 18 ticks  |  One space: 53 ticks
 
-Verified: generated ON/OFF codes at 23°C Cool Fan-Low match stored codes byte-for-byte.
+Verified: OFF code at 23°C Cool Fan-Low matches stored code bytes 0-15.
 """
 import base64, struct, json, sys
 
@@ -56,10 +57,10 @@ def _build_timings(data_bytes):
 
 def gree_sk_bytes(temp, mode, fan, power_on=True):
     b5  = 0x00 if power_on else 0xC0
-    b13 = b5 >> 1
+    b10 = b5 >> 4
     return [0x06 | (fan << 4) | (mode << 6), (temp - 16) << 4,
             0x00, 0x00, 0x33, b5, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, b13]
+            0x00, 0x00, b10, 0x00, 0x00, 0x00, 0x00, 0x00]
 
 
 def gree_sk_code(temp, mode, fan, power_on=True):
