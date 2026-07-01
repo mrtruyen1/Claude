@@ -1,0 +1,237 @@
+##################################################################
+# FILE: automations/07_cua_cuon_zigbee_notify.yaml
+# Cập nhật: 2026-06-01 — thay chat_id hard-code → !secret telegram_chat_id
+##################################################################
+
+- alias: Cửa cuốn Zigbee - Telegram mở đóng stop lỗi
+  id: cua_cuon_zigbee_thong_bao
+  mode: single
+  max_exceeded: silent
+
+  trigger:
+    - platform: state
+      entity_id: cover.cua_cuon_zigbee
+      to: "opening"
+      id: dang_mo
+    - platform: state
+      entity_id: cover.cua_cuon_zigbee
+      to: "closing"
+      id: dang_dong
+    - platform: numeric_state
+      entity_id: cover.cua_cuon_zigbee
+      attribute: current_position
+      above: 94
+      id: da_mo
+      for:
+        seconds: 1
+    - platform: numeric_state
+      entity_id: cover.cua_cuon_zigbee
+      attribute: current_position
+      below: 6
+      id: da_dong
+      for:
+        seconds: 1
+
+  action:
+    - variables:
+        ten_nguoi: "{{ states('input_text.nguoi_dieu_khien_cua_cuon') }}"
+
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: dang_mo
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Cửa cuốn Mở"
+                message: >
+                  🔼 Cửa cuốn đang MỞ
+                  👤 Người thực hiện: {{ ten_nguoi }}
+                  🕐 {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+                inline_keyboard:
+                  - "🚪 Đóng:/cv_close, ⏹ Stop:/cv_stop"
+            - wait_template: >
+                {{ is_state('cover.cua_cuon_zigbee', 'open')
+                   and (state_attr('cover.cua_cuon_zigbee', 'current_position') | int(-1)) >= 95 }}
+              timeout:
+                minutes: 2
+              continue_on_timeout: true
+            - if:
+                - condition: template
+                  value_template: "{{ wait.completed }}"
+              then:
+                - action: telegram_bot.send_message
+                  continue_on_error: true
+                  data:
+                    chat_id: !secret telegram_chat_id
+                    title: "Cửa cuốn đã mở"
+                    message: >
+                      ✅ Cửa cuốn đã MỞ hoàn toàn
+                      👤 Người thực hiện: {{ ten_nguoi }}
+                      🕐 {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+                    inline_keyboard:
+                      - "🚪 Đóng:/cv_close"
+                - action: input_text.set_value
+                  target:
+                    entity_id: input_text.lich_su_cua_cuon
+                  data:
+                    value: >-
+                      {{ now().strftime('%d/%m %H:%M') }} | MỞ | {{ ten_nguoi }}
+
+        - conditions:
+            - condition: trigger
+              id: dang_dong
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Cửa cuốn Đóng"
+                message: >
+                  🔽 Cửa cuốn đang ĐÓNG
+                  👤 Người thực hiện: {{ ten_nguoi }}
+                  🕐 {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+                inline_keyboard:
+                  - "🚪 Mở:/cv_open, ⏹ Stop:/cv_stop"
+            - wait_template: >
+                {{ is_state('cover.cua_cuon_zigbee', 'closed')
+                   and (state_attr('cover.cua_cuon_zigbee', 'current_position') | int(101)) <= 5 }}
+              timeout:
+                minutes: 2
+              continue_on_timeout: true
+            - if:
+                - condition: template
+                  value_template: "{{ wait.completed }}"
+              then:
+                - action: telegram_bot.send_message
+                  continue_on_error: true
+                  data:
+                    chat_id: !secret telegram_chat_id
+                    title: "Cửa cuốn đã đóng"
+                    message: >
+                      ✅ Cửa cuốn đã ĐÓNG hoàn toàn
+                      👤 Người thực hiện: {{ ten_nguoi }}
+                      🕐 {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+                    inline_keyboard:
+                      - "🚪 Mở:/cv_open"
+                - action: input_text.set_value
+                  target:
+                    entity_id: input_text.lich_su_cua_cuon
+                  data:
+                    value: >-
+                      {{ now().strftime('%d/%m %H:%M') }} | ĐÓNG | {{ ten_nguoi }}
+
+        - conditions:
+            - condition: trigger
+              id: da_mo
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Cửa cuốn đã mở"
+                message: >
+                  ✅ Cửa cuốn đã MỞ hoàn toàn
+                  👤 Người thực hiện: {{ ten_nguoi }}
+                  🕐 {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+                inline_keyboard:
+                  - "🚪 Đóng:/cv_close"
+            - action: input_text.set_value
+              target:
+                entity_id: input_text.lich_su_cua_cuon
+              data:
+                value: >-
+                  {{ now().strftime('%d/%m %H:%M') }} | MỞ | {{ ten_nguoi }}
+
+        - conditions:
+            - condition: trigger
+              id: da_dong
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Cửa cuốn đã đóng"
+                message: >
+                  ✅ Cửa cuốn đã ĐÓNG hoàn toàn
+                  👤 Người thực hiện: {{ ten_nguoi }}
+                  🕐 {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
+                inline_keyboard:
+                  - "🚪 Mở:/cv_open"
+            - action: input_text.set_value
+              target:
+                entity_id: input_text.lich_su_cua_cuon
+              data:
+                value: >-
+                  {{ now().strftime('%d/%m %H:%M') }} | ĐÓNG | {{ ten_nguoi }}
+
+- alias: Cửa cuốn Zigbee - Giám sát kết nối và sóng
+  id: cua_cuon_zigbee_giam_sat_ket_noi
+  mode: single
+  max_exceeded: silent
+
+  trigger:
+    - platform: state
+      entity_id: cover.cua_cuon_zigbee
+      to: "unavailable"
+      for:
+        minutes: 5
+      id: mat_ket_noi
+    - platform: state
+      entity_id: cover.cua_cuon_zigbee
+      from: "unavailable"
+      for:
+        minutes: 1
+      id: co_lai_ket_noi
+    - platform: numeric_state
+      entity_id: sensor.cua_cuon_zigbee_lqi_raw
+      below: 15
+      for:
+        minutes: 10
+      id: song_yeu
+
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: mat_ket_noi
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Cảnh báo Zigbee cửa cuốn"
+                message: >
+                  Cửa cuốn mất kết nối Zigbee quá 5 phút.
+                  LQI gần nhất: {{ states('sensor.cua_cuon_zigbee_lqi_raw') }}.
+        - conditions:
+            - condition: trigger
+              id: co_lai_ket_noi
+            - condition: template
+              value_template: >
+                {{ as_timestamp(trigger.to_state.last_changed)
+                   - as_timestamp(trigger.from_state.last_changed) >= 300 }}
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Zigbee cửa cuốn đã phục hồi"
+                message: >
+                  Cửa cuốn đã kết nối lại. Trạng thái:
+                  {{ states('cover.cua_cuon_zigbee') }}, vị trí
+                  {{ state_attr('cover.cua_cuon_zigbee', 'current_position') }}%.
+        - conditions:
+            - condition: trigger
+              id: song_yeu
+          sequence:
+            - action: telegram_bot.send_message
+              continue_on_error: true
+              data:
+                chat_id: !secret telegram_chat_id
+                title: "Cảnh báo sóng Zigbee cửa cuốn"
+                message: >
+                  LQI cửa cuốn dưới 15 liên tục 10 phút.
+                  Giá trị hiện tại: {{ states('sensor.cua_cuon_zigbee_lqi_raw') }}.
