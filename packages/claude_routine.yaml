@@ -1,0 +1,24 @@
+################################################################
+# PACKAGE: claude_routine.yaml
+# Mục đích: rest_command gọi Claude Code Routine API (endpoint /fire)
+#           để xử lý lệnh nhận từ Telegram trực tiếp, KHÔNG qua n8n.
+# Yêu cầu : secrets.yaml phải có 2 key:
+#   claude_routine_url  = "https://api.anthropic.com/v1/claude_code/routines/<ROUTINE_ID>/fire"
+#   claude_routine_auth = "Bearer sk-ant-oat01-xxxxxxxx"
+# Lưu ý   : rest_command là platform mới -> cần FULL RESTART HA để load lần
+#           đầu; sau đó dùng rest_command.reload khi chỉ đổi secret/URL.
+# Tạo     : 2026-07-01, theo yêu cầu Truyền - luồng Telegram -> Claude
+#           Routine trực tiếp.
+################################################################
+
+rest_command:
+  claude_routine_fire:
+    url: !secret claude_routine_url
+    method: POST
+    headers:
+      Authorization: !secret claude_routine_auth
+      anthropic-beta: "experimental-cc-routine-2026-04-01"
+      anthropic-version: "2023-06-01"
+    payload: '{"text": {{ message | tojson }}}'
+    content_type: "application/json; charset=utf-8"
+    timeout: 30
