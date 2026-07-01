@@ -17,6 +17,8 @@
           Bridge offline lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
           Tất cả thiết bị Zigbee sẽ không phản hồi.
           Vào Settings -> Add-ons -> Zigbee2MQTT để kiểm tra log.
+        inline_keyboard:
+          - "🔄 Restart Zigbee2MQTT:/z2m_restart"
 
 - id: z2m_ket_noi_lai_telegram
   alias: "Z2M - Thông báo Telegram khi Zigbee kết nối lại"

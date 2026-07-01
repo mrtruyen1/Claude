@@ -1,0 +1,219 @@
+# 09 - Bảng điều khiển nhà qua Telegram (inline keyboard)
+# Lệnh /menu → gửi trạng thái + nút bấm bật/tắt thiết bị
+# Callback handler → thực thi lệnh + cập nhật tin nhắn
+
+- id: telegram_menu_gui_bang_dieu_khien
+  alias: "Telegram - Gửi bảng điều khiển khi gõ /menu"
+  mode: single
+  trigger:
+    - platform: event
+      event_type: telegram_bot.command_received
+      event_data:
+        command: /menu
+  action:
+    - action: telegram_bot.send_message
+      data:
+        chat_id: !secret telegram_chat_id
+        parse_mode: markdown
+        message: >-
+          🏠 *Bảng điều khiển nhà*
+          _{{ now().strftime('%H:%M  %d/%m/%Y') }}_
+
+          💡 *Đèn*
+          ├ Phòng ngủ: {{ '🟢 BẬT' if states('switch.den_phong_ngu') == 'on' else '⚫ TẮT' }}
+          ├ Nhà vệ sinh: {{ '🟢 BẬT' if states('switch.den_nha_ve_sinh') == 'on' else '⚫ TẮT' }}
+          ├ Bàn hàng: {{ '🟢 BẬT' if states('switch.den_ban_hang') == 'on' else '⚫ TẮT' }}
+          └ Cầu thang: {{ '🟢 BẬT' if states('switch.cau_thang_1') == 'on' else '⚫ TẮT' }}
+
+          ❄️ *Điều hòa*
+          └ Aircon: {{ '🟢 BẬT' if states('climate.aircon') != 'off' else '⚫ TẮT' }}
+
+          🔌 *Ổ cắm*
+          ├ Xiaomi: {{ '🟢 BẬT' if states('switch.o_cam_xiaomi') == 'on' else '⚫ TẮT' }}
+          └ Bình nóng lạnh: {{ '🟢 BẬT' if states('switch.binh_nong_lanh') == 'on' else '⚫ TẮT' }}
+
+          🚪 *Cửa cuốn*
+          └ {{ '🟢 Đang mở' if states('cover.cua_cuon_zigbee') == 'open' else '⚫ Đã đóng' if states('cover.cua_cuon_zigbee') == 'closed' else '🔄 ' + states('cover.cua_cuon_zigbee') }}
+        inline_keyboard:
+          - "💡 PNgủ {{ '🔴 Tắt' if states('switch.den_phong_ngu') == 'on' else '🟢 Bật' }}:/sw_den_phong_ngu, 💡 NVS {{ '🔴 Tắt' if states('switch.den_nha_ve_sinh') == 'on' else '🟢 Bật' }}:/sw_den_nha_ve_sinh"
+          - "💡 Bàn hàng {{ '🔴 Tắt' if states('switch.den_ban_hang') == 'on' else '🟢 Bật' }}:/sw_den_ban_hang, 💡 Cầu thang {{ '🔴 Tắt' if states('switch.cau_thang_1') == 'on' else '🟢 Bật' }}:/sw_cau_thang_1"
+          - "❄️ Aircon {{ '🔴 Tắt' if states('climate.aircon') != 'off' else '🟢 Bật' }}:/cl_aircon"
+          - "🔌 Xiaomi {{ '🔴 Tắt' if states('switch.o_cam_xiaomi') == 'on' else '🟢 Bật' }}:/sw_o_cam_xiaomi, 🔌 Bình nóng {{ '🔴 Tắt' if states('switch.binh_nong_lanh') == 'on' else '🟢 Bật' }}:/sw_binh_nong_lanh"
+          - "🚪 Mở cửa cuốn:/cv_open, 🚪 Đóng cửa cuốn:/cv_close"
+          - "🔄 Làm mới:/menu_refresh"
+
+
+- id: telegram_menu_xu_ly_nut_bam
+  alias: "Telegram - Xử lý nút bấm bảng điều khiển"
+  mode: queued
+  max: 5
+  trigger:
+    - platform: event
+      event_type: telegram_bot.callback_query_received
+  variables:
+    cb: "{{ trigger.event.data.data }}"
+    cb_id: "{{ trigger.event.data.id }}"
+    chat_id: "{{ trigger.event.data.chat_id }}"
+    msg_id: "{{ trigger.event.data.message.message_id }}"
+  action:
+    - choose:
+
+        # ── Toggle switch (đèn / ổ cắm) ──────────────────────────────
+        - conditions:
+            - condition: template
+              value_template: "{{ cb.startswith('sw_') }}"
+          sequence:
+            - variables:
+                entity_id: "switch.{{ cb[3:] }}"
+            - action: switch.toggle
+              target:
+                entity_id: "{{ entity_id }}"
+            - delay:
+                milliseconds: 400
+            - action: telegram_bot.answer_callback_query
+              data:
+                callback_query_id: "{{ cb_id }}"
+                message: >-
+                  {{ '🟢 Đã bật' if states(entity_id) == 'on' else '⚫ Đã tắt' }}
+                  {{ state_attr(entity_id, 'friendly_name') or entity_id }}
+            - action: telegram_bot.edit_message
+              data:
+                chat_id: "{{ chat_id }}"
+                message_id: "{{ msg_id }}"
+                parse_mode: markdown
+                message: >-
+                  🏠 *Bảng điều khiển nhà*
+                  _{{ now().strftime('%H:%M  %d/%m/%Y') }}_
+
+                  💡 *Đèn*
+                  ├ Phòng ngủ: {{ '🟢 BẬT' if states('switch.den_phong_ngu') == 'on' else '⚫ TẮT' }}
+                  ├ Nhà vệ sinh: {{ '🟢 BẬT' if states('switch.den_nha_ve_sinh') == 'on' else '⚫ TẮT' }}
+                  ├ Bàn hàng: {{ '🟢 BẬT' if states('switch.den_ban_hang') == 'on' else '⚫ TẮT' }}
+                  └ Cầu thang: {{ '🟢 BẬT' if states('switch.cau_thang_1') == 'on' else '⚫ TẮT' }}
+
+                  ❄️ *Điều hòa*
+                  └ Aircon: {{ '🟢 BẬT' if states('climate.aircon') != 'off' else '⚫ TẮT' }}
+
+                  🔌 *Ổ cắm*
+                  ├ Xiaomi: {{ '🟢 BẬT' if states('switch.o_cam_xiaomi') == 'on' else '⚫ TẮT' }}
+                  └ Bình nóng lạnh: {{ '🟢 BẬT' if states('switch.binh_nong_lanh') == 'on' else '⚫ TẮT' }}
+
+                  🚪 *Cửa cuốn*
+                  └ {{ '🟢 Đang mở' if states('cover.cua_cuon_zigbee') == 'open' else '⚫ Đã đóng' if states('cover.cua_cuon_zigbee') == 'closed' else '🔄 ' + states('cover.cua_cuon_zigbee') }}
+                inline_keyboard:
+                  - "💡 PNgủ {{ '🔴 Tắt' if states('switch.den_phong_ngu') == 'on' else '🟢 Bật' }}:/sw_den_phong_ngu, 💡 NVS {{ '🔴 Tắt' if states('switch.den_nha_ve_sinh') == 'on' else '🟢 Bật' }}:/sw_den_nha_ve_sinh"
+                  - "💡 Bàn hàng {{ '🔴 Tắt' if states('switch.den_ban_hang') == 'on' else '🟢 Bật' }}:/sw_den_ban_hang, 💡 Cầu thang {{ '🔴 Tắt' if states('switch.cau_thang_1') == 'on' else '🟢 Bật' }}:/sw_cau_thang_1"
+                  - "❄️ Aircon {{ '🔴 Tắt' if states('climate.aircon') != 'off' else '🟢 Bật' }}:/cl_aircon"
+                  - "🔌 Xiaomi {{ '🔴 Tắt' if states('switch.o_cam_xiaomi') == 'on' else '🟢 Bật' }}:/sw_o_cam_xiaomi, 🔌 Bình nóng {{ '🔴 Tắt' if states('switch.binh_nong_lanh') == 'on' else '🟢 Bật' }}:/sw_binh_nong_lanh"
+                  - "🚪 Mở cửa cuốn:/cv_open, 🚪 Đóng cửa cuốn:/cv_close"
+                  - "🔄 Làm mới:/menu_refresh"
+
+        # ── Toggle điều hòa ──────────────────────────────────────────
+        - conditions:
+            - condition: template
+              value_template: "{{ cb.startswith('cl_') }}"
+          sequence:
+            - variables:
+                entity_id: "climate.{{ cb[3:] }}"
+                dang_bat: "{{ states(entity_id) != 'off' }}"
+            - if:
+                - condition: template
+                  value_template: "{{ dang_bat }}"
+              then:
+                - action: climate.turn_off
+                  target:
+                    entity_id: "{{ entity_id }}"
+              else:
+                - action: climate.turn_on
+                  target:
+                    entity_id: "{{ entity_id }}"
+            - action: telegram_bot.answer_callback_query
+              data:
+                callback_query_id: "{{ cb_id }}"
+                message: "{{ '⚫ Đã tắt điều hòa' if dang_bat else '🟢 Đã bật điều hòa' }}"
+
+        # ── Mở cửa cuốn ─────────────────────────────────────────────
+        - conditions:
+            - condition: template
+              value_template: "{{ cb == 'cv_open' }}"
+          sequence:
+            - action: cover.open_cover
+              target:
+                entity_id: cover.cua_cuon_zigbee
+            - action: telegram_bot.answer_callback_query
+              data:
+                callback_query_id: "{{ cb_id }}"
+                message: "🚪 Đang mở cửa cuốn..."
+
+        # ── Đóng cửa cuốn ───────────────────────────────────────────
+        - conditions:
+            - condition: template
+              value_template: "{{ cb == 'cv_close' }}"
+          sequence:
+            - action: cover.close_cover
+              target:
+                entity_id: cover.cua_cuon_zigbee
+            - action: telegram_bot.answer_callback_query
+              data:
+                callback_query_id: "{{ cb_id }}"
+                message: "🚪 Đang đóng cửa cuốn..."
+
+        # ── Restart Zigbee2MQTT ──────────────────────────────────────
+        - conditions:
+            - condition: template
+              value_template: "{{ cb == 'z2m_restart' }}"
+          sequence:
+            - action: telegram_bot.answer_callback_query
+              data:
+                callback_query_id: "{{ cb_id }}"
+                message: "🔄 Đang restart Zigbee2MQTT..."
+            - action: hassio.addon_restart
+              data:
+                addon: a0d7b954_zigbee2mqtt
+
+        # ── Làm mới bảng điều khiển ─────────────────────────────────
+        - conditions:
+            - condition: template
+              value_template: "{{ cb == 'menu_refresh' }}"
+          sequence:
+            - action: telegram_bot.answer_callback_query
+              data:
+                callback_query_id: "{{ cb_id }}"
+                message: "🔄 Đã cập nhật!"
+            - action: telegram_bot.edit_message
+              data:
+                chat_id: "{{ chat_id }}"
+                message_id: "{{ msg_id }}"
+                parse_mode: markdown
+                message: >-
+                  🏠 *Bảng điều khiển nhà*
+                  _{{ now().strftime('%H:%M  %d/%m/%Y') }}_
+
+                  💡 *Đèn*
+                  ├ Phòng ngủ: {{ '🟢 BẬT' if states('switch.den_phong_ngu') == 'on' else '⚫ TẮT' }}
+                  ├ Nhà vệ sinh: {{ '🟢 BẬT' if states('switch.den_nha_ve_sinh') == 'on' else '⚫ TẮT' }}
+                  ├ Bàn hàng: {{ '🟢 BẬT' if states('switch.den_ban_hang') == 'on' else '⚫ TẮT' }}
+                  └ Cầu thang: {{ '🟢 BẬT' if states('switch.cau_thang_1') == 'on' else '⚫ TẮT' }}
+
+                  ❄️ *Điều hòa*
+                  └ Aircon: {{ '🟢 BẬT' if states('climate.aircon') != 'off' else '⚫ TẮT' }}
+
+                  🔌 *Ổ cắm*
+                  ├ Xiaomi: {{ '🟢 BẬT' if states('switch.o_cam_xiaomi') == 'on' else '⚫ TẮT' }}
+                  └ Bình nóng lạnh: {{ '🟢 BẬT' if states('switch.binh_nong_lanh') == 'on' else '⚫ TẮT' }}
+
+                  🚪 *Cửa cuốn*
+                  └ {{ '🟢 Đang mở' if states('cover.cua_cuon_zigbee') == 'open' else '⚫ Đã đóng' if states('cover.cua_cuon_zigbee') == 'closed' else '🔄 ' + states('cover.cua_cuon_zigbee') }}
+                inline_keyboard:
+                  - "💡 PNgủ {{ '🔴 Tắt' if states('switch.den_phong_ngu') == 'on' else '🟢 Bật' }}:/sw_den_phong_ngu, 💡 NVS {{ '🔴 Tắt' if states('switch.den_nha_ve_sinh') == 'on' else '🟢 Bật' }}:/sw_den_nha_ve_sinh"
+                  - "💡 Bàn hàng {{ '🔴 Tắt' if states('switch.den_ban_hang') == 'on' else '🟢 Bật' }}:/sw_den_ban_hang, 💡 Cầu thang {{ '🔴 Tắt' if states('switch.cau_thang_1') == 'on' else '🟢 Bật' }}:/sw_cau_thang_1"
+                  - "❄️ Aircon {{ '🔴 Tắt' if states('climate.aircon') != 'off' else '🟢 Bật' }}:/cl_aircon"
+                  - "🔌 Xiaomi {{ '🔴 Tắt' if states('switch.o_cam_xiaomi') == 'on' else '🟢 Bật' }}:/sw_o_cam_xiaomi, 🔌 Bình nóng {{ '🔴 Tắt' if states('switch.binh_nong_lanh') == 'on' else '🟢 Bật' }}:/sw_binh_nong_lanh"
+                  - "🚪 Mở cửa cuốn:/cv_open, 🚪 Đóng cửa cuốn:/cv_close"
+                  - "🔄 Làm mới:/menu_refresh"
+
+      default:
+        - action: telegram_bot.answer_callback_query
+          data:
+            callback_query_id: "{{ cb_id }}"
+            message: ""
