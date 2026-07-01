@@ -1,9 +1,9 @@
 - id: telegram_lenh_truc_tiep_claude_routine
-  alias: "15 Telegram lenh truc tiep - Claude Routine"
+  alias: "15 Telegram lệnh trực tiếp - Claude Routine"
   description: >-
-    Nhan tin nhan Telegram thuong (khong phai /command) tu Truyen, chuyen thanh
-    lenh cho Claude Code Routine qua API /fire - KHONG qua n8n. Chi cho phep
-    dung chat_id cua Truyen (895298455).
+    Nhận tin nhắn Telegram thường (không phải /command) từ Truyền, chuyển
+    thành lệnh cho Claude Code Routine qua API /fire - KHÔNG qua n8n. Chỉ
+    cho phép đúng chat_id của Truyền (895298455).
   mode: queued
   max: 5
   trigger:
@@ -20,5 +20,5 @@
     - action: telegram_bot.send_message
       data:
         chat_id: 895298455
-        message: "Da nhan lenh, dang chuyen cho Claude xu ly - se tra loi khi xong."
+        message: "Đã nhận lệnh, đang chuyển cho Claude xử lý - sẽ trả lời khi xong."
       continue_on_error: true

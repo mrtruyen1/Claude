@@ -1,12 +1,14 @@
 ################################################################
 # PACKAGE: claude_routine.yaml
-# Muc dich: rest_command goi Claude Code Routine API (endpoint /fire)
-#           de xu ly lenh nhan tu Telegram truc tiep, KHONG qua n8n.
-# Yeu cau  : them 2 key vao secrets.yaml TRUOC KHI restart HA:
+# Mục đích: rest_command gọi Claude Code Routine API (endpoint /fire)
+#           để xử lý lệnh nhận từ Telegram trực tiếp, KHÔNG qua n8n.
+# Yêu cầu : secrets.yaml phải có 2 key:
 #   claude_routine_url  = "https://api.anthropic.com/v1/claude_code/routines/<ROUTINE_ID>/fire"
 #   claude_routine_auth = "Bearer sk-ant-oat01-xxxxxxxx"
-# Luu y    : rest_command la platform moi -> can FULL RESTART HA de load.
-# Tao      : 2026-07-01, theo yeu cau Truyen - luong Telegram -> Claude Routine truc tiep.
+# Lưu ý   : rest_command là platform mới -> cần FULL RESTART HA để load lần
+#           đầu; sau đó dùng rest_command.reload khi chỉ đổi secret/URL.
+# Tạo     : 2026-07-01, theo yêu cầu Truyền - luồng Telegram -> Claude
+#           Routine trực tiếp.
 ################################################################
 
 rest_command:
