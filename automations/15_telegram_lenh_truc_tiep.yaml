@@ -1,0 +1,23 @@
+alias: "15 Telegram lenh truc tiep - Claude Routine"
+description: >-
+  Nhan tin nhan Telegram thuong (khong phai /command) tu Truyen, chuyen thanh
+  lenh cho Claude Code Routine qua API /fire - KHONG qua n8n. Chi cho phep
+  dung chat_id cua Truyen (895298455).
+mode: queued
+max: 5
+triggers:
+  - trigger: event
+    event_type: telegram_text
+conditions:
+  - condition: template
+    value_template: "{{ (trigger.event.data.chat_id | int(0)) == 895298455 }}"
+actions:
+  - action: rest_command.claude_routine_fire
+    data:
+      message: "{{ trigger.event.data.text }}"
+    continue_on_error: true
+  - action: telegram_bot.send_message
+    data:
+      chat_id: 895298455
+      message: "Da nhan lenh, dang chuyen cho Claude xu ly - se tra loi khi xong."
+    continue_on_error: true

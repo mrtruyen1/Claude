@@ -1,0 +1,22 @@
+################################################################
+# PACKAGE: claude_routine.yaml
+# Muc dich: rest_command goi Claude Code Routine API (endpoint /fire)
+#           de xu ly lenh nhan tu Telegram truc tiep, KHONG qua n8n.
+# Yeu cau  : them 2 key vao secrets.yaml TRUOC KHI restart HA:
+#   claude_routine_url  = "https://api.anthropic.com/v1/claude_code/routines/<ROUTINE_ID>/fire"
+#   claude_routine_auth = "Bearer sk-ant-oat01-xxxxxxxx"
+# Luu y    : rest_command la platform moi -> can FULL RESTART HA de load.
+# Tao      : 2026-07-01, theo yeu cau Truyen - luong Telegram -> Claude Routine truc tiep.
+################################################################
+
+rest_command:
+  claude_routine_fire:
+    url: !secret claude_routine_url
+    method: POST
+    headers:
+      Authorization: !secret claude_routine_auth
+      anthropic-beta: "experimental-cc-routine-2026-04-01"
+      anthropic-version: "2023-06-01"
+    payload: '{"text": {{ message | tojson }}}'
+    content_type: "application/json; charset=utf-8"
+    timeout: 30
