@@ -11,7 +11,8 @@
   action:
     - action: telegram_bot.send_message
       data:
-        chat_id: !secret telegram_chat_id
+        chat_id: !secret telegram_group_chat_id
+        message_thread_id: !secret telegram_thread_canhbao
         message: >-
           ⚠️ CẢNH BÁO: Zigbee2MQTT mất kết nối!
           Bridge offline lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}
@@ -34,7 +35,8 @@
   action:
     - action: telegram_bot.send_message
       data:
-        chat_id: !secret telegram_chat_id
+        chat_id: !secret telegram_group_chat_id
+        message_thread_id: !secret telegram_thread_canhbao
         message: >-
           ✅ Zigbee2MQTT đã kết nối trở lại!
           Bridge online lúc: {{ now().strftime('%H:%M:%S %d/%m/%Y') }}

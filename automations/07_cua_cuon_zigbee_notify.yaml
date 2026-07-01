@@ -1,6 +1,6 @@
 ##################################################################
 # FILE: automations/07_cua_cuon_zigbee_notify.yaml
-# Cập nhật: 2026-06-01 — thay chat_id hard-code → !secret telegram_chat_id
+# Cập nhật: 2026-07-01 — gửi vào group topics
 ##################################################################
 
 - alias: Cửa cuốn Zigbee - Telegram mở đóng stop lỗi
@@ -44,7 +44,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_thongbao
                 title: "Cửa cuốn Mở"
                 message: >
                   🔼 Cửa cuốn đang MỞ
@@ -65,7 +66,8 @@
                 - action: telegram_bot.send_message
                   continue_on_error: true
                   data:
-                    chat_id: !secret telegram_chat_id
+                    chat_id: !secret telegram_group_chat_id
+                    message_thread_id: !secret telegram_thread_thongbao
                     title: "Cửa cuốn đã mở"
                     message: >
                       ✅ Cửa cuốn đã MỞ hoàn toàn
@@ -87,7 +89,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_thongbao
                 title: "Cửa cuốn Đóng"
                 message: >
                   🔽 Cửa cuốn đang ĐÓNG
@@ -108,7 +111,8 @@
                 - action: telegram_bot.send_message
                   continue_on_error: true
                   data:
-                    chat_id: !secret telegram_chat_id
+                    chat_id: !secret telegram_group_chat_id
+                    message_thread_id: !secret telegram_thread_thongbao
                     title: "Cửa cuốn đã đóng"
                     message: >
                       ✅ Cửa cuốn đã ĐÓNG hoàn toàn
@@ -130,7 +134,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_thongbao
                 title: "Cửa cuốn đã mở"
                 message: >
                   ✅ Cửa cuốn đã MỞ hoàn toàn
@@ -152,7 +157,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_thongbao
                 title: "Cửa cuốn đã đóng"
                 message: >
                   ✅ Cửa cuốn đã ĐÓNG hoàn toàn
@@ -201,7 +207,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_canhbao
                 title: "Cảnh báo Zigbee cửa cuốn"
                 message: >
                   Cửa cuốn mất kết nối Zigbee quá 5 phút.
@@ -217,7 +224,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_canhbao
                 title: "Zigbee cửa cuốn đã phục hồi"
                 message: >
                   Cửa cuốn đã kết nối lại. Trạng thái:
@@ -230,7 +238,8 @@
             - action: telegram_bot.send_message
               continue_on_error: true
               data:
-                chat_id: !secret telegram_chat_id
+                chat_id: !secret telegram_group_chat_id
+                message_thread_id: !secret telegram_thread_canhbao
                 title: "Cảnh báo sóng Zigbee cửa cuốn"
                 message: >
                   LQI cửa cuốn dưới 15 liên tục 10 phút.

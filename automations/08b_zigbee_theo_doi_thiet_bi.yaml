@@ -34,7 +34,8 @@
     - action: telegram_bot.send_message
       continue_on_error: true
       data:
-        chat_id: !secret telegram_chat_id
+        chat_id: !secret telegram_group_chat_id
+        message_thread_id: !secret telegram_thread_canhbao
         message: >-
           🔴 ZIGBEE MẤT KẾT NỐI
           Thiết bị: {{ trigger.to_state.attributes.friendly_name | replace(' Linkquality','') | replace(' Humidity','') | replace(' Độ ẩm','') }}
@@ -71,7 +72,8 @@
     - action: telegram_bot.send_message
       continue_on_error: true
       data:
-        chat_id: !secret telegram_chat_id
+        chat_id: !secret telegram_group_chat_id
+        message_thread_id: !secret telegram_thread_canhbao
         message: >-
           🟢 ZIGBEE KẾT NỐI LẠI
           Thiết bị: {{ trigger.to_state.attributes.friendly_name | replace(' Linkquality','') | replace(' Humidity','') | replace(' Độ ẩm','') }}
@@ -103,7 +105,8 @@
     - action: telegram_bot.send_message
       continue_on_error: true
       data:
-        chat_id: !secret telegram_chat_id
+        chat_id: !secret telegram_group_chat_id
+        message_thread_id: !secret telegram_thread_canhbao
         message: >-
           🟡 ZIGBEE TÍN HIỆU YẾU
           Thiết bị: {{ trigger.to_state.attributes.friendly_name | replace(' Linkquality','') }}
