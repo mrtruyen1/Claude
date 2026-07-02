@@ -158,6 +158,9 @@ Gộp: tool WebSocket prefix **`ha__*`** (`Proxmox:ha__ha_get_overview`, `…ha_
 | Exec trong LXC (vd MariaDB) | `Proxmox:ct_exec ctid=NNN` |
 | Synology DSM | `Proxmox:dsm_run` / `dsm_sudo_run` / `dsm_logs` |
 | SSH generic | `Proxmox:ssh_run` |
+| Lỗi journal host + mọi CT trong 1 lệnh (v1.2.0) | `Proxmox:journal_errors(hours=)` |
+| Public exposure (Funnel/Serve/AllowFunnel/port/sshd, v1.2.0) | `Proxmox:security_check` |
+| Trạng thái backup vzdump mọi guest (v1.2.0) | `Proxmox:backup_status` |
 
 ### Connector `ha` — HA operations trực tiếp (WebSocket/REST)
 | Việc | Tool |
