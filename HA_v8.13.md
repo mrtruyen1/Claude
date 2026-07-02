@@ -69,7 +69,7 @@ Mosquitto/MariaDB/Z2M **KHÔNG** phải addon — chúng là **LXC riêng** trê
 | LXC 105 | zigbee2mqtt-new | Z2M `2.12` · coordinator SLZB qua `tcp://192.168.31.45:6638` (adapter zstack) · Z-Stack fw `20260310` (v8.6) (⚠️ v8.5: đã chuyển từ LXC 110 sang LXC 105, LXC 110 còn tồn tại nhưng không chạy) |
 | LXC 113 | cloudflared | tunnel |
 
-**VM khác:** 100 `Dva1622` (chạy, backup hằng ngày) · 103 Win10 (stopped) · **105 n8n: ĐÃ XÓA HẲN (v8.13 confirmed — 105.conf absent, đĩa 20G không còn; VMID 105 nay là LXC zigbee2mqtt-new)**.
+**VM khác:** 100 `Dva1622` (chạy, backup hằng ngày) · 103 Win10 (stopped) · **105 n8n: ĐÃ XÓA HẲN — Truyền xác nhận CHỦ ĐÍCH 2026-07-02 (105.conf absent, đĩa 20G không còn; VMID 105 nay là LXC zigbee2mqtt-new)**.
 
 **Backup Proxmox:** job tuần `sun 02:00` → Synology, gồm VMID `101,102,104,106,107,108,110,111,113` + VM100 daily riêng. VM105 n8n decommissioned nên không còn trong job tuần.
 
