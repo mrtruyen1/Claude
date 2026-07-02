@@ -1,12 +1,13 @@
-# SYSTEM AUDIT PROMPT — Proxmox/NAS + Home Assistant — v9.0
+# SYSTEM AUDIT PROMPT — Proxmox/NAS + Home Assistant — v9.1
 > **Smarthome TruyenND** · Synology DVA1622 trên Proxmox 8.x + HA OS trên VM101
 > **v9.0 (2026-07-02): HỢP NHẤT** `PVE_v8.12.md` + `HA_v8.15.md` thành 1 file duy nhất. Toàn bộ bài học/baseline/quy trình giữ nguyên giá trị; changelog cũ nén ở APPENDIX.
 >
-> **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-02 tối, v8.12/v8.15.1):**
-> - **PVE 100/100** (0 HIGH/MEDIUM/LOW, chỉ Watch) · **HA 98/100 sau fix** (0 MEDIUM đang chờ — fallback Tuya đã hạ thành Watch/chấp-nhận theo quyết định Truyền).
-> - Fix đã áp dụng: HA `08b` thêm `parse_mode: plain_text` (3 automation); recorder exclude `sensor.proxmox_cpu_used` (xóa khỏi `include.entities` + thêm `exclude.entities`, full restart, DB đã ngừng ghi).
-> - Watch đang mở: LVM thin **53.3%** · DSM vol2 **65%**/vol3 31% · VM103 Win10 RUNNING (user bật, benign) · `vm-100-disk-1` 68.71% · sshd host root+password (Truyền GIỮ NGUYÊN — không flag) · `systemd-networkd-wait-online` timeout lặp ở CT (BENIGN noise).
-> - Việc phiên sau: verify script `/etc/cron.weekly/fstrim-vms` trên host còn trim CT110 (đã xóa) — cập nhật ctids nếu đúng; verify IP thật CT111 (tài liệu ghi trùng `.111` với VM101 — khả năng ghi nhầm); verify version MariaDB CT107 (2 prompt cũ ghi lệch 10.11.14 vs 11.4).
+> **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-03 đêm, v9.1):**
+> - **PVE 100/100 · HA 100/100** (0 HIGH/MEDIUM/LOW cả 2 lớp, chỉ Watch). Fallback Tuya = `unknown` (cùng lớp unavailable — Watch/chấp nhận, hành vi không đổi).
+> - **3 việc tồn đọng ĐÃ GIẢI QUYẾT:** ① script `/etc/cron.weekly/fstrim-vms` trên host ĐÃ ĐÚNG ctids `105 106 107 113` (ghi chú "stale CT110" trong prompt cũ là lỗi tài liệu, không phải lỗi hệ thống); ② IP thật CT111 = **192.168.31.38** (DHCP — tài liệu cũ ghi `.111` là nhầm); ③ MariaDB CT107 = **10.11.14** (deb12).
+> - Verify fix v8.15.1: DB đã NGỪNG ghi cả 4 entity excluded (`proxmox_cpu_used` row cuối 13:19 UTC 02/07 = trước restart; `192_168_31_84_cpu_used` row cuối 28/06 = dead id, rows tự purge ~12/07).
+> - Watch đang mở: **swap VM101 KVM leo lại 2.87GB** (từ 24MB v8.9; PSI 0.00 + 0 OOM = chưa áp lực; >3GB → xem xét tăng RAM) · host swap tổng 6.4GB · LVM thin **53.45%** · DSM vol2 **66%**/vol3 31% · `balloon` VM100 config = **8192** (baseline cũ ghi 6144 — drift, hỏi Truyền có chủ đích không) · addon thứ 6 `a0d7b954_ssh` (Advanced SSH, stopped) + Studio Code Server stopped · file dump mồ côi của guest đã xóa (CT110/114 trên Synology, CT110 local; VM103 backup thủ công 12/06) — dọn cần Truyền duyệt.
+> - Việc phiên sau: verify rows `sensor.proxmox_cpu_used`/`192_168_31_84_cpu_used` đã purge hết (sau 12/07); theo dõi trend swap VM101; hỏi Truyền về balloon VM100 8192 + addon Advanced SSH + dọn dump mồ côi.
 
 ---
 
@@ -73,12 +74,11 @@ Upload file `.md` này + nhắn **"audit"** → AI **tự chạy ngay, không h�
 | **Mosquitto CT106** | — | `Proxmox:ct_exec ctid=106` | — | — | `passwd`/`acl` phải `mosquitto:mosquitto 640` |
 | **MariaDB CT107** | — | `Proxmox:ct_exec ctid=107` | — | — | `mysql` socket root, DB `homeassistant` |
 | **9router CT108** | `192.168.31.108` | `Proxmox:ct_exec ctid=108` | — | — | 9Router AI Gateway v0.5.8 · LLM proxy OpenAI-compat `/v1` port **20128** · open-webui CT111 là client · tunnel public phải TẮT khi require-key off |
-| **open-webui CT111** | (verify IP*) | `Proxmox:ct_exec ctid=111` | — | — | Docker `open-webui:v0.9.6` · port 3000→8080 · compose `/opt/open-webui/` |
+| **open-webui CT111** | `192.168.31.38` (DHCP) | `Proxmox:ct_exec ctid=111` | — | — | Docker `open-webui:v0.9.6` · port 3000→8080 · compose `/opt/open-webui/` · IP động — verify lại nếu đổi |
 | **WireGuard CT112** | — | `Proxmox:ct_exec ctid=112` | — | — | VPN cá nhân Truyền — CHỦ ĐÍCH |
 | **cloudflared CT113** | — | `Proxmox:ct_exec ctid=113` | — | — | ready: `curl 127.0.0.1:20241/ready` → 200, conns=4 |
 | **Windows VM103** | `192.168.31.19` | (thường stopped) | — | — | IP `.19` trong SSH log = **bình thường**, KHÔNG brute force |
 
-> *Tài liệu cũ ghi CT111 = `192.168.31.111` trùng HA VM101 — khả năng ghi nhầm, **verify phiên sau** (`ct_exec 111 -- ip a`).
 > Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ** · **CT114 openclaw**.
 
 **Mẫu SSH đúng (chạy bên trong `Proxmox:pve_run`):**
@@ -110,9 +110,9 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
     ├── CT 104 — Frigate NVR 0.17.2    192.168.31.104  4096M, swap 2048M, GPU DRI passthrough, shm 512MB · 5 camera · LIVE+AI (record:false + snapshots retain 7d)
     ├── CT 105 — zigbee2mqtt-new       192.168.31.43   Z2M 2.12.1 · SLZB-06U tcp://192.168.31.45:6638 (zstack, fw 20260310) · rootfs 8G
     ├── CT 106 — mqtt-broker (Mosquitto) 512M, nesting=1
-    ├── CT 107 — MariaDB (recorder HA) 512M, unprivileged, swap 256M (version 10.11 vs 11.4 lệch tài liệu — verify)
+    ├── CT 107 — MariaDB 10.11.14 (recorder HA) 512M, unprivileged, swap 256M
     ├── CT 108 — 9router AI Gateway v0.5.8  192.168.31.108  LLM proxy /v1 :20128
-    ├── CT 111 — open-webui v0.9.6     Docker · 3000→8080 · 2GB RAM · ANTHROPIC_API_KEY trong .env
+    ├── CT 111 — open-webui v0.9.6     192.168.31.38 (DHCP) · Docker · 3000→8080 · 2GB RAM · ANTHROPIC_API_KEY trong .env
     ├── CT 112 — WireGuard VPN cá nhân (onboot=1) · server 10.6.0.1/24 UDP 51820 · 2 peer · CHỦ ĐÍCH
     └── CT 113 — cloudflared (Debian 13) 512M, nesting=1 · native binary + systemd
 ```
@@ -124,7 +124,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 **Tailscale topology:** HOST `proxmox-pve` (100.97.18.51) = exit node + subnet router (`192.168.31.0/24`, ip_forward v4/v6=1) · CT102 = Funnel ingress thôi · CT104 = Serve tailnet-only, **KHÔNG AllowFunnel**.
 
 **HA stack:** Core `2026.7.x` · HAOS `18.x` · Supervisor `2026.06.x` · Python `3.14.x` · DB MariaDB trên **CT107** (LXC, KHÔNG phải addon).
-**Addon HA (5, trong Supervisor):** `Terminal & SSH` · `ESPHome Device Builder` · `MCP Server Dev` · `Nabu Casa Webhook Proxy` · `Studio Code Server`. Mosquitto/MariaDB/Z2M **KHÔNG** phải addon — là LXC riêng. `cloud logged_in=false` = bình thường (đi qua Tailscale + Webhook Proxy).
+**Addon HA (6, trong Supervisor):** `Terminal & SSH` (started) · `ESPHome Device Builder` (started) · `MCP Server Dev` (started) · `Nabu Casa Webhook Proxy` (started) · `Studio Code Server` (stopped — on-demand) · `Advanced SSH & Web Terminal a0d7b954_ssh` (stopped — phát hiện v9.1, hỏi Truyền có cần gỡ). Mosquitto/MariaDB/Z2M **KHÔNG** phải addon — là LXC riêng. `cloud logged_in=false` = bình thường (đi qua Tailscale + Webhook Proxy).
 
 **Backup Proxmox:** VM100 daily 02:30 `mode snapshot` → Synology · weekly sun 02:00 vmid **`101,102,104,105,106,107,108,111,112,113`** → Synology · job thứ 3 sun 04:00 VM100→local keep-last=1 (chủ đích) · `backup-all.sh` ctids **`(102 104 105 106 107 108 111 113)`** (service-data).
 
@@ -178,20 +178,20 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | Reallocated / Pending / Uncorrectable | **0** mọi disk (host + DSM sata1-4) | >0 = HIGH |
 | NCQ queue_depth | sda/sdb/sdc = **1** (tắt chủ đích, khóa udev+rc.d; `libata.force=noncq` GRUB hiện ABSENT — chấp nhận) | KHÔNG bật lại |
 | ZFS ARC max | 4 GiB (`zfs_arc_max=4294967296`) — host **KHÔNG có pool** (LVM-thin), chỉ phòng hờ | KHÔNG cần zpool scrub |
-| LVM thin `data%` | ~**53%** (v8.12; dao động theo VM103) | >60 Watch · >70 fstrim · >80 urgent |
-| DSM volume1/2/3 | **4% / 65% / 31%** (v8.12) | ≥70 Watch · >80 action |
+| LVM thin `data%` | ~**53.45%** (v9.1; dao động theo VM103) | >60 Watch · >70 fstrim · >80 urgent |
+| DSM volume1/2/3 | **4% / 66% / 31%** (v9.1) | ≥70 Watch · >80 action |
 | DSM Btrfs scrub | **0 errors** mọi volume | >0 = HIGH (bit-rot) → check SMART + cân nhắc replace |
 | mdstat DSM | `[4/26] UUUU` | Bình thường DVA1622 |
-| Balloon min | VM100/101=**6144**, VM103=**4096** | Thiếu min = Watch |
+| Balloon min | VM101=**6144**, VM103=**4096**, VM100=**8192** (quan sát v9.1 — baseline cũ ghi 6144, chờ Truyền xác nhận chủ đích) | Thiếu min = Watch |
 | Kernel | `6.8.12-30-pve` | Bump minor = benign |
 | journal host | ~**624MB** | >1GB → `journalctl --vacuum-size=500M` |
-| VM101 KVM swap | ~**24MB** (RESOLVED v8.9 từ 2.6GB; top swap nay VM100 KVM ~1-1.7GB benign) | Leo lại >2GB = Watch, >3GB → xem xét tăng RAM |
+| VM101 KVM swap | **leo lại 2.87GB** (v9.1; v8.9 từng RESOLVED về 24MB; VM100 KVM ~1.8GB; PSI 0.00 + 0 OOM = chưa áp lực thật) | >3GB → xem xét tăng RAM / swapoff có kiểm soát (hỏi Truyền) |
 | cloudflared | **4** connections, `127.0.0.1:20241/ready` = 200 | <4 = restart cloudflared. QUIC bị chặn → `--protocol http2` |
 | DSM net buffer rmem/wmem | **16777216** (16MB, TRONG DSM — check `dsm_run`, KHÔNG host) | host 212992 mặc định là OK |
 | Frigate | **0.17.2** healthy · `record:false` + `snapshots:true` retain 7d (mode motion) · shm **512MB** · `/dev/dri/renderD128` mounted · **CPU decode — KHÔNG bật VAAPI/QSV** (GPU=GeForce 210/nouveau, preset-vaapi làm ffmpeg crash, đã rollback v8.11.2) · storage `/opt/frigate/storage` (bind→host root) ~**392M** bounded <2GB · Serve tailnet-only | storage >2GB = retain không kick; `AllowFunnel` + auth off = HIGH |
 | Camera Frigate | 5: `ngoai_troi`(AI detect,5fps), `phong_ngu`, `phong_khach`, `ban_hang`, `ban_hang_2` | RTSP timeout sporadic `ngoai_troi` (.4:554) = watchdog tự recover |
 | Mosquitto CT106 | `passwd`/`acl` = `mosquitto:mosquitto 640`, test-config OK | Owner khác = MEDIUM |
-| MariaDB CT107 dir | ~**474MB** (bảng `statistics` chi phối — long-term, cố ý) | >500MB dir = kiểm tra purge/exclude |
+| MariaDB CT107 | version **10.11.14** (verified v9.1) · dir ~**474MB** (bảng `statistics` chi phối — long-term, cố ý) | >500MB dir = kiểm tra purge/exclude |
 | open-webui CT111 | `v0.9.6` healthy qua compose | Thấy `:main` → `docker stop/rm open-webui && cd /opt/open-webui && docker compose up -d` |
 | Z2M CT105 | **2.12.1** active, SLZB `.45` ping 0% loss | 2 lần fail start khi update = build transient, benign nếu active sau đó |
 | Backup jobs | Daily VM100 02:30 snapshot (**3.76GB**, sensor HA `OK`) · weekly sun 02:00 vmid `101,102,104,105,106,107,108,111,112,113` · sun 04:00 VM100→local (chủ đích) | Thiếu CT mới = backup gap. `mode stop` = reboot DSM mỗi đêm → đổi lại snapshot |
@@ -524,7 +524,7 @@ value_template: >-
 **Python 3.14:** `SyntaxWarning: 'return' in a 'finally' block` · `upnp` deprecation.
 **Zigbee:** `sensor.cua_cuon_zigbee_calibration_time` template spam (TS130F không gửi field — BENIGN, do Z2M auto-create) · `Ổ cắm Xiaomi` update template fail (payload thiếu key `update`) · `UNSUP_GENERAL_COMMAND` Cầu thang 4 mỗi restart (firmware không hỗ trợ configReport) · OTA `No image currently available` · LQI: fw `20260310` có thể >200; LQI>20 = functional — KHÔNG flag LQI thấp trên SLZB-06U/CC2652P · lỗi `Failed to execute routing table` khi mesh bận sau restart = transient.
 **Broadlink/thiết bị:** `infrared.rm_pro_ir_emitter`/`radio_frequency...` = `unknown` bình thường · `sensor.rm_pro_temperature = 0.0°C` (hardware artifact) · `weather.forecast_home` không tồn tại (automation dùng `weather.openweathermap`) · SmartHub AC + weather `failed_conditions` = ĐÚNG thiết kế (mutex/mùa mưa).
-**PVE:** vmbr0 drops (multicast snooping) · `systemd-networkd-wait-online` timeout ~2-4/ngày ở CT (err-level noise, service active) · `wtmpdb-rotate.timer` failed sau apt upgrade Debian 13 → `reset-failed` · Mosquitto repo `NO_PUBKEY` (key GPG hết hạn, gói Debian vẫn update) · nouveau `msvld: init failed` (tàn dư test VAAPI, không tái diễn) · DSM UI "Celeron J4125" (hardcode firmware, cosmetic) · volume3 tụt ~2% sau cài lại disk · Windows VM103 RUNNING khi user bật switch HA (không tự stop — có user context).
+**PVE:** vmbr0 drops (multicast snooping) · `systemd-networkd-wait-online` timeout ~2-4/ngày ở CT (err-level noise, service active) · `wtmpdb-rotate.timer` failed sau apt upgrade Debian 13 → `reset-failed` · Mosquitto repo `NO_PUBKEY` (key GPG hết hạn, gói Debian vẫn update) · nouveau `msvld: init failed` (spam vài phút MỖI LẦN Frigate CT104 restart — GPU DRI passthrough init, BENIGN, xác nhận tái diễn v9.1) · DSM UI "Celeron J4125" (hardcode firmware, cosmetic) · volume3 tụt ~2% sau cài lại disk · Windows VM103 RUNNING khi user bật switch HA (không tự stop — có user context).
 **Đã giải quyết (không tái flag):** n8n decommission · `automations.yaml` xóa · CT110/CT114 xóa · orphan-stats `0x70b3d52b600763e8` · ghost `ten_thiet_bi_` · `www/yaml_backups` + 7 file nhạy cảm `www/` (nếu tái xuất hiện → LOW) · Telegram repair (v8.1) · Broadlink timeout (v8.3) · Ổ cắm 20A + Cầu thang 4 LQI (v8.6 sau fw SLZB) · fix cửa cuốn `05` `for:1s`+time trong DIR (v8.8) · `allowlist_external_dirs` (v8.10, đã restart) · `03_mat_dien` continue_on_error · `06_Sonoff` `value_json.action|default('')` · `08b` parse_mode plain_text (v8.15).
 **Cần re-auth thủ công (không phải bug):** Tuya `sign invalid -9999999` → re-auth · EcoFlow `quanghuy_shutdown` lỗi khi pin <40% (NAS đã tắt = expected) · Tasker token hết hạn → tạo token mới trên Tasker.
 
@@ -631,19 +631,13 @@ Ngay sau box → **thực thi fix** → in output verify → `→ Tiếp: [2/N]�
 
 ## 📁 SCRIPTS HIỆN TẠI TRÊN HỆ THỐNG (snapshot — verify khi audit)
 
-### `/etc/cron.weekly/fstrim-vms`
-```bash
-#!/bin/bash
-LOG="/var/log/fstrim-vms-$(date +%Y%m).log"
-echo "=== $(date) ===" >> $LOG
-ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes admin@192.168.31.116 \
-    "nohup sudo fstrim -av > /tmp/fstrim.log 2>&1 & echo PID:\$!" >> $LOG 2>&1
-for ct in 106 107 110 113; do
-    fstrim -v "/var/lib/lxc/$ct/rootfs" >> $LOG 2>&1
-done
-lvs -o lv_name,lv_size,data_percent --units g pve >> $LOG
-```
-> ⚠️ **STALE trên hệ thống:** vòng lặp còn CT110 (đã xóa) và thiếu CT105 — **phiên sau verify + sửa thành `105 106 107 113`** (backup `.bak` trước).
+### `/etc/cron.weekly/fstrim-vms` — ✅ verified ĐÚNG (v9.1)
+Script thực tế trên host (verify 2026-07-03) đã đầy đủ và đúng, KHÔNG stale:
+1. **DSM VM100**: `ssh admin@.116 "nohup sudo fstrim -av ..."` + poll 20×30s + gom `/tmp/fstrim.log` về.
+2. **VM103 Windows** (chỉ khi stopped): `kpartx` map `vm-103-disk-1` → mount `ntfs3 -o discard` → `fstrim` → unmount.
+3. **CT `105 106 107 113`** (đúng danh sách hiện hành — CT110 đã gỡ từ trước): fstrim host-side `/var/lib/lxc/$ct/rootfs` khi CT running.
+4. Ghi `lvs data_percent` sau trim.
+> Log tháng: `/var/log/fstrim-vms-YYYYMM.log` — file tháng mới chỉ xuất hiện sau lần chạy cron.weekly đầu tiên trong tháng (thiếu file đầu tháng = bình thường).
 
 ### `/opt/open-webui/docker-compose.yml`
 ```yaml
@@ -691,6 +685,7 @@ volumes:
 
 | Version | Tóm tắt |
 |---|---|
+| **v9.1 (2026-07-03 đêm)** | **PVE 100/100 · HA 100/100** — 0 finding cả 2 lớp. Đóng 3 việc tồn đọng: fstrim-vms ĐÃ ĐÚNG `105 106 107 113` (ghi chú stale cũ = lỗi tài liệu); CT111 IP = `.38` DHCP; MariaDB CT107 = 10.11.14. Verify DB ngừng ghi 4 entity excluded (rows purge ~12/07). Baseline mới: LVM 53.45%, vol2 66%, balloon VM100 = 8192 (drift, chờ xác nhận), addon 6 (thêm Advanced SSH stopped). Watch mới: swap VM101 KVM leo lại 2.87GB (PSI 0, no OOM); nouveau msvld xác nhận tái diễn theo mỗi lần Frigate restart (BENIGN). Tuya fallback = `unknown` (hành vi không đổi). Backup jobs khớp 100%, Btrfs scrub 0 lỗi, SMART khớp baseline tuyệt đối, security sạch (Funnel chỉ CT102, 0 failed SSH login). |
 | **v9.0 (2026-07-02)** | **Hợp nhất PVE_v8.12 + HA_v8.15 → 1 file.** Sửa chuẩn: gộp bảng kết nối/tools/format báo cáo trùng lặp; xóa mục stale (VM105/CT110/CT114 khỏi lệnh audit, section "trạng thái v8.4" cũ, 2 marker "mới nhất" sai trong lịch sử HA, heading trùng §6.3); cập nhật baseline mới nhất (LVM 53%, DSM 4/65/31, sensor 163/switch 108, packages 20, Frigate 0.17.2, Z2M 2.12.1); đưa bài học v8.15.1 (verify entity sống + grep include trước exclude recorder) vào §B.8.2, parse_mode plain_text vào §B.7; thêm bảng QUYẾT ĐỊNH CỦA TRUYỀN; sửa quy trình push theo môi trường thực tế; nén changelog. Việc mở: fstrim-vms ctids stale, IP CT111, version MariaDB. |
 | HA v8.15/.1 (2026-07-02 tối) | 98/100. FIX 08b parse_mode plain_text (×12 lỗi Telegram Markdown do `_` trong entity_id). FIX recorder exclude `sensor.proxmox_cpu_used` (2 bài học: id chết trong states_meta; entity nằm trong include.entities). Quyết định Truyền: fallback Tuya giữ nguyên (Watch), backup CT112 chủ đích, SSH giữ nguyên. |
 | PVE v8.12/.1 (2026-07-02 tối) | 100/100. Z2M update 2.12.1 (2 fail start transient). Backup CT112 thủ công chủ đích. nouveau spam benign. Watch: VM103 RUNNING, LVM 53.33%, vol2 65%. |
