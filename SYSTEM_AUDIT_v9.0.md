@@ -108,7 +108,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
     ├── VM 103 — Windows 10            192.168.31.19   8G RAM, balloon min 4096, thường STOPPED (bật qua switch HA)
     ├── CT 102 — mcp-server            192.168.31.26   512M · mcp-server/node/nginx/tailscaled (Funnel ingress duy nhất)
     ├── CT 104 — Frigate NVR 0.17.2    192.168.31.104  4096M, swap 2048M, GPU DRI passthrough, shm 512MB · 5 camera · LIVE+AI (record:false + snapshots retain 7d)
-    ├── CT 105 — zigbee2mqtt-new       192.168.31.43   Z2M 2.12.1 · SLZB-06U tcp://192.168.31.45:6638 (zstack, fw 20260310) · rootfs 8G · `enable_external_js: true` (app Zigbee Map cần)
+    ├── CT 105 — zigbee2mqtt-new       192.168.31.43   Z2M 2.12.1 · SLZB-06U tcp://192.168.31.45:6638 (zstack, fw 20260310) · rootfs 8G · `enable_external_js: true` (app Zigbee Map cần) · `transmit_power: 15` (Truyền tăng từ 9, 2026-07-03)
     ├── CT 106 — mqtt-broker (Mosquitto) 512M, nesting=1
     ├── CT 107 — MariaDB (recorder HA) 512M, unprivileged, swap 256M (version 10.11 vs 11.4 lệch tài liệu — verify)
     ├── CT 108 — 9router AI Gateway v0.5.8  192.168.31.108  LLM proxy /v1 :20128
@@ -693,7 +693,7 @@ volumes:
 
 | Version | Tóm tắt |
 |---|---|
-| v9.0.1 (2026-07-03) | FIX app Zigbee Map FAIL "Injecting extension into Zigbee2MQTT": Z2M 2.x mặc định `enable_external_js: false` chặn extension ngoài → bật `true` trong CT105 `configuration.yaml` (backup `.bak-external-js`), restart z2m OK, verify extension save/remove qua MQTT = ok. Ghi chú vào §B.9 + sơ đồ CT105. |
+| v9.0.1 (2026-07-03) | FIX app Zigbee Map FAIL "Injecting extension into Zigbee2MQTT": Z2M 2.x mặc định `enable_external_js: false` chặn extension ngoài → bật `true` trong CT105 `configuration.yaml` (backup `.bak-external-js`), restart z2m OK, verify extension save/remove qua MQTT = ok. Ghi chú vào §B.9 + sơ đồ CT105. Cùng phiên: tăng `transmit_power` 9→15 dBm theo yêu cầu Truyền (backup `.bak-txpower`, restart OK, verify `bridge/info` = 15). |
 | **v9.0 (2026-07-02)** | **Hợp nhất PVE_v8.12 + HA_v8.15 → 1 file.** Sửa chuẩn: gộp bảng kết nối/tools/format báo cáo trùng lặp; xóa mục stale (VM105/CT110/CT114 khỏi lệnh audit, section "trạng thái v8.4" cũ, 2 marker "mới nhất" sai trong lịch sử HA, heading trùng §6.3); cập nhật baseline mới nhất (LVM 53%, DSM 4/65/31, sensor 163/switch 108, packages 20, Frigate 0.17.2, Z2M 2.12.1); đưa bài học v8.15.1 (verify entity sống + grep include trước exclude recorder) vào §B.8.2, parse_mode plain_text vào §B.7; thêm bảng QUYẾT ĐỊNH CỦA TRUYỀN; sửa quy trình push theo môi trường thực tế; nén changelog. Việc mở: fstrim-vms ctids stale, IP CT111, version MariaDB. |
 | HA v8.15/.1 (2026-07-02 tối) | 98/100. FIX 08b parse_mode plain_text (×12 lỗi Telegram Markdown do `_` trong entity_id). FIX recorder exclude `sensor.proxmox_cpu_used` (2 bài học: id chết trong states_meta; entity nằm trong include.entities). Quyết định Truyền: fallback Tuya giữ nguyên (Watch), backup CT112 chủ đích, SSH giữ nguyên. |
 | PVE v8.12/.1 (2026-07-02 tối) | 100/100. Z2M update 2.12.1 (2 fail start transient). Backup CT112 thủ công chủ đích. nouveau spam benign. Watch: VM103 RUNNING, LVM 53.33%, vol2 65%. |
