@@ -1,13 +1,16 @@
-# SYSTEM AUDIT PROMPT — Proxmox/NAS + Home Assistant — v9.0
+# SYSTEM AUDIT PROMPT — Proxmox/NAS + Home Assistant — v9.1
 > **Smarthome TruyenND** · Synology DVA1622 trên Proxmox 8.x + HA OS trên VM101
 > **v9.0 (2026-07-02): HỢP NHẤT** `PVE_v8.12.md` + `HA_v8.15.md` thành 1 file duy nhất. Toàn bộ bài học/baseline/quy trình giữ nguyên giá trị; changelog cũ nén ở APPENDIX.
 >
-> **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-03, v9.1):**
-> - **PVE 97/100** (0 HIGH · 1 MEDIUM: host swap 6.0GB / VM101 KVM 3.44GB · 1 LOW: dọn backup tồn dư) · **HA 100/100** (0 lỗi; fallback Tuya = Watch/chấp nhận theo quyết định Truyền).
-> - Phát hiện chính: (a) host swap 6.0GB — VM101 KVM **3.44GB** (hồi quy từ baseline 24MB), VM100 1.03GB; nguyên nhân VM103 Windows đang chạy siết RAM host → tráo page nhàn rỗi của guest; **PSI memory=0.00 + 0 OOM = chưa áp lực thật**. (b) **20 bản vzdump VM100 (~78GB) tồn dư** ở `/mnt/pve/Synology/dump` không có retention (job daily nay ghi `local`, log xác nhận; không hook copy). (c) host chạy **smbd (Samba) 445/139** — chủ đích (`cron.daily/samba`), chỉ LAN.
-> - Xác nhận tốt: SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Used 11%/Media Errors 0), Btrfs scrub **0 errors** cả 3 volume, weekly vmid + `backup-all.sh` ctids khớp, **`fstrim-vms` ctids ĐÃ sửa đúng `105 106 107 113`** (không còn CT110), HA `ha core check`=valid + 0 repairs/0 orphans, mọi thiết bị ping 0% loss, backup sensor OK, Core 2026.7.0 + HAOS 18.1 mới nhất.
-> - Resolved việc treo: **CT111 IP thật = `192.168.31.38`** (tài liệu ghi nhầm `.111`) · **MariaDB CT107 = `10.11.14`** (chốt, không phải 11.4) · `fstrim-vms` stale ctids đã tự sửa xong.
-> - Việc phiên sau: quyết định reclaim swap (`swapoff -a && swapon -a` khi VM103 tắt) hay tăng RAM VM101; đặt retention cho `/Synology/dump` VM100 + dọn bản backup CT110/CT114 (~0.9GB); xác nhận smbd host còn cần; cân nhắc exclude `sensor.o_cam_zigbee_20a_linkquality` (~6.4k rows — HỎI Truyền).
+> **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-03, v9.1.1 — SAU FIX):**
+> - **PVE 100/100 sau fix** (2 finding v9.1 đã sửa xong cùng phiên) · **HA 100/100** (0 lỗi; fallback Tuya = Watch/chấp nhận theo quyết định Truyền).
+> - **FIX 1 (MEDIUM swap):** host swap 6.0GB → **0B**. Quy trình: stop pvestatd (auto-balloon ghi đè target thủ công mỗi 10s) → hạ balloon VM101/103 tạo dư địa → `swapoff -a; swapon -a` (nohup, 2 lượt, 59s+25s) → trả balloon về mức pvestatd đã chọn (KHÔNG max!) → start pvestatd. 0 OOM, PSI đỉnh 0.26, HA/DSM HTTP 200 suốt quá trình. Swap sẽ TĂNG DẦN LẠI khi VM103 chạy (tổng cầu RAM > host) — benign nếu PSI=0, xem bài học.
+> - **FIX 2 (LOW backup):** tìm ra cơ chế ẩn = **DSM Task Scheduler id=8 "Copy Backhup Proxmox sang NAS"** (owner admin, daily 06:30): `rsync -av root@.84:/var/lib/vz/dump/ /volume2/Proxmox/dump/` — CHỦ ĐÍCH (dự phòng off-host) nhưng không prune. Đã dọn NAS dump **186G → 119G** (13 bản VM100 cũ, 4 bản CT110, CT114, 3 bản VM105-n8n, 7 bản lxc Jun16/17 trùng) + xóa gốc local (tránh rsync re-copy; local root 61%→50%) + **thêm PHASE 3 retention keep-7 vào `/opt/pve-backup/pve-backup-nas-side.sh`** (backup `.bak-20260703`, `bash -n` OK).
+> - Còn chờ Truyền quyết (KHÔNG tự xóa): NAS còn bản cũ `qemu-104` 2023 (11G), `qemu-108` 2025-11 (2.6G), 2 bản `qemu-103` cũ 2025-06 + 2026-05 (27G) — xóa thêm được ~40G nếu duyệt.
+> - Phát hiện khác: host chạy **smbd (Samba) 445/139** chủ đích (`cron.daily/samba`, chỉ LAN) · **Lynis ĐÃ cài + timer daily** (tài liệu cũ ghi "chưa cài").
+> - Xác nhận tốt: SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Used 11%/Media Errors 0), Btrfs scrub **0 errors** cả 3 volume, weekly vmid + `backup-all.sh` ctids khớp, `fstrim-vms` ctids ĐÃ đúng `105 106 107 113`, HA `ha core check`=valid + 0 repairs/0 orphans, mọi thiết bị ping 0% loss, backup sensor OK, Core 2026.7.0 + HAOS 18.1 mới nhất.
+> - Resolved việc treo: **CT111 IP thật = `192.168.31.38`** · **MariaDB CT107 = `10.11.14`** · `fstrim-vms` stale ctids đã xong.
+> - Việc phiên sau: theo dõi swap regrow (ngưỡng như baseline) + verify PHASE 3 retention chạy lần đầu (log `/var/log/pve-backup.log` sáng 04/07); hỏi Truyền về 3 nhóm backup cũ ~40G; xác nhận smbd host còn cần; cân nhắc exclude `sensor.o_cam_zigbee_20a_linkquality` (~6.4k rows — HỎI Truyền).
 
 ---
 
@@ -127,7 +130,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 **HA stack:** Core `2026.7.x` · HAOS `18.x` · Supervisor `2026.06.x` · Python `3.14.x` · DB MariaDB trên **CT107** (LXC, KHÔNG phải addon).
 **Addon HA (5, trong Supervisor):** `Terminal & SSH` · `ESPHome Device Builder` · `MCP Server Dev` · `Nabu Casa Webhook Proxy` · `Studio Code Server`. Mosquitto/MariaDB/Z2M **KHÔNG** phải addon — là LXC riêng. `cloud logged_in=false` = bình thường (đi qua Tailscale + Webhook Proxy).
 
-**Backup Proxmox:** VM100 daily 02:30 `mode snapshot` → Synology · weekly sun 02:00 vmid **`101,102,104,105,106,107,108,111,112,113`** → Synology · job thứ 3 sun 04:00 VM100→local keep-last=1 (chủ đích) · `backup-all.sh` ctids **`(102 104 105 106 107 108 111 113)`** (service-data).
+**Backup Proxmox (đủ 5 lớp — verify v9.1.1):** VM100 daily 02:30 `mode snapshot` → **`local`** keep-last=2 (KHÔNG phải Synology — log vzdump xác nhận đích) · weekly sun 02:00 vmid **`101,102,104,105,106,107,108,111,112,113`** → Synology keep-last=3 · job thứ 3 sun 04:00 VM100→local keep-last=1 (chủ đích) · `backup-all.sh` 02:00 ctids **`(102 104 105 106 107 108 111 113)`** (service-data → `/Synology/backups`) · **DSM Task id=8 "Copy Backhup Proxmox sang NAS" daily 06:30** (`rsync -av root@.84:/var/lib/vz/dump/ /volume2/Proxmox/dump/` — pull off-host CHỦ ĐÍCH, không prune) + **PHASE 3 trong `pve-backup-nas-side.sh` 01:00 prune chuỗi VM100 trên NAS keep-7** (thêm v9.1.1). Lưu ý: rsync pull sẽ re-copy MỌI file còn nằm ở local → muốn xóa hẳn 1 backup phải xóa Ở CẢ local lẫn NAS.
 
 ---
 
@@ -186,7 +189,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | Balloon min | VM100/101=**6144**, VM103=**4096** | Thiếu min = Watch |
 | Kernel | `6.8.12-30-pve` | Bump minor = benign |
 | journal host | ~**624MB** | >1GB → `journalctl --vacuum-size=500M` |
-| VM101 KVM swap | **3.44GB** (v9.1 hồi quy từ 24MB; VM100 KVM 1.03GB; tổng host swap 6.0GB) — khi VM103 chạy, host tráo page nhàn rỗi guest, PSI=0/0 OOM | Leo lại >2GB = Watch, >3GB → xem xét tăng RAM / reclaim khi VM103 tắt |
+| VM101 KVM swap | **~0** (RECLAIMED v9.1.1 từ 3.44GB; tổng host swap 6.0GB→0B, quy trình bài học "Reclaim swap"). Khi VM103 chạy swap SẼ tăng dần lại — benign nếu PSI=0/0 OOM | Leo lại >2GB = Watch, >3GB → reclaim lại (quy trình đã có) hoặc tăng RAM |
 | cloudflared | **4** connections, `127.0.0.1:20241/ready` = 200 | <4 = restart cloudflared. QUIC bị chặn → `--protocol http2` |
 | DSM net buffer rmem/wmem | **16777216** (16MB, TRONG DSM — check `dsm_run`, KHÔNG host) | host 212992 mặc định là OK |
 | Frigate | **0.17.2** healthy · `record:false` + `snapshots:true` retain 7d (mode motion) · shm **512MB** · `/dev/dri/renderD128` mounted · **CPU decode — KHÔNG bật VAAPI/QSV** (GPU=GeForce 210/nouveau, preset-vaapi làm ffmpeg crash, đã rollback v8.11.2) · storage `/opt/frigate/storage` (bind→host root) ~**392M** bounded <2GB · Serve tailnet-only | storage >2GB = retain không kick; `AllowFunnel` + auth off = HIGH |
@@ -367,7 +370,7 @@ pvesm list local | grep vzdump | tail
 pvesh get /cluster/backup --output-format json | grep -E "vmid|schedule"
 grep -E "CTS=|ctids=" /opt/backup-all.sh
 ```
-**Hardening tùy chọn (không bắt buộc mỗi phiên):** Lynis (`lynis audit system --quick` — Hardening Index, chưa cài) · 2FA `root@pam` TOTP · **Backup RESTORE test** định kỳ quý: restore thử 1 CT nhỏ vào vmid tạm 999 rồi xóa (`pct restore 999 <file> --storage local-lvm --unprivileged 1 && pct start 999 && pct exec 999 -- uptime && pct stop 999 && pct destroy 999`) — **XÁC NHẬN với Truyền trước**, không đụng vmid đang dùng. "Backup OK" ≠ "restore được".
+**Hardening tùy chọn (không bắt buộc mỗi phiên):** Lynis (**ĐÃ cài + `lynis.timer` daily chạy `--cronjob`** — verified v9.1.1; xem report `/var/log/lynis.log` khi cần Hardening Index) · 2FA `root@pam` TOTP · **Backup RESTORE test** định kỳ quý: restore thử 1 CT nhỏ vào vmid tạm 999 rồi xóa (`pct restore 999 <file> --storage local-lvm --unprivileged 1 && pct start 999 && pct exec 999 -- uptime && pct stop 999 && pct destroy 999`) — **XÁC NHẬN với Truyền trước**, không đụng vmid đang dùng. "Backup OK" ≠ "restore được".
 
 ### PHASE 7 — Reporting & Auto-Fix
 Xem **FORMAT BÁO CÁO & RUBRIC** (chung 2 lớp) ở cuối file. Sau PHASE 0→6: in summary → error box → fix ngay từng lỗi HIGH→MEDIUM→LOW.
@@ -591,7 +594,8 @@ Ngay sau box → **thực thi fix** → in output verify → `→ Tiếp: [2/N]�
 - NCQ tắt chủ đích — KHÔNG bật lại.
 - KHÔNG kết luận disk chết từ `dmesg` trong VM — verify từ host.
 - KHÔNG kết luận LVM thin đầy khi chưa fstrim; swap cao ≠ ZFS ARC khi chưa soi process.
-- **Host swap cao khi VM103 chạy (v9.1):** VM103 Windows (5.6GB) siết RAM host → host tráo page NHÀN RỖI của guest (VM101 KVM lên 3.44GB, VM100 1.03GB). Kiểm `VmSwap` từng process + PSI: **PSI memory=0.00 + 0 OOM = swap "nguội", chưa thrash → chưa áp lực thật**. Reclaim (`swapoff -a && swapon -a`) CHỈ khi RAM trống > swap dùng (an toàn nhất khi VM103 tắt) — CẦN XÁC NHẬN, tránh OOM giữa chừng.
+- **Host swap cao khi VM103 chạy (v9.1):** VM103 Windows (5.6GB) siết RAM host → host tráo page NHÀN RỖI của guest (VM101 KVM lên 3.44GB, VM100 1.03GB). Kiểm `VmSwap` từng process + PSI: **PSI memory=0.00 + 0 OOM = swap "nguội", chưa thrash → chưa áp lực thật**.
+- **Quy trình RECLAIM SWAP đã verify (v9.1.1, 6.0GB→0B, 0 OOM):** (1) `systemctl stop pvestatd` — auto-balloon ghi đè target thủ công mỗi ~10s, không stop thì lệnh `balloon` vô hiệu; (2) hạ balloon VM đáp ứng nhanh (`echo "balloon N" | qm monitor <id>` — VM101/103 nhả trong ~45s; **VM100 DSM balloon driver KHÔNG nhả theo lệnh + không báo stats — đừng chờ**); (3) verify `available > swap + ~2GB`; (4) `nohup bash -c 'swapoff -a; swapon -a' > log &` (dùng `;` không `&&`; nohup vì MCP timeout 60s); (5) trả balloon về **mức pvestatd đã chọn trước đó, KHÔNG phải max** — trả max làm VM nở hết cỡ → swap lập tức quay lại (đã dính lượt 1: 0B→2.3GB, phải làm lượt 2); (6) `systemctl start pvestatd`; (7) verify: free, PSI, 0 OOM, HA/DSM HTTP 200, 12 guest running. Sau reclaim `buff/cache` bị xả (available thấp transient vài giờ — không phải lỗi).
 
 ### LXC / Containers
 - **#26** `pct fstrim` trả 0B trên LVM thin → fstrim host-side `fstrim -v /var/lib/lxc/$ct/rootfs/`.
@@ -645,12 +649,15 @@ LOG="/var/log/fstrim-vms-$(date +%Y%m).log"
 echo "=== $(date) ===" >> $LOG
 ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes admin@192.168.31.116 \
     "nohup sudo fstrim -av > /tmp/fstrim.log 2>&1 & echo PID:\$!" >> $LOG 2>&1
-for ct in 106 107 110 113; do
+for ct in 105 106 107 113; do
     fstrim -v "/var/lib/lxc/$ct/rootfs" >> $LOG 2>&1
 done
 lvs -o lv_name,lv_size,data_percent --units g pve >> $LOG
 ```
-> ⚠️ **STALE trên hệ thống:** vòng lặp còn CT110 (đã xóa) và thiếu CT105 — **phiên sau verify + sửa thành `105 106 107 113`** (backup `.bak` trước).
+> ✅ **Verified 2026-07-03:** ctids đã đúng `105 106 107 113` (CT110 đã gỡ khỏi vòng lặp — mục stale cũ RESOLVED). Log tháng gần nhất: `fstrim-vms-202606.log` (chạy 28/06).
+
+### `/opt/pve-backup/pve-backup-nas-side.sh` — PHASE 3 (thêm v9.1.1)
+Prune chuỗi VM100 do DSM task id=8 rsync-pull về NAS (giữ 7 bản mới nhất, xóa cả `.log`/`.notes`), chạy trong cron 01:00 daily; guard `mountpoint -q`. Backup gốc: `.bak-20260703`.
 
 ### `/opt/open-webui/docker-compose.yml`
 ```yaml
@@ -698,6 +705,7 @@ volumes:
 
 | Version | Tóm tắt |
 |---|---|
+| **v9.1.1 (2026-07-03)** | **FIX cả 2 finding v9.1 → PVE 100/100.** (1) Reclaim swap 6.0GB→0B (quy trình 7 bước mới trong Bài học: stop pvestatd → hạ balloon 101/103 → swapoff/swapon nohup → trả balloon mức cũ KHÔNG max → start pvestatd; 0 OOM; bài học phụ: VM100 DSM balloon không nhả theo lệnh; trả max = swap quay lại ngay). (2) Backup: tìm ra DSM Task id=8 rsync-pull daily 06:30 (chủ đích, không prune) → dọn NAS dump 186G→119G + xóa gốc local (root 61%→50%) + thêm PHASE 3 retention keep-7 vào pve-backup-nas-side.sh. Chờ Truyền: xóa thêm qemu-104/108/103-cũ (~40G)? Ghi nhận: Lynis đã cài + timer daily; cập nhật snapshot fstrim-vms (đã đúng); tài liệu backup 5 lớp + bảng kết nối. |
 | **v9.1 (2026-07-03)** | **Audit đầy đủ 2 lớp: PVE 97/100 · HA 100/100.** MEDIUM mới: host swap 6.0GB (VM101 KVM 3.44GB hồi quy từ 24MB) do VM103 Windows chạy siết RAM host → tráo page guest; PSI=0 + 0 OOM = chưa áp lực thật (fix reclaim/tăng RAM = CẦN XÁC NHẬN). LOW mới: 20 bản vzdump VM100 (~78GB) tồn dư `/Synology/dump` không retention (job daily nay ghi `local` — log xác nhận, không hook copy) + backup CT110/CT114 mồ côi (~0.9GB). Ghi nhận host chạy smbd/Samba 445/139 (chủ đích, `cron.daily/samba`, chỉ LAN). Resolved: `fstrim-vms` ctids ĐÃ đúng `105 106 107 113`; **CT111 IP thật `.38`** (không phải `.111`); **MariaDB CT107 `10.11.14`** (chốt). Xác nhận sạch: SMART 4 ổ khớp baseline, Btrfs scrub 0 errors, weekly/backup-all.sh ctids khớp, HA config valid + 0 repairs/orphans, 22 auto/16 script/20 pkg/1 cmdline khớp, telegram parse_mode đủ (40/46 message an toàn Markdown), 0 file rác, mọi thiết bị ping 0% loss, Core 2026.7.0/HAOS 18.1 mới nhất. Baseline drift: LVM 53.59%, DSM vol 4/66/32, sensor 163/switch 108/auto 40. |
 | v9.0.1 (2026-07-03) | FIX app Zigbee Map FAIL "Injecting extension into Zigbee2MQTT": Z2M 2.x mặc định `enable_external_js: false` chặn extension ngoài → bật `true` trong CT105 `configuration.yaml` (backup `.bak-external-js`), restart z2m OK, verify extension save/remove qua MQTT = ok. Ghi chú vào §B.9 + sơ đồ CT105. Cùng phiên: sweep `transmit_power` tìm điểm cân bằng (Truyền muốn sóng phòng ngủ khỏe hơn): 15 → Cầu thang 4 lật route nối thẳng coordinator, LQI 113–127 sập còn 26–40 sau ~6ph; 9 → hồi 113–117; 12 → ổn (113); **14 → ổn 113–140 sau 15ph, CHỐT 14**. Bài học: (1) `linkquality` đo chiều thiết bị→coordinator nên tăng TX power coordinator KHÔNG đổi số LQI của thiết bị xa (Phòng ngủ `0xa4c138159e4ff542` giữ 53–76 ở mọi mức) — lợi ích chỉ ở chiều lệnh đi xuống; (2) ngưỡng lật route của Cầu thang 4 nằm giữa 14 và 15; (3) khi test nhiều restart z2m → tắt tạm 2 automation 08 (bridge alert Telegram, `for: 15s`) rồi bật lại. FIX layout panel Zigbee Map vỡ trên HA 2026.7.0 (tab bar tụt xuống đáy) → update HACS `dan-danache/ha-zigbee-map` 2.17.0→2.17.1 + restart HA Core, entry `zigbee_map` loaded. |
 | **v9.0 (2026-07-02)** | **Hợp nhất PVE_v8.12 + HA_v8.15 → 1 file.** Sửa chuẩn: gộp bảng kết nối/tools/format báo cáo trùng lặp; xóa mục stale (VM105/CT110/CT114 khỏi lệnh audit, section "trạng thái v8.4" cũ, 2 marker "mới nhất" sai trong lịch sử HA, heading trùng §6.3); cập nhật baseline mới nhất (LVM 53%, DSM 4/65/31, sensor 163/switch 108, packages 20, Frigate 0.17.2, Z2M 2.12.1); đưa bài học v8.15.1 (verify entity sống + grep include trước exclude recorder) vào §B.8.2, parse_mode plain_text vào §B.7; thêm bảng QUYẾT ĐỊNH CỦA TRUYỀN; sửa quy trình push theo môi trường thực tế; nén changelog. Việc mở: fstrim-vms ctids stale, IP CT111, version MariaDB. |
