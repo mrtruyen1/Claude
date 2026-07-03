@@ -108,7 +108,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
     ├── VM 103 — Windows 10            192.168.31.19   8G RAM, balloon min 4096, thường STOPPED (bật qua switch HA)
     ├── CT 102 — mcp-server            192.168.31.26   512M · mcp-server/node/nginx/tailscaled (Funnel ingress duy nhất)
     ├── CT 104 — Frigate NVR 0.17.2    192.168.31.104  4096M, swap 2048M, GPU DRI passthrough, shm 512MB · 5 camera · LIVE+AI (record:false + snapshots retain 7d)
-    ├── CT 105 — zigbee2mqtt-new       192.168.31.43   Z2M 2.12.1 · SLZB-06U tcp://192.168.31.45:6638 (zstack, fw 20260310) · rootfs 8G
+    ├── CT 105 — zigbee2mqtt-new       192.168.31.43   Z2M 2.12.1 · SLZB-06U tcp://192.168.31.45:6638 (zstack, fw 20260310) · rootfs 8G · `enable_external_js: true` (app Zigbee Map cần) · `transmit_power: 14` (sweep 2026-07-03: 15 làm Cầu thang 4 lật route LQI 122→26; 12 và 14 ổn — chốt 14; KHÔNG tăng lên 15)
     ├── CT 106 — mqtt-broker (Mosquitto) 512M, nesting=1
     ├── CT 107 — MariaDB (recorder HA) 512M, unprivileged, swap 256M (version 10.11 vs 11.4 lệch tài liệu — verify)
     ├── CT 108 — 9router AI Gateway v0.5.8  192.168.31.108  LLM proxy /v1 :20128
@@ -514,6 +514,10 @@ value_template: >-
 
 **Zigbee Mesh Map:** `packages/zigbee_network_map.yaml` + `scripts/zigbee_map_refresh.yaml`; sensor đã exclude recorder.
 
+**Zigbee Map (HACS integration `dan-danache/ha-zigbee-map`, domain `zigbee_map`, panel sidebar "Zigbee Map", entry "Zigbee Panels"):** panel kết nối thẳng websocket Z2M (`ws://192.168.31.43:8099`) và inject extension JS qua `bridge/request/extension/save`.
+- **Bài học 1 (2026-07-03):** Z2M 2.x mặc định `advanced.enable_external_js: false` → panel FAIL "Injecting extension into Zigbee2MQTT". Fix: đặt `true` trong `configuration.yaml` CT105 (backup `.bak-external-js`), restart z2m, verify roundtrip extension save/remove qua MQTT = ok. Bảo mật: cờ này cho phép nạp JS ngoài vào Z2M — chấp nhận vì Z2M chỉ trong LAN.
+- **Bài học 2 (2026-07-03):** HA Core 2026.7.0 làm vỡ layout panel (khoảng đen trống lớn, thanh tab Map/Devices tụt xuống đáy màn hình). Fix = update integration 2.17.0 → **2.17.1** ("Fixed page rendering compatibility with Home Assistant 2026.7.0") qua HACS + restart HA Core. Nếu layout còn lỗi sau update → force-close app Companion / xoá cache frontend.
+
 **Tham chiếu nhanh:** Frigate · SmartIR (`1101.json`) · Broadlink RM Pro (`.20`) · ESPHome (`kitchen`/`living` `.30`) · Z2M · EcoFlow RIVER 3 · Tuya (acc `mrtruyen@gmail.com`). **Notify:** `notify.facebook_truyen_text` · `telegram_bot.send_message` (`chat_id: !secret telegram_chat_id`).
 
 ### B.10 · BỎ QUA — ĐÃ XÁC NHẬN BÌNH THƯỜNG (chống false-positive)
@@ -691,6 +695,7 @@ volumes:
 
 | Version | Tóm tắt |
 |---|---|
+| v9.0.1 (2026-07-03) | FIX app Zigbee Map FAIL "Injecting extension into Zigbee2MQTT": Z2M 2.x mặc định `enable_external_js: false` chặn extension ngoài → bật `true` trong CT105 `configuration.yaml` (backup `.bak-external-js`), restart z2m OK, verify extension save/remove qua MQTT = ok. Ghi chú vào §B.9 + sơ đồ CT105. Cùng phiên: sweep `transmit_power` tìm điểm cân bằng (Truyền muốn sóng phòng ngủ khỏe hơn): 15 → Cầu thang 4 lật route nối thẳng coordinator, LQI 113–127 sập còn 26–40 sau ~6ph; 9 → hồi 113–117; 12 → ổn (113); **14 → ổn 113–140 sau 15ph, CHỐT 14**. Bài học: (1) `linkquality` đo chiều thiết bị→coordinator nên tăng TX power coordinator KHÔNG đổi số LQI của thiết bị xa (Phòng ngủ `0xa4c138159e4ff542` giữ 53–76 ở mọi mức) — lợi ích chỉ ở chiều lệnh đi xuống; (2) ngưỡng lật route của Cầu thang 4 nằm giữa 14 và 15; (3) khi test nhiều restart z2m → tắt tạm 2 automation 08 (bridge alert Telegram, `for: 15s`) rồi bật lại. FIX layout panel Zigbee Map vỡ trên HA 2026.7.0 (tab bar tụt xuống đáy) → update HACS `dan-danache/ha-zigbee-map` 2.17.0→2.17.1 + restart HA Core, entry `zigbee_map` loaded. |
 | **v9.0 (2026-07-02)** | **Hợp nhất PVE_v8.12 + HA_v8.15 → 1 file.** Sửa chuẩn: gộp bảng kết nối/tools/format báo cáo trùng lặp; xóa mục stale (VM105/CT110/CT114 khỏi lệnh audit, section "trạng thái v8.4" cũ, 2 marker "mới nhất" sai trong lịch sử HA, heading trùng §6.3); cập nhật baseline mới nhất (LVM 53%, DSM 4/65/31, sensor 163/switch 108, packages 20, Frigate 0.17.2, Z2M 2.12.1); đưa bài học v8.15.1 (verify entity sống + grep include trước exclude recorder) vào §B.8.2, parse_mode plain_text vào §B.7; thêm bảng QUYẾT ĐỊNH CỦA TRUYỀN; sửa quy trình push theo môi trường thực tế; nén changelog. Việc mở: fstrim-vms ctids stale, IP CT111, version MariaDB. |
 | HA v8.15/.1 (2026-07-02 tối) | 98/100. FIX 08b parse_mode plain_text (×12 lỗi Telegram Markdown do `_` trong entity_id). FIX recorder exclude `sensor.proxmox_cpu_used` (2 bài học: id chết trong states_meta; entity nằm trong include.entities). Quyết định Truyền: fallback Tuya giữ nguyên (Watch), backup CT112 chủ đích, SSH giữ nguyên. |
 | PVE v8.12/.1 (2026-07-02 tối) | 100/100. Z2M update 2.12.1 (2 fail start transient). Backup CT112 thủ công chủ đích. nouveau spam benign. Watch: VM103 RUNNING, LVM 53.33%, vol2 65%. |
