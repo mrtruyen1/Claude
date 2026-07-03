@@ -1,0 +1,1731 @@
+{
+ "title": "Flux UI",
+ "kiosk_mode": {
+  "mobile_settings": {
+   "hide_sidebar": true
+  }
+ },
+ "button_card_templates": {
+  "nav": {
+   "size": "22px",
+   "show_state": false,
+   "styles": {
+    "card": [
+     {
+      "border-radius": "16px"
+     },
+     {
+      "padding": "10px 4px"
+     },
+     {
+      "box-shadow": "none"
+     },
+     {
+      "background-color": "var(--card-background-color)"
+     }
+    ],
+    "icon": [
+     {
+      "width": "22px"
+     },
+     {
+      "color": "var(--secondary-text-color)"
+     }
+    ],
+    "name": [
+     {
+      "font-size": "11px"
+     },
+     {
+      "font-weight": "600"
+     },
+     {
+      "margin-top": "4px"
+     },
+     {
+      "color": "var(--primary-text-color)"
+     }
+    ]
+   }
+  },
+  "action": {
+   "size": "26px",
+   "show_state": false,
+   "tap_action": {
+    "action": "toggle"
+   },
+   "styles": {
+    "card": [
+     {
+      "border-radius": "18px"
+     },
+     {
+      "padding": "14px 6px"
+     },
+     {
+      "box-shadow": "none"
+     }
+    ],
+    "icon": [
+     {
+      "width": "28px"
+     }
+    ],
+    "name": [
+     {
+      "font-size": "12px"
+     },
+     {
+      "font-weight": "600"
+     },
+     {
+      "margin-top": "8px"
+     }
+    ]
+   },
+   "state": [
+    {
+     "value": "on",
+     "styles": {
+      "card": [
+       {
+        "background-color": "rgba(var(--rgb-primary-color),0.20)"
+       }
+      ],
+      "icon": [
+       {
+        "color": "var(--primary-color)"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "hero": {
+   "show_icon": false,
+   "show_state": false,
+   "styles": {
+    "card": [
+     {
+      "border-radius": "22px"
+     },
+     {
+      "padding": "20px"
+     },
+     {
+      "box-shadow": "none"
+     },
+     {
+      "background": "linear-gradient(135deg, rgba(var(--rgb-primary-color),0.35), rgba(var(--rgb-primary-color),0.08))"
+     },
+     {
+      "min-height": "84px"
+     }
+    ],
+    "grid": [
+     {
+      "grid-template-areas": "\"n\" \"l\""
+     },
+     {
+      "grid-template-rows": "min-content min-content"
+     }
+    ],
+    "name": [
+     {
+      "font-size": "20px"
+     },
+     {
+      "font-weight": "700"
+     },
+     {
+      "justify-self": "start"
+     },
+     {
+      "color": "var(--primary-text-color)"
+     }
+    ],
+    "label": [
+     {
+      "font-size": "13px"
+     },
+     {
+      "justify-self": "start"
+     },
+     {
+      "margin-top": "4px"
+     },
+     {
+      "color": "var(--secondary-text-color)"
+     }
+    ]
+   },
+   "show_label": true
+  }
+ },
+ "views": [
+  {
+   "title": "Nhà",
+   "path": "home",
+   "icon": "mdi:home",
+   "type": "sections",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "grid",
+       "columns": 5,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:home",
+         "name": "Nhà",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/home"
+         },
+         "styles": {
+          "card": [
+           {
+            "background": "var(--primary-color)"
+           }
+          ],
+          "icon": [
+           {
+            "color": "white"
+           }
+          ],
+          "name": [
+           {
+            "color": "white"
+           }
+          ]
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:bed",
+         "name": "P.N",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/phong-ngu"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-1-box",
+         "name": "T1",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-1"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-2-box",
+         "name": "T2",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-2"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-3-box",
+         "name": "T3",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-3"
+         }
+        }
+       ]
+      },
+      {
+       "type": "custom:button-card",
+       "template": "hero",
+       "name": "[[[ const h=new Date().getHours(); return h<11?'Chào buổi sáng ☀️':h<14?'Chào buổi trưa':h<18?'Chào buổi chiều':'Chào buổi tối 🌙'; ]]]",
+       "label": "Smarthome TruyenND"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Điều khiển nhanh",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.cuacuon_mo",
+         "name": "Mở cửa",
+         "icon": "mdi:arrow-up-bold-box"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.cuacuon_dong",
+         "name": "Đóng cửa",
+         "icon": "mdi:arrow-down-bold-box"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.cuacuon_stop",
+         "name": "Dừng",
+         "icon": "mdi:stop-circle-outline"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.tat_tat_cac_den",
+         "name": "Tắt hết đèn",
+         "icon": "mdi:lightbulb-group-off"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_tv_sony",
+         "name": "TV Sony",
+         "icon": "mdi:television"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "switch.sonoff_1000e2aa15",
+         "name": "Máy chủ",
+         "icon": "mdi:desktop-classic"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Điều hòa",
+       "heading_style": "title"
+      },
+      {
+       "type": "tile",
+       "entity": "climate.aircon",
+       "name": "Điều hòa phòng ngủ",
+       "features": [
+        {
+         "type": "target-temperature"
+        },
+        {
+         "type": "climate-hvac-modes",
+         "style": "dropdown"
+        },
+        {
+         "type": "climate-fan-modes",
+         "style": "dropdown"
+        }
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "input_number.duy_tri_nhiet_do",
+       "name": "Duy trì nhiệt độ",
+       "features": [
+        {
+         "type": "numeric-input",
+         "style": "buttons"
+        }
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "climate.ir_smart_hub_dieu_hoa_daikin",
+       "name": "Điều hòa Daikin",
+       "features": [
+        {
+         "type": "climate-hvac-modes",
+         "style": "dropdown"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Cửa cuốn",
+       "heading_style": "title"
+      },
+      {
+       "type": "tile",
+       "entity": "cover.cua_cuon_zigbee",
+       "name": "Cửa cuốn Zigbee",
+       "features": [
+        {
+         "type": "cover-open-close"
+        },
+        {
+         "type": "cover-position"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Ổ cắm Zigbee 20A",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "switch.o_cam_zigbee_20a",
+         "name": "Ổ cắm 20A"
+        },
+        {
+         "type": "tile",
+         "entity": "sensor.o_cam_zigbee_20a_power",
+         "name": "Công suất"
+        },
+        {
+         "type": "tile",
+         "entity": "sensor.o_cam_zigbee_20a_voltage",
+         "name": "Điện áp"
+        },
+        {
+         "type": "tile",
+         "entity": "sensor.o_cam_zigbee_20a_energy",
+         "name": "Năng lượng"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Đèn / thiết bị đang bật",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:auto-entities",
+       "card": {
+        "type": "grid",
+        "columns": 3,
+        "square": false
+       },
+       "card_param": "cards",
+       "filter": {
+        "include": [
+         {
+          "domain": "switch",
+          "state": "on",
+          "options": {
+           "type": "tile",
+           "tap_action": {
+            "action": "toggle"
+           }
+          }
+         },
+         {
+          "domain": "light",
+          "state": "on",
+          "options": {
+           "type": "tile",
+           "tap_action": {
+            "action": "toggle"
+           }
+          }
+         }
+        ],
+        "exclude": [
+         {
+          "entity_id": "switch.sonoff_1000e2aa15"
+         },
+         {
+          "entity_id": "switch.proxmox_*"
+         },
+         {
+          "entity_id": "switch.*_motion"
+         },
+         {
+          "entity_id": "switch.*_detect"
+         },
+         {
+          "entity_id": "switch.*_snapshots"
+         },
+         {
+          "entity_id": "switch.*_review_*"
+         },
+         {
+          "entity_id": "switch.mariadb"
+         },
+         {
+          "entity_id": "switch.mikrotik_*"
+         },
+         {
+          "entity_id": "switch.*_power_outage_memory"
+         },
+         {
+          "entity_id": "switch.cua_cuon_zigbee_motor_reversal"
+         },
+         {
+          "entity_id": "switch.ecoflow_*"
+         }
+        ]
+       },
+       "sort": {
+        "method": "friendly_name",
+        "ignore_case": true
+       },
+       "unique": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "P.N",
+   "path": "phong-ngu",
+   "icon": "mdi:bed",
+   "type": "sections",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "grid",
+       "columns": 5,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:home",
+         "name": "Nhà",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/home"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:bed",
+         "name": "P.N",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/phong-ngu"
+         },
+         "styles": {
+          "card": [
+           {
+            "background": "var(--primary-color)"
+           }
+          ],
+          "icon": [
+           {
+            "color": "white"
+           }
+          ],
+          "name": [
+           {
+            "color": "white"
+           }
+          ]
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-1-box",
+         "name": "T1",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-1"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-2-box",
+         "name": "T2",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-2"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-3-box",
+         "name": "T3",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-3"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Đèn phòng ngủ",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "switch.den_phong_ngu",
+         "name": "Đèn phòng ngủ"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_cong_tac",
+         "name": "Ổ cắm"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_ngu",
+         "name": "Đèn ngủ 2"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_nha_ve_sinh",
+         "name": "Đèn WC"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_nha_ve_sinh_2",
+         "name": "Đèn WC 2"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.binh_nong_lanh",
+         "name": "Bình nóng lạnh"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Điều hòa",
+       "heading_style": "title"
+      },
+      {
+       "type": "tile",
+       "entity": "climate.aircon",
+       "name": "Điều hòa",
+       "features": [
+        {
+         "type": "target-temperature"
+        },
+        {
+         "type": "climate-hvac-modes",
+         "style": "dropdown"
+        },
+        {
+         "type": "climate-fan-modes",
+         "style": "dropdown"
+        }
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "input_number.duy_tri_nhiet_do",
+       "name": "Duy trì nhiệt độ",
+       "features": [
+        {
+         "type": "numeric-input",
+         "style": "buttons"
+        }
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "input_boolean.dieu_hoa_phong_ngu_duy_tri_tu_dong",
+       "name": "Duy trì tự động"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Quạt Mitomo",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_on",
+         "name": "Bật/Tăng",
+         "icon": "mdi:fan"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_off",
+         "name": "Tắt quạt",
+         "icon": "mdi:fan-off"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_swing",
+         "name": "Xoay",
+         "icon": "mdi:rotate-3d-variant"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_time",
+         "name": "Hẹn giờ",
+         "icon": "mdi:clock-outline"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_mode",
+         "name": "Mode",
+         "icon": "mdi:weather-windy"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Bật bình nóng lạnh",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.bat_binhnonglanh_10p",
+         "name": "10 phút",
+         "icon": "mdi:water-boiler"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.bat_binhnonglanh_15p",
+         "name": "15 phút",
+         "icon": "mdi:water-boiler"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.bat_binhnonglanh_20p",
+         "name": "20 phút",
+         "icon": "mdi:water-boiler"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.bat_binhnonglanh_30p",
+         "name": "30 phút",
+         "icon": "mdi:water-boiler"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.bat_binhnonglanh_60p",
+         "name": "60 phút",
+         "icon": "mdi:water-boiler"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Hẹn giờ",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:scheduler-card",
+       "title": "Điều hòa",
+       "time_step": 5,
+       "include": [
+        "input_boolean",
+        "input_number",
+        "climate.aircon",
+        "script.ir_mitomo_off"
+       ],
+       "discover_existing": false,
+       "exclude": []
+      },
+      {
+       "type": "custom:scheduler-card",
+       "title": "Bình nóng lạnh",
+       "time_step": 5,
+       "include": [
+        "script.bat_binhnonglanh_10p",
+        "script.bat_binhnonglanh_15p",
+        "script.bat_binhnonglanh_20p",
+        "script.bat_binhnonglanh_30p",
+        "script.bat_binhnonglanh_60p",
+        "switch.binh_nong_lanh"
+       ],
+       "discover_existing": false,
+       "exclude": []
+      },
+      {
+       "type": "custom:scheduler-card",
+       "title": "Ổ cắm",
+       "discover_existing": false,
+       "exclude": [],
+       "include": [
+        "switch.o_cam_tuya",
+        "switch.o_cam_xiaomi"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "T1",
+   "path": "tang-1",
+   "icon": "mdi:numeric-1-box",
+   "type": "sections",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "grid",
+       "columns": 5,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:home",
+         "name": "Nhà",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/home"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:bed",
+         "name": "P.N",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/phong-ngu"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-1-box",
+         "name": "T1",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-1"
+         },
+         "styles": {
+          "card": [
+           {
+            "background": "var(--primary-color)"
+           }
+          ],
+          "icon": [
+           {
+            "color": "white"
+           }
+          ],
+          "name": [
+           {
+            "color": "white"
+           }
+          ]
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-2-box",
+         "name": "T2",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-2"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-3-box",
+         "name": "T3",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-3"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Cửa cuốn",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.cuacuon_mo",
+         "name": "Mở cửa",
+         "icon": "mdi:arrow-up-bold-box"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.cuacuon_dong",
+         "name": "Đóng cửa",
+         "icon": "mdi:arrow-down-bold-box"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.cuacuon_stop",
+         "name": "Dừng",
+         "icon": "mdi:stop-circle-outline"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Đèn tầng 1",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "switch.kitchen_1",
+         "name": "Đèn bếp 1"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.kitchen_2",
+         "name": "Đèn bếp 2"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.kitchen_0",
+         "name": "Đèn bếp 3"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_tang_1_2",
+         "name": "Đèn ngoài"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_trong_tang_1_switch_1",
+         "name": "Đèn trong"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.nha_ve_sinh_tang_1_switch_1",
+         "name": "Đèn WC"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.den_ban_hang",
+         "name": "Đèn bán hàng"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.bat_tat_den_tang_1",
+         "name": "Bật hết đèn T1",
+         "icon": "mdi:lightbulb-group"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.tat_tat_den_tang_1",
+         "name": "Tắt hết đèn T1",
+         "icon": "mdi:lightbulb-group-off"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Quạt tường tầng 1",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.quattuong_1",
+         "name": "Số 1",
+         "icon": "mdi:fan-speed-1"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.quattuong_2",
+         "name": "Số 2",
+         "icon": "mdi:fan-speed-2"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.quattuong_3",
+         "name": "Số 3",
+         "icon": "mdi:fan-speed-3"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quattuong_t1_off",
+         "name": "Tắt",
+         "icon": "mdi:fan-off"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quattuong_t1_swing",
+         "name": "Xoay",
+         "icon": "mdi:rotate-3d-variant"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quattuong_t1_time",
+         "name": "Hẹn giờ",
+         "icon": "mdi:clock-outline"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Xiaomi Box",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mibox_onoff",
+         "name": "Nguồn",
+         "icon": "mdi:power"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mibox_home",
+         "name": "Home",
+         "icon": "mdi:home"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mibox_back",
+         "name": "Back",
+         "icon": "mdi:keyboard-backspace"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mibox_volume2",
+         "name": "Vol -",
+         "icon": "mdi:volume-minus"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mibox_volume1",
+         "name": "Vol +",
+         "icon": "mdi:volume-plus"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Camera",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 1,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:webrtc-camera",
+         "streams": [
+          {
+           "url": "rtsp://192.168.31.28:8554/ban_hang_2"
+          }
+         ],
+         "muted": true,
+         "ui": true,
+         "background": true
+        },
+        {
+         "type": "custom:webrtc-camera",
+         "streams": [
+          {
+           "url": "rtsp://192.168.31.28:8554/phong_khach"
+          }
+         ],
+         "muted": true,
+         "ui": true,
+         "background": true
+        },
+        {
+         "type": "custom:webrtc-camera",
+         "streams": [
+          {
+           "url": "rtsp://192.168.31.28:8554/ban_hang"
+          }
+         ],
+         "muted": true,
+         "ui": true,
+         "background": true
+        },
+        {
+         "type": "custom:webrtc-camera",
+         "streams": [
+          {
+           "url": "rtsp://192.168.31.28:8554/ngoai_troi"
+          }
+         ],
+         "muted": true,
+         "ui": true,
+         "background": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "T2",
+   "path": "tang-2",
+   "icon": "mdi:numeric-2-box",
+   "type": "sections",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "grid",
+       "columns": 5,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:home",
+         "name": "Nhà",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/home"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:bed",
+         "name": "P.N",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/phong-ngu"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-1-box",
+         "name": "T1",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-1"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-2-box",
+         "name": "T2",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-2"
+         },
+         "styles": {
+          "card": [
+           {
+            "background": "var(--primary-color)"
+           }
+          ],
+          "icon": [
+           {
+            "color": "white"
+           }
+          ],
+          "name": [
+           {
+            "color": "white"
+           }
+          ]
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-3-box",
+         "name": "T3",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-3"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Đèn tầng 2",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "switch.living_room_lamp_1",
+         "name": "Đèn phòng khách"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.living_room_lamp_2",
+         "name": "Đèn trần"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.cau_thang_2",
+         "name": "Cầu thang T2"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.living2_room_lamp_1",
+         "name": "Đèn quảng cáo"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.living2_room_lamp_2",
+         "name": "Quạt trần"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.o_cam_xiaomi",
+         "name": "Ổ cắm Xiaomi"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Quạt phòng khách (Mitomo)",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_on_pro",
+         "name": "Bật/Tăng",
+         "icon": "mdi:fan"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_off_pro",
+         "name": "Tắt",
+         "icon": "mdi:fan-off"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_swing_pro",
+         "name": "Xoay",
+         "icon": "mdi:rotate-3d-variant"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_time_pro",
+         "name": "Hẹn giờ",
+         "icon": "mdi:clock-outline"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_mitomo_mode_pro",
+         "name": "Mode",
+         "icon": "mdi:weather-windy"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Quạt trần phòng khách",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 3,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quat_tran_pk_spd1",
+         "name": "Tốc độ 1",
+         "icon": "mdi:fan-speed-1"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quat_tran_pk_spd2",
+         "name": "Tốc độ 2",
+         "icon": "mdi:fan-speed-2"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quat_tran_pk_spd3",
+         "name": "Tốc độ 3",
+         "icon": "mdi:fan-speed-3"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quat_tran_pk_stop",
+         "name": "Dừng",
+         "icon": "mdi:fan-off"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_quat_tran_pk_den",
+         "name": "Đèn",
+         "icon": "mdi:ceiling-fan-light"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Điều hòa SK",
+       "heading_style": "title"
+      },
+      {
+       "type": "tile",
+       "entity": "climate.dieu_hoa_sk",
+       "name": "Điều hòa SK",
+       "features": [
+        {
+         "type": "climate-hvac-modes",
+         "style": "dropdown"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_sk_on_pro",
+         "name": "Bật",
+         "icon": "mdi:power"
+        },
+        {
+         "type": "custom:button-card",
+         "template": "action",
+         "entity": "script.ir_sk_off_pro",
+         "name": "Tắt",
+         "icon": "mdi:power-off"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Máy chủ / Proxmox",
+       "heading_style": "title"
+      },
+      {
+       "type": "tile",
+       "entity": "switch.tat_mo_win_10",
+       "name": "VM103 – Win10",
+       "icon": "mdi:microsoft-windows"
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "switch.proxmox_switch",
+         "name": "Tắt Proxmox"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.proxmox_reboot_101",
+         "name": "Reboot HA"
+        }
+       ]
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "button.quanghuy_reboot",
+         "features": [
+          {
+           "type": "button"
+          }
+         ]
+        },
+        {
+         "type": "tile",
+         "entity": "button.quanghuy_shutdown",
+         "features": [
+          {
+           "type": "button"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "T3",
+   "path": "tang-3",
+   "icon": "mdi:numeric-3-box",
+   "type": "sections",
+   "max_columns": 2,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "grid",
+       "columns": 5,
+       "square": false,
+       "cards": [
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:home",
+         "name": "Nhà",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/home"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:bed",
+         "name": "P.N",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/phong-ngu"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-1-box",
+         "name": "T1",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-1"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-2-box",
+         "name": "T2",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-2"
+         }
+        },
+        {
+         "type": "custom:button-card",
+         "template": "nav",
+         "icon": "mdi:numeric-3-box",
+         "name": "T3",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/flux-mobile/tang-3"
+         },
+         "styles": {
+          "card": [
+           {
+            "background": "var(--primary-color)"
+           }
+          ],
+          "icon": [
+           {
+            "color": "white"
+           }
+          ],
+          "name": [
+           {
+            "color": "white"
+           }
+          ]
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Đèn tầng 3",
+       "heading_style": "title"
+      },
+      {
+       "type": "grid",
+       "columns": 2,
+       "square": false,
+       "cards": [
+        {
+         "type": "tile",
+         "entity": "switch.tang3_recovery_solax3switch01_den_1",
+         "name": "Đèn phòng thờ"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.tang3_recovery_solax3switch01_den_2",
+         "name": "Đèn thờ"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.tang3_recovery_solax3switch01_den_3",
+         "name": "Đèn ngoài T3"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.cau_thang_3",
+         "name": "Cầu thang T3"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.cau_thang_4_center",
+         "name": "Hành lang T3"
+        },
+        {
+         "type": "tile",
+         "entity": "switch.o_cam_tuya",
+         "name": "Ổ cắm Tuya"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Hẹn giờ",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:scheduler-card",
+       "title": "Đèn tầng 3",
+       "time_step": 5,
+       "discover_existing": false,
+       "exclude": [],
+       "include": [
+        "switch.tang3_recovery_solax3switch01_den_1",
+        "switch.tang3_recovery_solax3switch01_den_2"
+       ]
+      },
+      {
+       "type": "custom:scheduler-card",
+       "title": "Phòng ngủ / TV",
+       "time_step": 5,
+       "discover_existing": false,
+       "exclude": [],
+       "include": [
+        "script.mocua1p2",
+        "switch.den_cong_tac",
+        "switch.den_ngu",
+        "switch.den_nha_ve_sinh",
+        "switch.den_nha_ve_sinh_2",
+        "switch.den_phong_ngu",
+        "script.ir_tv_sony"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
