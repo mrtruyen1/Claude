@@ -14,19 +14,22 @@
    "styles": {
     "card": [
      {
-      "border-radius": "22px"
+      "border-radius": "18px"
      },
      {
-      "padding": "8px 2px"
+      "padding": "10px 2px"
      },
      {
       "box-shadow": "none"
      },
      {
-      "background": "none"
+      "background": "rgba(255,255,255,0.06)"
      },
      {
-      "border": "none"
+      "backdrop-filter": "blur(14px)"
+     },
+     {
+      "border": "1px solid rgba(255,255,255,0.08)"
      }
     ],
     "icon": [
@@ -34,7 +37,7 @@
       "width": "23px"
      },
      {
-      "color": "rgba(255,255,255,0.72)"
+      "color": "rgba(255,255,255,0.75)"
      }
     ],
     "name": [
@@ -48,7 +51,7 @@
       "margin-top": "3px"
      },
      {
-      "color": "rgba(255,255,255,0.72)"
+      "color": "rgba(255,255,255,0.75)"
      }
     ]
    }
@@ -469,9 +472,6 @@
        "type": "grid",
        "columns": 5,
        "square": false,
-       "card_mod": {
-        "style": ":host { position: fixed !important; left: 0; right: 0; bottom: 14px; z-index: 6; margin: 0 auto !important; max-width: 460px; width: calc(100% - 24px); background: rgba(18,14,38,0.72); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; box-shadow: 0 10px 34px rgba(0,0,0,0.45); padding: 6px !important; }"
-       },
        "cards": [
         {
          "type": "custom:button-card",
@@ -838,15 +838,6 @@
        "unique": true
       }
      ]
-    },
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "custom:button-card",
-       "template": "spacer"
-      }
-     ]
     }
    ]
   },
@@ -864,9 +855,6 @@
        "type": "grid",
        "columns": 5,
        "square": false,
-       "card_mod": {
-        "style": ":host { position: fixed !important; left: 0; right: 0; bottom: 14px; z-index: 6; margin: 0 auto !important; max-width: 460px; width: calc(100% - 24px); background: rgba(18,14,38,0.72); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; box-shadow: 0 10px 34px rgba(0,0,0,0.45); padding: 6px !important; }"
-       },
        "cards": [
         {
          "type": "custom:button-card",
@@ -1229,15 +1217,6 @@
        }
       }
      ]
-    },
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "custom:button-card",
-       "template": "spacer"
-      }
-     ]
     }
    ]
   },
@@ -1255,9 +1234,6 @@
        "type": "grid",
        "columns": 5,
        "square": false,
-       "card_mod": {
-        "style": ":host { position: fixed !important; left: 0; right: 0; bottom: 14px; z-index: 6; margin: 0 auto !important; max-width: 460px; width: calc(100% - 24px); background: rgba(18,14,38,0.72); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; box-shadow: 0 10px 34px rgba(0,0,0,0.45); padding: 6px !important; }"
-       },
        "cards": [
         {
          "type": "custom:button-card",
@@ -1649,15 +1625,6 @@
        ]
       }
      ]
-    },
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "custom:button-card",
-       "template": "spacer"
-      }
-     ]
     }
    ]
   },
@@ -1675,9 +1642,6 @@
        "type": "grid",
        "columns": 5,
        "square": false,
-       "card_mod": {
-        "style": ":host { position: fixed !important; left: 0; right: 0; bottom: 14px; z-index: 6; margin: 0 auto !important; max-width: 460px; width: calc(100% - 24px); background: rgba(18,14,38,0.72); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; box-shadow: 0 10px 34px rgba(0,0,0,0.45); padding: 6px !important; }"
-       },
        "cards": [
         {
          "type": "custom:button-card",
@@ -2044,15 +2008,6 @@
        ]
       }
      ]
-    },
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "custom:button-card",
-       "template": "spacer"
-      }
-     ]
     }
    ]
   },
@@ -2070,9 +2025,6 @@
        "type": "grid",
        "columns": 5,
        "square": false,
-       "card_mod": {
-        "style": ":host { position: fixed !important; left: 0; right: 0; bottom: 14px; z-index: 6; margin: 0 auto !important; max-width: 460px; width: calc(100% - 24px); background: rgba(18,14,38,0.72); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; box-shadow: 0 10px 34px rgba(0,0,0,0.45); padding: 6px !important; }"
-       },
        "cards": [
         {
          "type": "custom:button-card",
@@ -2253,15 +2205,6 @@
        "card_mod": {
         "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        }
-      }
-     ]
-    },
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "custom:button-card",
-       "template": "spacer"
       }
      ]
     }
