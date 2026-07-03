@@ -325,6 +325,8 @@
    "type": "sections",
    "max_columns": 2,
    "dense_section_placement": true,
+   "theme": "Flux Glass",
+   "badges": [],
    "sections": [
     {
      "type": "grid",
@@ -626,6 +628,8 @@
    "type": "sections",
    "max_columns": 2,
    "dense_section_placement": true,
+   "theme": "Flux Glass",
+   "badges": [],
    "sections": [
     {
      "type": "grid",
@@ -923,6 +927,8 @@
    "type": "sections",
    "max_columns": 2,
    "dense_section_placement": true,
+   "theme": "Flux Glass",
+   "badges": [],
    "sections": [
     {
      "type": "grid",
@@ -1249,6 +1255,8 @@
    "type": "sections",
    "max_columns": 2,
    "dense_section_placement": true,
+   "theme": "Flux Glass",
+   "badges": [],
    "sections": [
     {
      "type": "grid",
@@ -1550,6 +1558,8 @@
    "type": "sections",
    "max_columns": 2,
    "dense_section_placement": true,
+   "theme": "Flux Glass",
+   "badges": [],
    "sections": [
     {
      "type": "grid",
