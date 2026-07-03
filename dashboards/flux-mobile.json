@@ -3,61 +3,12 @@
  "background": "linear-gradient(165deg, #0a0a18 0%, #180c34 28%, #341058 55%, #5a1560 80%, #7a1c50 100%) fixed",
  "kiosk_mode": {
   "mobile_settings": {
-   "hide_header": true,
    "hide_sidebar": true
   }
  },
  "button_card_templates": {
-  "nav": {
-   "size": "22px",
-   "show_state": false,
-   "styles": {
-    "card": [
-     {
-      "border-radius": "18px"
-     },
-     {
-      "padding": "10px 2px"
-     },
-     {
-      "box-shadow": "none"
-     },
-     {
-      "background": "rgba(255,255,255,0.06)"
-     },
-     {
-      "backdrop-filter": "blur(14px)"
-     },
-     {
-      "border": "1px solid rgba(255,255,255,0.08)"
-     }
-    ],
-    "icon": [
-     {
-      "width": "23px"
-     },
-     {
-      "color": "rgba(255,255,255,0.75)"
-     }
-    ],
-    "name": [
-     {
-      "font-size": "10.5px"
-     },
-     {
-      "font-weight": "600"
-     },
-     {
-      "margin-top": "3px"
-     },
-     {
-      "color": "rgba(255,255,255,0.75)"
-     }
-    ]
-   }
-  },
   "action": {
-   "size": "26px",
+   "size": "24px",
    "show_state": false,
    "tap_action": {
     "action": "toggle"
@@ -65,13 +16,13 @@
    "styles": {
     "card": [
      {
-      "border-radius": "22px"
+      "border-radius": "18px"
      },
      {
-      "padding": "15px 6px"
+      "padding": "11px 5px"
      },
      {
-      "height": "92px"
+      "height": "78px"
      },
      {
       "background": "rgba(255,255,255,0.055)"
@@ -83,12 +34,12 @@
       "border": "1px solid rgba(255,255,255,0.10)"
      },
      {
-      "box-shadow": "0 6px 18px rgba(0,0,0,0.28)"
+      "box-shadow": "0 4px 12px rgba(0,0,0,0.25)"
      }
     ],
     "icon": [
      {
-      "width": "28px"
+      "width": "24px"
      },
      {
       "color": "#c9b6ff"
@@ -96,13 +47,13 @@
     ],
     "name": [
      {
-      "font-size": "12px"
+      "font-size": "11px"
      },
      {
       "font-weight": "600"
      },
      {
-      "margin-top": "8px"
+      "margin-top": "6px"
      },
      {
       "color": "rgba(255,255,255,0.92)"
@@ -128,7 +79,7 @@
    ]
   },
   "dev": {
-   "size": "24px",
+   "size": "22px",
    "show_state": true,
    "show_name": true,
    "show_icon": true,
@@ -141,13 +92,13 @@
    "styles": {
     "card": [
      {
-      "border-radius": "24px"
+      "border-radius": "20px"
      },
      {
-      "padding": "14px"
+      "padding": "11px"
      },
      {
-      "height": "94px"
+      "height": "76px"
      },
      {
       "background": "rgba(255,255,255,0.055)"
@@ -159,7 +110,7 @@
       "border": "1px solid rgba(255,255,255,0.10)"
      },
      {
-      "box-shadow": "0 6px 20px rgba(0,0,0,0.28)"
+      "box-shadow": "0 4px 14px rgba(0,0,0,0.25)"
      }
     ],
     "grid": [
@@ -167,13 +118,13 @@
       "grid-template-areas": "\"i n\" \"i s\""
      },
      {
-      "grid-template-columns": "46px 1fr"
+      "grid-template-columns": "40px 1fr"
      },
      {
       "grid-template-rows": "1fr 1fr"
      },
      {
-      "gap": "0 12px"
+      "gap": "0 10px"
      }
     ],
     "img_cell": [
@@ -181,13 +132,13 @@
       "background-color": "rgba(255,255,255,0.10)"
      },
      {
-      "border-radius": "15px"
+      "border-radius": "13px"
      },
      {
-      "width": "46px"
+      "width": "40px"
      },
      {
-      "height": "46px"
+      "height": "40px"
      },
      {
       "align-self": "center"
@@ -195,7 +146,7 @@
     ],
     "icon": [
      {
-      "width": "24px"
+      "width": "22px"
      },
      {
       "color": "rgba(255,255,255,0.80)"
@@ -209,7 +160,7 @@
       "align-self": "end"
      },
      {
-      "font-size": "13px"
+      "font-size": "12.5px"
      },
      {
       "font-weight": "600"
@@ -226,7 +177,7 @@
       "align-self": "start"
      },
      {
-      "font-size": "12px"
+      "font-size": "11.5px"
      },
      {
       "color": "rgba(255,255,255,0.55)"
@@ -270,13 +221,13 @@
    "styles": {
     "card": [
      {
-      "border-radius": "24px"
+      "border-radius": "20px"
      },
      {
-      "padding": "14px"
+      "padding": "11px"
      },
      {
-      "height": "94px"
+      "height": "76px"
      },
      {
       "background": "rgba(255,255,255,0.055)"
@@ -288,7 +239,7 @@
       "border": "1px solid rgba(255,255,255,0.10)"
      },
      {
-      "box-shadow": "0 6px 20px rgba(0,0,0,0.28)"
+      "box-shadow": "0 4px 14px rgba(0,0,0,0.25)"
      }
     ],
     "grid": [
@@ -296,13 +247,13 @@
       "grid-template-areas": "\"i n\" \"i s\""
      },
      {
-      "grid-template-columns": "46px 1fr"
+      "grid-template-columns": "40px 1fr"
      },
      {
       "grid-template-rows": "1fr 1fr"
      },
      {
-      "gap": "0 12px"
+      "gap": "0 10px"
      }
     ],
     "img_cell": [
@@ -310,13 +261,13 @@
       "background-color": "rgba(41,182,246,0.18)"
      },
      {
-      "border-radius": "15px"
+      "border-radius": "13px"
      },
      {
-      "width": "46px"
+      "width": "40px"
      },
      {
-      "height": "46px"
+      "height": "40px"
      },
      {
       "align-self": "center"
@@ -324,7 +275,7 @@
     ],
     "icon": [
      {
-      "width": "24px"
+      "width": "22px"
      },
      {
       "color": "#4fc3f7"
@@ -338,7 +289,7 @@
       "align-self": "end"
      },
      {
-      "font-size": "13px"
+      "font-size": "12.5px"
      },
      {
       "font-weight": "600"
@@ -355,7 +306,7 @@
       "align-self": "start"
      },
      {
-      "font-size": "15px"
+      "font-size": "14px"
      },
      {
       "font-weight": "700"
@@ -365,188 +316,16 @@
      }
     ]
    }
-  },
-  "hero": {
-   "show_icon": false,
-   "show_state": false,
-   "show_label": true,
-   "styles": {
-    "card": [
-     {
-      "border-radius": "26px"
-     },
-     {
-      "padding": "22px"
-     },
-     {
-      "min-height": "96px"
-     },
-     {
-      "background": "linear-gradient(135deg, rgba(124,92,255,0.45), rgba(255,90,180,0.30))"
-     },
-     {
-      "backdrop-filter": "blur(18px)"
-     },
-     {
-      "border": "1px solid rgba(255,255,255,0.14)"
-     },
-     {
-      "box-shadow": "0 10px 30px rgba(80,30,120,0.45)"
-     }
-    ],
-    "grid": [
-     {
-      "grid-template-areas": "\"n\" \"l\""
-     },
-     {
-      "grid-template-rows": "min-content min-content"
-     }
-    ],
-    "name": [
-     {
-      "font-size": "22px"
-     },
-     {
-      "font-weight": "700"
-     },
-     {
-      "justify-self": "start"
-     },
-     {
-      "color": "white"
-     }
-    ],
-    "label": [
-     {
-      "font-size": "13px"
-     },
-     {
-      "justify-self": "start"
-     },
-     {
-      "margin-top": "5px"
-     },
-     {
-      "color": "rgba(255,255,255,0.85)"
-     }
-    ]
-   }
-  },
-  "spacer": {
-   "styles": {
-    "card": [
-     {
-      "background": "none"
-     },
-     {
-      "box-shadow": "none"
-     },
-     {
-      "border": "none"
-     },
-     {
-      "height": "78px"
-     }
-    ]
-   }
   }
  },
  "views": [
   {
    "title": "Nhà",
    "path": "home",
-   "icon": "mdi:home",
    "type": "sections",
    "max_columns": 2,
+   "dense_section_placement": true,
    "sections": [
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "custom:button-card",
-       "template": "hero",
-       "name": "[[[ const h=new Date().getHours(); return h<11?'Chào buổi sáng ☀️':h<14?'Chào buổi trưa':h<18?'Chào buổi chiều':'Chào buổi tối 🌙'; ]]]",
-       "label": "[[[ const t=states['sensor.nhiet_do_bedroom']; return 'Trong nhà ' + (t?t.state:'--') + '°C · Smarthome TruyenND'; ]]]"
-      },
-      {
-       "type": "grid",
-       "columns": 5,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:home",
-         "name": "Nhà",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/home"
-         },
-         "styles": {
-          "card": [
-           {
-            "background": "rgba(200,190,235,0.95)"
-           },
-           {
-            "border-radius": "20px"
-           }
-          ],
-          "icon": [
-           {
-            "color": "#2a1e45"
-           }
-          ],
-          "name": [
-           {
-            "color": "#2a1e45"
-           }
-          ]
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:bed",
-         "name": "P.N",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/phong-ngu"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-1-box",
-         "name": "T1",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-1"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-2-box",
-         "name": "T2",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-2"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-3-box",
-         "name": "T3",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-3"
-         }
-        }
-       ]
-      }
-     ]
-    },
     {
      "type": "grid",
      "cards": [
@@ -555,7 +334,7 @@
        "heading": "Điều khiển nhanh",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -617,14 +396,14 @@
        "heading": "Điều hòa",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
        "type": "tile",
        "entity": "climate.aircon",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Điều hòa phòng ngủ",
        "features": [
@@ -645,7 +424,7 @@
        "type": "tile",
        "entity": "input_number.duy_tri_nhiet_do",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Duy trì nhiệt độ",
        "features": [
@@ -659,7 +438,7 @@
        "type": "tile",
        "entity": "climate.ir_smart_hub_dieu_hoa_daikin",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Điều hòa Daikin",
        "features": [
@@ -679,14 +458,14 @@
        "heading": "Cửa cuốn",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
        "type": "tile",
        "entity": "cover.cua_cuon_zigbee",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Cửa cuốn Zigbee",
        "features": [
@@ -708,7 +487,7 @@
        "heading": "Ổ cắm Zigbee 20A",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -756,7 +535,7 @@
        "heading": "Đèn / thiết bị đang bật",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -844,92 +623,10 @@
   {
    "title": "P.N",
    "path": "phong-ngu",
-   "icon": "mdi:bed",
    "type": "sections",
    "max_columns": 2,
+   "dense_section_placement": true,
    "sections": [
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "grid",
-       "columns": 5,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:home",
-         "name": "Nhà",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/home"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:bed",
-         "name": "P.N",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/phong-ngu"
-         },
-         "styles": {
-          "card": [
-           {
-            "background": "rgba(200,190,235,0.95)"
-           },
-           {
-            "border-radius": "20px"
-           }
-          ],
-          "icon": [
-           {
-            "color": "#2a1e45"
-           }
-          ],
-          "name": [
-           {
-            "color": "#2a1e45"
-           }
-          ]
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-1-box",
-         "name": "T1",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-1"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-2-box",
-         "name": "T2",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-2"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-3-box",
-         "name": "T3",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-3"
-         }
-        }
-       ]
-      }
-     ]
-    },
     {
      "type": "grid",
      "cards": [
@@ -938,7 +635,7 @@
        "heading": "Đèn phòng ngủ",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1000,14 +697,14 @@
        "heading": "Điều hòa",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
        "type": "tile",
        "entity": "climate.aircon",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Điều hòa",
        "features": [
@@ -1028,7 +725,7 @@
        "type": "tile",
        "entity": "input_number.duy_tri_nhiet_do",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Duy trì nhiệt độ",
        "features": [
@@ -1042,7 +739,7 @@
        "type": "tile",
        "entity": "input_boolean.dieu_hoa_phong_ngu_duy_tri_tu_dong",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Duy trì tự động"
       }
@@ -1056,7 +753,7 @@
        "heading": "Quạt Mitomo",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1111,7 +808,7 @@
        "heading": "Bật bình nóng lạnh",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1166,7 +863,7 @@
        "heading": "Hẹn giờ",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1182,7 +879,7 @@
        "discover_existing": false,
        "exclude": [],
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        }
       },
       {
@@ -1200,7 +897,7 @@
        "discover_existing": false,
        "exclude": [],
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        }
       },
       {
@@ -1213,7 +910,7 @@
         "switch.o_cam_xiaomi"
        ],
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        }
       }
      ]
@@ -1223,92 +920,10 @@
   {
    "title": "T1",
    "path": "tang-1",
-   "icon": "mdi:numeric-1-box",
    "type": "sections",
    "max_columns": 2,
+   "dense_section_placement": true,
    "sections": [
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "grid",
-       "columns": 5,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:home",
-         "name": "Nhà",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/home"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:bed",
-         "name": "P.N",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/phong-ngu"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-1-box",
-         "name": "T1",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-1"
-         },
-         "styles": {
-          "card": [
-           {
-            "background": "rgba(200,190,235,0.95)"
-           },
-           {
-            "border-radius": "20px"
-           }
-          ],
-          "icon": [
-           {
-            "color": "#2a1e45"
-           }
-          ],
-          "name": [
-           {
-            "color": "#2a1e45"
-           }
-          ]
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-2-box",
-         "name": "T2",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-2"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-3-box",
-         "name": "T3",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-3"
-         }
-        }
-       ]
-      }
-     ]
-    },
     {
      "type": "grid",
      "cards": [
@@ -1317,7 +932,7 @@
        "heading": "Cửa cuốn",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1358,7 +973,7 @@
        "heading": "Đèn tầng 1",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1453,7 +1068,7 @@
        "heading": "Quạt tường tầng 1",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1515,7 +1130,7 @@
        "heading": "Xiaomi Box",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1570,7 +1185,7 @@
        "heading": "Camera",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1631,92 +1246,10 @@
   {
    "title": "T2",
    "path": "tang-2",
-   "icon": "mdi:numeric-2-box",
    "type": "sections",
    "max_columns": 2,
+   "dense_section_placement": true,
    "sections": [
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "grid",
-       "columns": 5,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:home",
-         "name": "Nhà",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/home"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:bed",
-         "name": "P.N",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/phong-ngu"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-1-box",
-         "name": "T1",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-1"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-2-box",
-         "name": "T2",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-2"
-         },
-         "styles": {
-          "card": [
-           {
-            "background": "rgba(200,190,235,0.95)"
-           },
-           {
-            "border-radius": "20px"
-           }
-          ],
-          "icon": [
-           {
-            "color": "#2a1e45"
-           }
-          ],
-          "name": [
-           {
-            "color": "#2a1e45"
-           }
-          ]
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-3-box",
-         "name": "T3",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-3"
-         }
-        }
-       ]
-      }
-     ]
-    },
     {
      "type": "grid",
      "cards": [
@@ -1725,7 +1258,7 @@
        "heading": "Đèn tầng 2",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1787,7 +1320,7 @@
        "heading": "Quạt phòng khách (Mitomo)",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1842,7 +1375,7 @@
        "heading": "Quạt trần phòng khách",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1897,14 +1430,14 @@
        "heading": "Điều hòa SK",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
        "type": "tile",
        "entity": "climate.dieu_hoa_sk",
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        },
        "name": "Điều hòa SK",
        "features": [
@@ -1945,7 +1478,7 @@
        "heading": "Máy chủ / Proxmox",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -1985,7 +1518,7 @@
          "type": "tile",
          "entity": "button.quanghuy_reboot",
          "card_mod": {
-          "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+          "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
          },
          "features": [
           {
@@ -1997,7 +1530,7 @@
          "type": "tile",
          "entity": "button.quanghuy_shutdown",
          "card_mod": {
-          "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+          "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
          },
          "features": [
           {
@@ -2014,92 +1547,10 @@
   {
    "title": "T3",
    "path": "tang-3",
-   "icon": "mdi:numeric-3-box",
    "type": "sections",
    "max_columns": 2,
+   "dense_section_placement": true,
    "sections": [
-    {
-     "type": "grid",
-     "cards": [
-      {
-       "type": "grid",
-       "columns": 5,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:home",
-         "name": "Nhà",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/home"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:bed",
-         "name": "P.N",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/phong-ngu"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-1-box",
-         "name": "T1",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-1"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-2-box",
-         "name": "T2",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-2"
-         }
-        },
-        {
-         "type": "custom:button-card",
-         "template": "nav",
-         "icon": "mdi:numeric-3-box",
-         "name": "T3",
-         "tap_action": {
-          "action": "navigate",
-          "navigation_path": "/flux-mobile/tang-3"
-         },
-         "styles": {
-          "card": [
-           {
-            "background": "rgba(200,190,235,0.95)"
-           },
-           {
-            "border-radius": "20px"
-           }
-          ],
-          "icon": [
-           {
-            "color": "#2a1e45"
-           }
-          ],
-          "name": [
-           {
-            "color": "#2a1e45"
-           }
-          ]
-         }
-        }
-       ]
-      }
-     ]
-    },
     {
      "type": "grid",
      "cards": [
@@ -2108,7 +1559,7 @@
        "heading": "Đèn tầng 3",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -2170,7 +1621,7 @@
        "heading": "Hẹn giờ",
        "heading_style": "title",
        "card_mod": {
-        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.92) !important; }"
+        "style": ".content .title, .title, h1 { color: rgba(255,255,255,0.9) !important; font-size: 15px !important; }"
        }
       },
       {
@@ -2184,7 +1635,7 @@
         "switch.tang3_recovery_solax3switch01_den_2"
        ],
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        }
       },
       {
@@ -2203,7 +1654,7 @@
         "script.ir_tv_sony"
        ],
        "card_mod": {
-        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 24px !important; box-shadow: 0 6px 20px rgba(0,0,0,0.28) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
+        "style": "ha-card { background: rgba(255,255,255,0.055) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 20px !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; --primary-text-color: #ffffff; --secondary-text-color: rgba(255,255,255,0.62); --card-background-color: transparent; --ha-card-background: transparent; }"
        }
       }
      ]
