@@ -1,9 +1,9 @@
 - id: telegram_lenh_truc_tiep_claude_routine
   alias: "15 Telegram lệnh trực tiếp - Claude Routine"
   description: >-
-    Nhận tin nhắn Telegram thường (không phải /command) từ Truyền, chuyển
-    thành lệnh cho Claude Code Routine qua API /fire - KHÔNG qua n8n. Chỉ
-    cho phép đúng chat_id của Truyền (895298455).
+    Nhận tin nhắn Telegram thường từ Truyền trong group Nhà thông minh,
+    chuyển thành lệnh cho Claude Code Routine qua API /fire - KHÔNG qua n8n.
+    Chỉ cho phép user_id của Truyền trong group.
   mode: queued
   max: 5
   trigger:
@@ -11,7 +11,9 @@
       event_type: telegram_text
   condition:
     - condition: template
-      value_template: "{{ (trigger.event.data.chat_id | int(0)) == 895298455 }}"
+      value_template: >-
+        {{ (trigger.event.data.chat_id | int(0)) == -1004475371413
+           and (trigger.event.data.user_id | int(0)) == 895298455 }}
   action:
     - action: rest_command.claude_routine_fire
       data:
@@ -19,6 +21,7 @@
       continue_on_error: true
     - action: telegram_bot.send_message
       data:
-        chat_id: 895298455
+        chat_id: !secret telegram_group_chat_id
+        message_thread_id: "{{ trigger.event.data.message_thread_id | default(6) }}"
         message: "Đã nhận lệnh, đang chuyển cho Claude xử lý - sẽ trả lời khi xong."
       continue_on_error: true
