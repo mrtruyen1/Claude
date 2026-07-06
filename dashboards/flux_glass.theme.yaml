@@ -1,17 +1,18 @@
-# Theme "Flux Glass" cho dashboard flux-mobile.
-# ĐÃ THÊM VÀO: /homeassistant/themes/smarthome_neon_dark.yaml (append) trên HA VM101
-#   (vì file theme MỚI không được !include_dir_merge_named nạp lại nếu không restart;
-#    append vào file đã include + gọi service frontend.reload_themes thì nạp được ngay).
-# Backup file gốc: /homeassistant/themes/smarthome_neon_dark.yaml.bak-20260703
-# Kích hoạt: mỗi view trong flux-mobile đặt  theme: "Flux Glass"  (không đổi default toàn cục).
+# Theme "Flux Glass" cho dashboard flux-mobile (v2 — header sáng).
+# ĐÃ THÊM VÀO: /homeassistant/themes/smarthome_neon_dark.yaml (append cuối file) trên HA VM101
+#   (file theme MỚI không được nạp nếu không restart; append vào file đã include + gọi
+#    service frontend.reload_themes thì nạp ngay, không cần restart).
+# Backup gốc: smarthome_neon_dark.yaml.bak-20260703 và .bak-20260703b
+# Kích hoạt: mỗi view flux-mobile đặt  theme: "Flux Glass"  (không đổi default toàn cục).
+# Dashboard root cũng đặt background = cùng gradient để đồng bộ vùng nội dung.
 Flux Glass:
-  app-header-background-color: "#180c34"
-  app-header-text-color: "rgba(255,255,255,0.92)"
-  app-header-selection-color: "#c9b6ff"
-  lovelace-background: "linear-gradient(165deg, #0a0a18 0%, #180c34 28%, #341058 55%, #5a1560 80%, #7a1c50 100%) fixed"
-  primary-background-color: "#12081f"
-  ha-card-background: "rgba(255,255,255,0.055)"
-  card-background-color: "rgba(255,255,255,0.055)"
+  app-header-background-color: "#33155f"
+  app-header-text-color: "#ffffff"
+  app-header-selection-color: "#e6ddff"
+  lovelace-background: "linear-gradient(180deg, #33155f 0%, #4a1a63 34%, #611c5d 66%, #7f1f53 100%) fixed"
+  primary-background-color: "#2a1052"
+  ha-card-background: "rgba(255,255,255,0.06)"
+  card-background-color: "rgba(255,255,255,0.06)"
   ha-card-border-radius: "20px"
   ha-card-border-width: "1px"
   ha-card-border-color: "rgba(255,255,255,0.10)"
@@ -20,7 +21,7 @@ Flux Glass:
   secondary-text-color: "rgba(255,255,255,0.62)"
   text-primary-color: "#ffffff"
   disabled-text-color: "rgba(255,255,255,0.40)"
-  primary-color: "#b39ddb"
+  primary-color: "#c9b6ff"
   accent-color: "#ffca28"
   state-icon-color: "rgba(255,255,255,0.85)"
   paper-item-icon-color: "rgba(255,255,255,0.80)"
