@@ -10,7 +10,10 @@ export function CoverTile({ entityId, name, state, callService }: TileProps) {
   const position = state.attributes.current_position as number | undefined;
 
   return (
-    <div className={`tile tile-cover ${open ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}>
+    <div
+      className={`tile tile-cover ${open ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}
+      data-domain="cover"
+    >
       <div className="tile-tap" style={{ cursor: "default" }}>
         <span className="tile-icon">
           <Blinds size={20} strokeWidth={2} />

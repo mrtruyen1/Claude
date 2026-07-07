@@ -17,6 +17,7 @@ export function LightTile({ entityId, name, state, callService }: TileProps) {
     <TileShell
       icon={Lightbulb}
       name={name}
+      domain="light"
       active={on}
       unavailable={unavailable}
       subtitle={on ? (pct !== null ? `${pct}%` : "Đang bật") : "Đang tắt"}

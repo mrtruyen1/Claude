@@ -9,6 +9,7 @@ interface TileShellProps {
   active: boolean;
   unavailable?: boolean;
   subtitle?: string;
+  domain?: string;
   onActivate?: () => void;
   children?: ReactNode;
 }
@@ -19,12 +20,14 @@ export function TileShell({
   active,
   unavailable,
   subtitle,
+  domain,
   onActivate,
   children,
 }: TileShellProps) {
   return (
     <div
       className={`tile ${active ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}
+      data-domain={domain}
     >
       <button
         type="button"

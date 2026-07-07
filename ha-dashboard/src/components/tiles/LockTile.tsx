@@ -13,6 +13,7 @@ export function LockTile({ entityId, name, state, callService }: TileProps) {
     <TileShell
       icon={locked ? Lock : LockOpen}
       name={name}
+      domain="lock"
       active={!locked}
       unavailable={unavailable}
       subtitle={locked ? "Đã khóa" : "Đang mở"}

@@ -31,7 +31,10 @@ export function ClimateTile({ entityId, name, state, callService }: TileProps) {
   };
 
   return (
-    <div className={`tile tile-climate ${active ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}>
+    <div
+      className={`tile tile-climate ${active ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}
+      data-domain="climate"
+    >
       <div className="tile-tap" style={{ cursor: "default" }}>
         <span className="tile-icon">
           <Thermometer size={20} strokeWidth={2} />

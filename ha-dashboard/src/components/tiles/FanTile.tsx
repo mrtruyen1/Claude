@@ -14,6 +14,7 @@ export function FanTile({ entityId, name, state, callService }: TileProps) {
     <TileShell
       icon={Fan}
       name={name}
+      domain="fan"
       active={on}
       unavailable={unavailable}
       subtitle={on ? (pct !== undefined ? `${pct}%` : "Đang chạy") : "Đang tắt"}

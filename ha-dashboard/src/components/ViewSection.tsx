@@ -1,0 +1,68 @@
+import { Play } from "lucide-react";
+import type { DashboardEntity, HassState } from "@/lib/types";
+import { PRIMARY_DOMAINS } from "@/lib/domain-meta";
+import { renderTile } from "@/components/tiles";
+import { SensorReadouts } from "@/components/SensorReadouts";
+import type { CallService } from "@/components/tiles/tile-props";
+
+interface Props {
+  entities: DashboardEntity[];
+  states: Record<string, HassState>;
+  callService: CallService;
+}
+
+const PRIMARY = new Set<string>([...PRIMARY_DOMAINS, "button", "input_number", "number", "remote"]);
+
+export function ViewSection({ entities, states, callService }: Props) {
+  const available = entities.filter((e) => states[e.entity_id]);
+  const primary = available.filter((e) => PRIMARY.has(e.domain));
+  const scripts = available.filter((e) => e.domain === "script");
+  const sensors = available.filter((e) => e.domain === "sensor");
+
+  if (available.length === 0) {
+    return <p className="empty-state">Chưa có thiết bị nào trong tab này.</p>;
+  }
+
+  return (
+    <div className="view-section">
+      {primary.length > 0 && (
+        <div className="tile-grid">
+          {primary.map((e) =>
+            renderTile(e.domain, {
+              entityId: e.entity_id,
+              name: e.name,
+              state: states[e.entity_id],
+              callService,
+            }),
+          )}
+        </div>
+      )}
+      {scripts.length > 0 && (
+        <section>
+          <h3 className="section-label">Điều khiển nhanh</h3>
+          <div className="remote-grid">
+            {scripts.map((s) => (
+              <button
+                key={s.entity_id}
+                type="button"
+                className="remote-btn"
+                onClick={() => callService("script", "turn_on", s.entity_id)}
+              >
+                <span className="remote-btn-icon">
+                  <Play size={16} />
+                </span>
+                {s.name}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+      {sensors.length > 0 && (
+        <section>
+          <h3 className="section-label">Cảm biến</h3>
+          <SensorReadouts entities={sensors} states={states} />
+        </section>
+      )}
+    </div>
+  );
+}

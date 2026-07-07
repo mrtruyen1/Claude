@@ -10,7 +10,10 @@ export function MediaPlayerTile({ entityId, name, state, callService }: TileProp
   const title = state.attributes.media_title as string | undefined;
 
   return (
-    <div className={`tile tile-media ${playing ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}>
+    <div
+      className={`tile tile-media ${playing ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}
+      data-domain="media_player"
+    >
       <div className="tile-tap" style={{ cursor: "default" }}>
         <span className="tile-icon">
           <Speaker size={20} strokeWidth={2} />

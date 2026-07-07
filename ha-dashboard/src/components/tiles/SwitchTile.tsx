@@ -17,6 +17,7 @@ export function SwitchTile({ entityId, name, state, callService, domain }: Switc
     <TileShell
       icon={domain === "input_boolean" ? ToggleLeft : Power}
       name={name}
+      domain={domain}
       active={on}
       unavailable={unavailable}
       subtitle={on ? "Đang bật" : "Đang tắt"}

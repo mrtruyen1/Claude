@@ -16,6 +16,7 @@ export function GenericTile({ entityId, name, state, callService, domain }: Gene
     <TileShell
       icon={domainIcon(domain)}
       name={name}
+      domain={domain}
       active={on}
       unavailable={unavailable}
       subtitle={state.state}
