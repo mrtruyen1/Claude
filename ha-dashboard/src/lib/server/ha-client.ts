@@ -24,6 +24,11 @@ interface DeviceRegistryEntry {
 const RECONNECT_MIN_MS = 1000;
 const RECONNECT_MAX_MS = 30_000;
 const REQUEST_TIMEOUT_MS = 15_000;
+// HA's http.ban component permanently bans an IP after ~5 failed auth
+// attempts. Never retry a bad token at the normal backoff cadence — that's
+// exactly what trips the ban. Two strikes and we stop until someone fixes
+// HA_TOKEN and restarts the process.
+const MAX_AUTH_FAILURES = 2;
 
 class HaClient extends EventEmitter {
   private ws: WebSocket | null = null;
@@ -33,6 +38,8 @@ class HaClient extends EventEmitter {
   private connected = false;
   private ready: Promise<void> | null = null;
   private resolveReady: (() => void) | null = null;
+  private authFailures = 0;
+  private haltedForAuth = false;
 
   states = new Map<string, HassState>();
   areas = new Map<string, HaArea>();
@@ -85,6 +92,10 @@ class HaClient extends EventEmitter {
     }
     this.pending.clear();
     this.ready = null;
+    if (this.haltedForAuth) {
+      // Do not auto-reconnect after repeated auth failures — see MAX_AUTH_FAILURES.
+      return;
+    }
     setTimeout(() => this.connect(), this.reconnectDelay);
     this.reconnectDelay = Math.min(this.reconnectDelay * 2, RECONNECT_MAX_MS);
   }
@@ -98,11 +109,24 @@ class HaClient extends EventEmitter {
         return;
       }
       case "auth_invalid": {
-        console.error("[ha-client] auth_invalid:", msg.message);
+        this.authFailures += 1;
+        console.error(
+          `[ha-client] auth_invalid (${this.authFailures}/${MAX_AUTH_FAILURES}):`,
+          msg.message,
+        );
+        if (this.authFailures >= MAX_AUTH_FAILURES) {
+          this.haltedForAuth = true;
+          console.error(
+            "[ha-client] repeated auth failures — halting reconnect to avoid " +
+              "tripping HA's IP ban (homeassistant.components.http.ban). " +
+              "Fix HA_TOKEN in .env and restart the service to resume.",
+          );
+        }
         socket.close();
         return;
       }
       case "auth_ok": {
+        this.authFailures = 0;
         this.reconnectDelay = RECONNECT_MIN_MS;
         await this.bootstrap();
         this.connected = true;
