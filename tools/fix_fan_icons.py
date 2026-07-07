@@ -46,6 +46,23 @@ def fix_button(src,dst):
     idx=np.arange(NT); good=~gap
     r_t=np.interp(idx, idx[good], r_out[good], period=NT)
     r_t=circular_smooth(r_t, 8)
+    # robust circle fit (Kasa) on reliable boundary angles (exclude cut gap and right side-wall bulge)
+    relia=good&(np.cos(th)<0.55)&(r_out>0)
+    bxp=cx+np.cos(th[relia])*r_out[relia]; byp=cy+np.sin(th[relia])*r_out[relia]
+    A=np.c_[bxp,byp,np.ones(len(bxp))]
+    b=bxp**2+byp**2
+    sol=np.linalg.lstsq(A,b,rcond=None)[0]
+    fcx,fcy=sol[0]/2,sol[1]/2
+    fR=np.sqrt(sol[2]+fcx**2+fcy**2)
+    # radius of fitted circle along each ray from (cx,cy)
+    dxc,dyc=fcx-cx,fcy-cy
+    proj=dxc*np.cos(th)+dyc*np.sin(th)
+    perp2=(dxc**2+dyc**2)-proj**2
+    r_fit=proj+np.sqrt(np.maximum(fR**2-perp2,0))
+    # on the left half the true outline is the fitted circle; keep protrusions (e.g. timer crown)
+    left=np.cos(th)<0.2
+    r_t=np.where(left, np.maximum(r_fit, np.where(gap,0,r_out)), r_t)
+    r_t=np.maximum(circular_smooth(r_t, 6), np.where(gap,0,r_out))
     # donor angles for fill
     gi=np.where(gap)[0]
     if len(gi):
@@ -86,6 +103,40 @@ def fix_button(src,dst):
     r_tar=r_t[ti]
     lum=im[...,:3]@np.array([.299,.587,.114])
     annw=smoothstep((rad-0.86*r_tar)/(0.04*r_tar))*smoothstep((r_tar+1-rad)/(0.04*r_tar))*sm
+    # --- polar mirror: rebuild weak rim angles from the strong (right) side ---
+    band=smoothstep((rad-0.835*r_tar)/(0.03*r_tar))*smoothstep((r_tar*1.005-rad)/(0.03*r_tar))
+    sel0=band>0.3
+    bl=np.zeros(NT)
+    t0=ti[sel0]; l0=lum[sel0]
+    o=np.argsort(t0); ts,ls=t0[o],l0[o]
+    u0,s0=np.unique(ts,return_index=True)
+    for i,u in enumerate(u0):
+        en=s0[i+1] if i+1<len(u0) else len(ts)
+        bl[u]=np.percentile(ls[s0[i]:en],90)
+    bl[bl==0]=np.nan
+    medl=np.nanmedian(bl)
+    weak=np.where(np.isnan(bl),1.0,(bl<0.72*medl).astype(float))
+    # only rebuild the left half of the ring; never touch the strong right side wall
+    weak=weak*(np.cos(th)<-0.05)
+    weak=np.clip(circular_smooth(weak,14)*1.6,0,1)*(np.cos(th)<0.05)
+    wmap=weak[ti]*band
+    py_,px_=np.where(wmap>0.02)
+    uu=rad[py_,px_]/np.maximum(r_tar[py_,px_],1e-6)
+    ath=ang[py_,px_]
+    sth=(np.pi-ath)%(2*np.pi)
+    sti=(sth/(2*np.pi)*NT).astype(int)%NT
+    srad=uu*r_t[sti]
+    sx=(cx+np.cos(sth)*srad); sy=(cy+np.sin(sth)*srad)
+    sxi=np.clip(sx.astype(int),0,W-1); syi=np.clip(sy.astype(int),0,H-1)
+    s_rgb=im[syi,sxi,:3]; s_a=im[syi,sxi,3]; s_sm=sm[syi,sxi]
+    wv=wmap[py_,px_]*np.clip(s_a/255,0,1)*np.maximum(s_sm,0.4)
+    im[py_,px_,:3]=im[py_,px_,:3]*(1-wv[:,None])+s_rgb*wv[:,None]
+    im[py_,px_,3]=np.maximum(im[py_,px_,3], s_a*wmap[py_,px_])
+    sm[py_,px_]=np.maximum(sm[py_,px_], (s_a>128)*wmap[py_,px_])
+    # soften seams inside the rebuilt zone
+    smoothed=np.dstack([blur(im[...,c],1.4) for c in range(4)])
+    wz=(wmap*0.65)[...,None]
+    im[...]=im*(1-wz)+smoothed*wz
     peak=np.zeros(NT)
     for t0 in range(NT):
         pass
@@ -110,10 +161,16 @@ def fix_button(src,dst):
     # replace everything outside with a fresh, symmetric ring glow
     inside=smoothstep((r_tar+1.0-rad)/2.0)
     disk=(rad<=r_tar).astype(float)
-    ga=new_glow(disk)*smoothstep((rad-(r_tar-2.0))/2.5)
+    # opaque dark backing disk so the glass face reads the same on any background
+    NAVY=np.array([10,21,38],float)
+    back_a=smoothstep((r_tar-1.0-rad)/2.0)*255
     ca=im[...,3:4]*inside[...,None]
-    oa=ca+ga[...,None]*(1-ca/255)
-    orgb=(im[...,:3]*ca+CYAN*ga[...,None]*(1-ca/255))/np.maximum(oa,1e-6)
+    # content over backing
+    fa=ca+back_a[...,None]*(1-ca/255)
+    frgb=(im[...,:3]*ca+NAVY*back_a[...,None]*(1-ca/255))/np.maximum(fa,1e-6)
+    ga=new_glow(disk)*smoothstep((rad-(r_tar-2.0))/2.5)
+    oa=fa+ga[...,None]*(1-fa/255)
+    orgb=(frgb*fa+CYAN*ga[...,None]*(1-fa/255))/np.maximum(oa,1e-6)
     out=np.zeros_like(im); out[...,:3]=orgb; out[...,3]=oa[...,0]
     save(out,dst)
 
@@ -124,7 +181,7 @@ def fix_on_fan(src,dst,lo=215,hi=248):
     save(over_glow(im,sil,ga),dst)
 
 
-import os
+import os, shutil
 SRC = '/config/www/tiles_chrome_v2'
 WEBP = '/config/www/tiles_chrome_v2_webp'
 BAK = '/config/www/tiles_chrome_v2_before_stroke_fix'
@@ -137,17 +194,15 @@ TARGETS = [
     ('stand_fan_sys3d_on', 'fan'),
     ('wall_fan_sys3d_on', 'fan'),
 ]
-import shutil
 for name, kind in TARGETS:
     png = f'{SRC}/{name}.png'
     bak = f'{BAK}/{name}.png'
     if not os.path.exists(bak):
         shutil.copy2(png, bak)
-    out_png = png  # overwrite source
     if kind == 'button':
-        fix_button(bak, out_png)
+        fix_button(bak, png)
     else:
-        fix_on_fan(bak, out_png)
-    Image.open(out_png).save(f'{WEBP}/{name}.webp', quality=92, method=6)
-    print('fixed', name, os.path.getsize(out_png), os.path.getsize(f'{WEBP}/{name}.webp'))
+        fix_on_fan(bak, png)
+    Image.open(png).save(f'{WEBP}/{name}.webp', quality=92, method=6)
+    print('fixed', name, os.path.getsize(png), os.path.getsize(f'{WEBP}/{name}.webp'))
 print('ALL DONE')
