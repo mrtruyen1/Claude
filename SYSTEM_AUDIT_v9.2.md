@@ -1,16 +1,14 @@
-# SYSTEM AUDIT PROMPT — Proxmox/NAS + Home Assistant — v9.1
+# SYSTEM AUDIT PROMPT — Proxmox/NAS + Home Assistant — v9.2
 > **Smarthome TruyenND** · Synology DVA1622 trên Proxmox 8.x + HA OS trên VM101
 > **v9.0 (2026-07-02): HỢP NHẤT** `PVE_v8.12.md` + `HA_v8.15.md` thành 1 file duy nhất. Toàn bộ bài học/baseline/quy trình giữ nguyên giá trị; changelog cũ nén ở APPENDIX.
 >
-> **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-03, v9.1.1 — SAU FIX):**
-> - **PVE 100/100 sau fix** (2 finding v9.1 đã sửa xong cùng phiên) · **HA 100/100** (0 lỗi; fallback Tuya = Watch/chấp nhận theo quyết định Truyền).
-> - **FIX 1 (MEDIUM swap):** host swap 6.0GB → **0B**. Quy trình: stop pvestatd (auto-balloon ghi đè target thủ công mỗi 10s) → hạ balloon VM101/103 tạo dư địa → `swapoff -a; swapon -a` (nohup, 2 lượt, 59s+25s) → trả balloon về mức pvestatd đã chọn (KHÔNG max!) → start pvestatd. 0 OOM, PSI đỉnh 0.26, HA/DSM HTTP 200 suốt quá trình. Swap sẽ TĂNG DẦN LẠI khi VM103 chạy (tổng cầu RAM > host) — benign nếu PSI=0, xem bài học.
-> - **FIX 2 (LOW backup):** tìm ra cơ chế ẩn = **DSM Task Scheduler id=8 "Copy Backhup Proxmox sang NAS"** (owner admin, daily 06:30): `rsync -av root@.84:/var/lib/vz/dump/ /volume2/Proxmox/dump/` — CHỦ ĐÍCH (dự phòng off-host) nhưng không prune. Đã dọn NAS dump **186G → 119G** (13 bản VM100 cũ, 4 bản CT110, CT114, 3 bản VM105-n8n, 7 bản lxc Jun16/17 trùng) + xóa gốc local (tránh rsync re-copy; local root 61%→50%) + **thêm PHASE 3 retention keep-7 vào `/opt/pve-backup/pve-backup-nas-side.sh`** (backup `.bak-20260703`, `bash -n` OK).
-> - Còn chờ Truyền quyết (KHÔNG tự xóa): NAS còn bản cũ `qemu-104` 2023 (11G), `qemu-108` 2025-11 (2.6G), 2 bản `qemu-103` cũ 2025-06 + 2026-05 (27G) — xóa thêm được ~40G nếu duyệt.
-> - Phát hiện khác: host chạy **smbd (Samba) 445/139** chủ đích (`cron.daily/samba`, chỉ LAN) · **Lynis ĐÃ cài + timer daily** (tài liệu cũ ghi "chưa cài").
-> - Xác nhận tốt: SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Used 11%/Media Errors 0), Btrfs scrub **0 errors** cả 3 volume, weekly vmid + `backup-all.sh` ctids khớp, `fstrim-vms` ctids ĐÃ đúng `105 106 107 113`, HA `ha core check`=valid + 0 repairs/0 orphans, mọi thiết bị ping 0% loss, backup sensor OK, Core 2026.7.0 + HAOS 18.1 mới nhất.
-> - Resolved việc treo: **CT111 IP thật = `192.168.31.38`** · **MariaDB CT107 = `10.11.14`** · `fstrim-vms` stale ctids đã xong.
-> - Việc phiên sau: theo dõi swap regrow (ngưỡng như baseline) + verify PHASE 3 retention chạy lần đầu (log `/var/log/pve-backup.log` sáng 04/07); hỏi Truyền về 3 nhóm backup cũ ~40G; xác nhận smbd host còn cần; cân nhắc exclude `sensor.o_cam_zigbee_20a_linkquality` (~6.4k rows — HỎI Truyền).
+> **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-07, v9.2 — AUDIT ĐẦY ĐỦ 2 LỚP):**
+> - **PVE 98/100** (1 MEDIUM: swap regrow) · **HA 100/100** (0 lỗi; fallback Tuya = Watch/chấp nhận).
+> - **MEDIUM (swap regrow):** host swap **7.1GB** (VM101 KVM 4.18GB + VM100 884MB bị host swap-out) leo lại từ 0B (v9.1.1) **DÙ VM103 đang STOPPED** — VM103 nhiều khả năng từng bật/tắt qua switch HA giữa 2 phiên, để lại page nguội đã swap. **PSI memory=0.00 mọi cửa sổ + 0 OOM + available 12Gi = swap NGUỘI, chưa thrash, chưa áp lực thật.** VM101 KVM 4.18GB > ngưỡng 3GB → đề xuất reclaim (quy trình 7 bước đã verify) HOẶC tăng RAM — **fix CẦN XÁC NHẬN vì gián đoạn (stop pvestatd + swapoff/swapon)**; chưa cấp bách khi PSI=0.
+> - **Xác nhận việc chờ của v9.1.1:** PHASE 3 retention trong `pve-backup-nas-side.sh` **ĐÃ chạy** (log 07/07 01:00 prune `vzdump-qemu-100-2026_06_29`) — hoạt động đúng.
+> - **Baseline drift (lành tính):** DSM volume3 32%→**41%** (vẫn <70) · sensor 163→**166** · automations **23 file** (+1: `17_cua_cuon_suy_luan_trang_thai.yaml` — Truyền thêm để suy luận trạng thái cửa cuốn TS130F từ hướng motor; logic OK) · `sensor.o_cam_zigbee_20a_linkquality` **12279 rows** (v9.1.1 ~6.4k, gấp đôi — vẫn CHƯA exclude, HỎI Truyền) · addon HA nay **6** (+`Advanced SSH & Web Terminal`, đang stopped) · NVMe Used 11%→12% (+1 benign).
+> - **Xác nhận tốt:** SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Media Errors 0, temp 33–39°C), Btrfs scrub **0 errors** cả 3 volume, LVM data% **53.14**, failed units **0**, backup 3 job đúng cấu hình + newest gần, Funnel chỉ CT102 + Frigate tailnet-only + 0 failed SSH, cloudflared 4 conns/ready 200, Mosquitto 640 OK, MariaDB 476MB, HA `ha core check`=valid + 0 repairs/0 orphans/0 error/0 warning log, entity đã exclude ĐÃ ngừng ghi (verify max last_row < mốc exclude), mọi thiết bị ping 0% loss, Core **2026.7.1** mới nhất.
+> - **Việc phiên sau:** (1) theo dõi swap — reclaim nếu Truyền duyệt hoặc PSI>0; (2) HỎI Truyền exclude `sensor.o_cam_zigbee_20a_linkquality`; (3) cập nhật DSM Update 3→4 (khi Truyền muốn); (4) theo dõi volume3 (41%).
 
 ---
 
@@ -183,7 +181,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | NCQ queue_depth | sda/sdb/sdc = **1** (tắt chủ đích, khóa udev+rc.d; `libata.force=noncq` GRUB hiện ABSENT — chấp nhận) | KHÔNG bật lại |
 | ZFS ARC max | 4 GiB (`zfs_arc_max=4294967296`) — host **KHÔNG có pool** (LVM-thin), chỉ phòng hờ | KHÔNG cần zpool scrub |
 | LVM thin `data%` | ~**53%** (v8.12; dao động theo VM103) | >60 Watch · >70 fstrim · >80 urgent |
-| DSM volume1/2/3 | **4% / 66% / 32%** (v9.1) | ≥70 Watch · >80 action |
+| DSM volume1/2/3 | **4% / 66% / 41%** (v9.2; vol3 tăng dần 32→41) | ≥70 Watch · >80 action |
 | DSM Btrfs scrub | **0 errors** mọi volume | >0 = HIGH (bit-rot) → check SMART + cân nhắc replace |
 | mdstat DSM | `[4/26] UUUU` | Bình thường DVA1622 |
 | Balloon min | VM100/101=**6144**, VM103=**4096** | Thiếu min = Watch |
@@ -222,14 +220,14 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 
 | Domain | Count / giá trị |
 |---|---|
-| automations (dir) | **22 file `.yaml` / 40 id, 0 dup** (grep bắt trigger-id lồng = dương tính giả) |
+| automations (dir) | **23 file `.yaml` / 40 id, 0 dup** (v9.2 +`17_cua_cuon_suy_luan_trang_thai`; grep bắt trigger-id lồng = dương tính giả) |
 | `automations.yaml` (UI) | **0 — đã xóa hẳn 2026-06-20.** Xuất hiện lại = flag (UI editor tạo dormant) |
 | scripts files | **16** |
 | scripts entities | **63** (16 file + 47 từ packages — bình thường, KHÔNG flag) |
 | packages | **20** (19 file cũ + `claude_routine`) |
 | command_line | **1 FILE** (`Proxmox.yaml` chứa 4 switch — đếm file, không đếm entity) |
 | automation domain | **40**, tất cả ON |
-| sensor domain | **163** · switch **108** (ổn định 2 phiên v8.13/v8.15 — thay baseline cũ 199/110; drift nhỏ sau restart = benign) |
+| sensor domain | **166** · switch **108** (sensor 163→166 v9.2; drift nhỏ sau restart = benign) |
 | repairs / orphans | **0 / 0** |
 | stale_restored | transient sau restart (561–979 tùy phiên) = **BENIGN, KHÔNG xóa** (mobile_app/frigate/systemmonitor/hassio/sonoff/synology_dsm/mqtt/hacs) |
 | recorder | `purge_keep_days:14` · `auto_purge/repack:true` · `commit_interval:60` · exclude 12 domain + `call_service` + entities tường minh (xem §B.8.2) |
@@ -705,6 +703,7 @@ volumes:
 
 | Version | Tóm tắt |
 |---|---|
+| **v9.2 (2026-07-07)** | **Audit đầy đủ 2 lớp: PVE 98/100 · HA 100/100.** MEDIUM: host swap leo lại **7.1GB** (VM101 KVM 4.18GB + VM100 884MB) từ 0B DÙ VM103 stopped — PSI=0.00 + 0 OOM + available 12Gi = swap nguội chưa áp lực; VM101 KVM >3GB → reclaim (CẦN XÁC NHẬN) hoặc tăng RAM. **Xác nhận PHASE 3 retention pve-backup-nas-side.sh ĐÃ chạy** (07/07 01:00 prune bản VM100 29/06). Drift lành tính: DSM vol3 32→41%, sensor 163→166, automations 22→23 file (+`17_cua_cuon_suy_luan_trang_thai.yaml` suy luận TS130F từ hướng motor — logic OK, mode:restart hợp lý), `sensor.o_cam_zigbee_20a_linkquality` 6.4k→12279 rows (chưa exclude, HỎI Truyền), addon HA 5→6 (+Advanced SSH & Web Terminal stopped), NVMe Used 11→12%. Có update DSM Update 3→4 (thông tin). Sạch: SMART 4 ổ khớp baseline, Btrfs scrub 0 errors ×3, LVM 53.14%, 0 failed unit, backup 3 job đúng, Funnel chỉ CT102 + 0 failed SSH, cloudflared 4 conns, Mosquitto 640, MariaDB 476MB, HA valid + 0 repairs/orphans/error/warning, entity đã exclude verify đã ngừng ghi, ping 0% loss toàn bộ, Core 2026.7.1. |
 | **v9.1.1 (2026-07-03)** | **FIX cả 2 finding v9.1 → PVE 100/100.** (1) Reclaim swap 6.0GB→0B (quy trình 7 bước mới trong Bài học: stop pvestatd → hạ balloon 101/103 → swapoff/swapon nohup → trả balloon mức cũ KHÔNG max → start pvestatd; 0 OOM; bài học phụ: VM100 DSM balloon không nhả theo lệnh; trả max = swap quay lại ngay). (2) Backup: tìm ra DSM Task id=8 rsync-pull daily 06:30 (chủ đích, không prune) → dọn NAS dump 186G→119G + xóa gốc local (root 61%→50%) + thêm PHASE 3 retention keep-7 vào pve-backup-nas-side.sh. Chờ Truyền: xóa thêm qemu-104/108/103-cũ (~40G)? Ghi nhận: Lynis đã cài + timer daily; cập nhật snapshot fstrim-vms (đã đúng); tài liệu backup 5 lớp + bảng kết nối. |
 | **v9.1 (2026-07-03)** | **Audit đầy đủ 2 lớp: PVE 97/100 · HA 100/100.** MEDIUM mới: host swap 6.0GB (VM101 KVM 3.44GB hồi quy từ 24MB) do VM103 Windows chạy siết RAM host → tráo page guest; PSI=0 + 0 OOM = chưa áp lực thật (fix reclaim/tăng RAM = CẦN XÁC NHẬN). LOW mới: 20 bản vzdump VM100 (~78GB) tồn dư `/Synology/dump` không retention (job daily nay ghi `local` — log xác nhận, không hook copy) + backup CT110/CT114 mồ côi (~0.9GB). Ghi nhận host chạy smbd/Samba 445/139 (chủ đích, `cron.daily/samba`, chỉ LAN). Resolved: `fstrim-vms` ctids ĐÃ đúng `105 106 107 113`; **CT111 IP thật `.38`** (không phải `.111`); **MariaDB CT107 `10.11.14`** (chốt). Xác nhận sạch: SMART 4 ổ khớp baseline, Btrfs scrub 0 errors, weekly/backup-all.sh ctids khớp, HA config valid + 0 repairs/orphans, 22 auto/16 script/20 pkg/1 cmdline khớp, telegram parse_mode đủ (40/46 message an toàn Markdown), 0 file rác, mọi thiết bị ping 0% loss, Core 2026.7.0/HAOS 18.1 mới nhất. Baseline drift: LVM 53.59%, DSM vol 4/66/32, sensor 163/switch 108/auto 40. |
 | v9.0.1 (2026-07-03) | FIX app Zigbee Map FAIL "Injecting extension into Zigbee2MQTT": Z2M 2.x mặc định `enable_external_js: false` chặn extension ngoài → bật `true` trong CT105 `configuration.yaml` (backup `.bak-external-js`), restart z2m OK, verify extension save/remove qua MQTT = ok. Ghi chú vào §B.9 + sơ đồ CT105. Cùng phiên: sweep `transmit_power` tìm điểm cân bằng (Truyền muốn sóng phòng ngủ khỏe hơn): 15 → Cầu thang 4 lật route nối thẳng coordinator, LQI 113–127 sập còn 26–40 sau ~6ph; 9 → hồi 113–117; 12 → ổn (113); **14 → ổn 113–140 sau 15ph, CHỐT 14**. Bài học: (1) `linkquality` đo chiều thiết bị→coordinator nên tăng TX power coordinator KHÔNG đổi số LQI của thiết bị xa (Phòng ngủ `0xa4c138159e4ff542` giữ 53–76 ở mọi mức) — lợi ích chỉ ở chiều lệnh đi xuống; (2) ngưỡng lật route của Cầu thang 4 nằm giữa 14 và 15; (3) khi test nhiều restart z2m → tắt tạm 2 automation 08 (bridge alert Telegram, `for: 15s`) rồi bật lại. FIX layout panel Zigbee Map vỡ trên HA 2026.7.0 (tab bar tụt xuống đáy) → update HACS `dan-danache/ha-zigbee-map` 2.17.0→2.17.1 + restart HA Core, entry `zigbee_map` loaded. |
