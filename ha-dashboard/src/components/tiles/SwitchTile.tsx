@@ -18,6 +18,7 @@ export function SwitchTile({ entityId, name, state, callService, domain }: Switc
       icon={domain === "input_boolean" ? ToggleLeft : Power}
       name={name}
       domain={domain}
+      entityId={entityId}
       active={on}
       unavailable={unavailable}
       subtitle={on ? "Đang bật" : "Đang tắt"}

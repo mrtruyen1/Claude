@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0c12;
-  --bg-elevated: #14181f;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-hover: rgba(255, 255, 255, 0.09);
-  --border: rgba(255, 255, 255, 0.09);
-  --text: #f2f4f9;
-  --text-dim: #8b93a7;
-  --accent: #f5b942;
-  --accent-soft: rgba(245, 185, 66, 0.16);
+  /* Matches the household's real HA theme (themes/smarthome_neon_dark.yaml)
+     and the card_mod neon scheme already used on the Overview dashboard:
+     cyan = idle/normal, amber = active/on, gray = unavailable. */
+  --bg: #061722;
+  --bg-elevated: #0b2231;
+  --surface: rgba(16, 37, 54, 0.55);
+  --surface-hover: rgba(16, 37, 54, 0.8);
+  --border: rgba(18, 247, 213, 0.16);
+  --text: #f4fbff;
+  --text-dim: #8091a0;
+  --accent: #ffb300;
+  --accent-soft: rgba(255, 179, 0, 0.16);
+  --idle: #19c7e6;
+  --idle-soft: rgba(25, 199, 230, 0.16);
   --danger: #ef5a5a;
-  --ok: #3ecf8e;
-
-  /* domain gloss defaults (generic/unknown domain = slate) */
-  --domain-a: #dbe2ee;
-  --domain-b: #8f9bb3;
-  --domain-c: #444b5c;
-  --domain-glow: rgba(143, 155, 179, 0.5);
+  --ok: #12f7d5;
+  --unavailable: #777777;
 }
 
 * {
@@ -32,9 +32,9 @@ body {
 }
 
 body {
-  background-image: radial-gradient(circle at 15% -10%, #202b45 0%, transparent 50%),
-    radial-gradient(circle at 90% 0%, #2e1f3d 0%, transparent 45%),
-    radial-gradient(circle at 50% 110%, #1a2a2a 0%, transparent 50%);
+  background-image: radial-gradient(circle at 15% -10%, #0d3446 0%, transparent 50%),
+    radial-gradient(circle at 90% 0%, #123a3a 0%, transparent 45%),
+    radial-gradient(circle at 50% 110%, #0b2a2a 0%, transparent 50%);
   background-attachment: fixed;
 }
 
@@ -53,7 +53,7 @@ body {
 
 .header-bar {
   backdrop-filter: blur(18px);
-  background: rgba(10, 12, 18, 0.82);
+  background: rgba(6, 23, 34, 0.85);
   border-bottom: 1px solid var(--border);
   padding: 14px 20px 12px;
   display: flex;
@@ -144,7 +144,7 @@ body {
   padding: 10px 20px;
   overflow-x: auto;
   backdrop-filter: blur(18px);
-  background: rgba(10, 12, 18, 0.7);
+  background: rgba(6, 23, 34, 0.75);
   border-bottom: 1px solid var(--border);
 }
 
@@ -211,76 +211,7 @@ body {
   text-align: center;
 }
 
-/* ---------- Domain gloss palette ---------- */
-.tile[data-domain="light"] {
-  --domain-a: #fff3c4;
-  --domain-b: #f5a623;
-  --domain-c: #a5670a;
-  --domain-glow: rgba(245, 166, 35, 0.55);
-}
-.tile[data-domain="switch"] {
-  --domain-a: #cdeaff;
-  --domain-b: #2f9bf0;
-  --domain-c: #0c4d8c;
-  --domain-glow: rgba(47, 155, 240, 0.55);
-}
-.tile[data-domain="input_boolean"] {
-  --domain-a: #d9d6ff;
-  --domain-b: #7c6cf0;
-  --domain-c: #3c2f96;
-  --domain-glow: rgba(124, 108, 240, 0.55);
-}
-.tile[data-domain="climate"] {
-  --domain-a: #ffd7bf;
-  --domain-b: #f97316;
-  --domain-c: #9a3a12;
-  --domain-glow: rgba(249, 115, 22, 0.55);
-}
-.tile[data-domain="cover"] {
-  --domain-a: #c7f5ea;
-  --domain-b: #14b8a6;
-  --domain-c: #0b5f56;
-  --domain-glow: rgba(20, 184, 166, 0.55);
-}
-.tile[data-domain="fan"] {
-  --domain-a: #cdf4ff;
-  --domain-b: #22c3e6;
-  --domain-c: #0d6c86;
-  --domain-glow: rgba(34, 195, 230, 0.55);
-}
-.tile[data-domain="lock"] {
-  --domain-a: #d3f7d9;
-  --domain-b: #2fbf5f;
-  --domain-c: #175f30;
-  --domain-glow: rgba(47, 191, 95, 0.55);
-}
-.tile[data-domain="media_player"] {
-  --domain-a: #f6d4ff;
-  --domain-b: #c94ce0;
-  --domain-c: #6c1f80;
-  --domain-glow: rgba(201, 76, 224, 0.55);
-}
-.tile[data-domain="button"] {
-  --domain-a: #eef1f7;
-  --domain-b: #9aa4bb;
-  --domain-c: #454c5e;
-  --domain-glow: rgba(154, 164, 187, 0.5);
-}
-.tile[data-domain="input_number"],
-.tile[data-domain="number"] {
-  --domain-a: #cfe0ff;
-  --domain-b: #4d82f3;
-  --domain-c: #1f3f8f;
-  --domain-glow: rgba(77, 130, 243, 0.5);
-}
-.tile[data-domain="humidifier"] {
-  --domain-a: #c9f0ff;
-  --domain-b: #38b6e0;
-  --domain-c: #145f7d;
-  --domain-glow: rgba(56, 182, 224, 0.55);
-}
-
-/* ---------- Tiles (glossy 3D) ---------- */
+/* ---------- Tiles (glossy 3D, same cyan-idle / amber-active neon as the real dashboard) ---------- */
 .tile-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -289,38 +220,36 @@ body {
 
 .tile {
   position: relative;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, rgba(20, 13, 45, 0.45), rgba(16, 37, 54, 0.45));
+  border: 1.5px solid rgba(25, 199, 230, 0.5);
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 17px rgba(25, 199, 230, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease,
     border-color 0.15s ease;
 }
 
 .tile:hover {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-  transform: translateY(-1px);
+  background: linear-gradient(145deg, rgba(20, 13, 45, 0.6), rgba(16, 37, 54, 0.6));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(8, 145, 178, 0.3);
 }
 
 .tile:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.97);
 }
 
 .tile-on {
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--domain-b) 22%, transparent),
-    color-mix(in srgb, var(--domain-c) 18%, transparent)
-  );
-  border-color: color-mix(in srgb, var(--domain-b) 55%, transparent);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px color-mix(in srgb, var(--domain-b) 30%, transparent),
-    0 6px 18px color-mix(in srgb, var(--domain-glow) 60%, transparent);
+  background: linear-gradient(145deg, rgba(255, 188, 38, 0.28), rgba(255, 133, 22, 0.18));
+  border-color: rgba(255, 179, 0, 0.86);
+  box-shadow: 0 0 24px rgba(255, 179, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .tile-unavailable {
-  opacity: 0.4;
-  filter: grayscale(0.4);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+  opacity: 0.45;
+  filter: grayscale(0.5);
 }
 
 .tile-tap {
@@ -343,25 +272,33 @@ body {
 }
 
 .tile-icon {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 14px;
-  color: #1c1c1c;
-  background: radial-gradient(circle at 32% 24%, var(--domain-a) 0%, var(--domain-b) 55%, var(--domain-c) 100%);
-  box-shadow: inset 0 1.5px 1.5px rgba(255, 255, 255, 0.75), inset 0 -3px 6px rgba(0, 0, 0, 0.3),
-    0 4px 10px rgba(0, 0, 0, 0.4);
-  opacity: 0.55;
-  transition: opacity 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  color: var(--idle);
+  background: radial-gradient(circle at 32% 24%, rgba(25, 199, 230, 0.35) 0%, rgba(25, 199, 230, 0.1) 60%, transparent 100%);
+  transition: color 0.15s ease, filter 0.15s ease, transform 0.15s ease;
 }
 
 .tile-on .tile-icon {
-  opacity: 1;
+  color: var(--accent);
   transform: scale(1.04);
-  box-shadow: inset 0 1.5px 1.5px rgba(255, 255, 255, 0.85), inset 0 -2px 5px rgba(0, 0, 0, 0.25),
-    0 0 18px 2px var(--domain-glow), 0 4px 10px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(0 0 8px rgba(255, 179, 0, 0.65));
+}
+
+/* Real chrome WEBP icons from the household's HA dashboard (www/tiles_chrome_v2_webp/) */
+.tile-icon-chrome {
+  position: absolute;
+  inset: -11px;
+  width: calc(100% + 22px);
+  height: calc(100% + 22px);
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
 }
 
 .tile-text {
@@ -388,7 +325,7 @@ body {
 .tile-slider {
   width: calc(100% - 28px);
   margin: 0 14px 14px;
-  accent-color: var(--domain-b, var(--accent));
+  accent-color: var(--accent);
 }
 
 .tile-climate-controls,

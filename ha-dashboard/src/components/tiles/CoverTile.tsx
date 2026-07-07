@@ -2,12 +2,14 @@
 
 import { Blinds, ChevronUp, Square, ChevronDown } from "lucide-react";
 import { isUnavailable } from "@/lib/domain-meta";
+import { chromeIconUrls } from "@/lib/icon-map";
 import type { TileProps } from "./tile-props";
 
 export function CoverTile({ entityId, name, state, callService }: TileProps) {
   const unavailable = isUnavailable(state.state);
   const open = state.state === "open";
   const position = state.attributes.current_position as number | undefined;
+  const chrome = chromeIconUrls(entityId, "cover");
 
   return (
     <div
@@ -16,7 +18,17 @@ export function CoverTile({ entityId, name, state, callService }: TileProps) {
     >
       <div className="tile-tap" style={{ cursor: "default" }}>
         <span className="tile-icon">
-          <Blinds size={20} strokeWidth={2} />
+          {chrome ? (
+            // eslint-disable-next-line @next/next/no-img-element -- served straight from HA's unauthenticated /local/ static host
+            <img
+              className="tile-icon-chrome"
+              src={open ? chrome.on : chrome.off}
+              alt=""
+              loading="lazy"
+            />
+          ) : (
+            <Blinds size={20} strokeWidth={2} />
+          )}
         </span>
         <span className="tile-text">
           <span className="tile-name">{name}</span>

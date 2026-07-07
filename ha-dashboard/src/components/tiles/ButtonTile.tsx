@@ -13,6 +13,7 @@ export function ButtonTile({ entityId, name, state, callService }: TileProps) {
       icon={CircleDot}
       name={name}
       domain="button"
+      entityId={entityId}
       active={false}
       unavailable={unavailable}
       subtitle="Nhấn để chạy"

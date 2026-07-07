@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { chromeIconUrls } from "@/lib/icon-map";
 
 interface TileShellProps {
   icon: LucideIcon;
@@ -10,6 +11,7 @@ interface TileShellProps {
   unavailable?: boolean;
   subtitle?: string;
   domain?: string;
+  entityId?: string;
   onActivate?: () => void;
   children?: ReactNode;
 }
@@ -21,9 +23,12 @@ export function TileShell({
   unavailable,
   subtitle,
   domain,
+  entityId,
   onActivate,
   children,
 }: TileShellProps) {
+  const chrome = domain && entityId ? chromeIconUrls(entityId, domain) : null;
+
   return (
     <div
       className={`tile ${active ? "tile-on" : ""} ${unavailable ? "tile-unavailable" : ""}`}
@@ -37,7 +42,17 @@ export function TileShell({
         aria-label={name}
       >
         <span className="tile-icon">
-          <Icon size={20} strokeWidth={2} />
+          {chrome ? (
+            // eslint-disable-next-line @next/next/no-img-element -- served straight from HA's unauthenticated /local/ static host
+            <img
+              className="tile-icon-chrome"
+              src={active ? chrome.on : chrome.off}
+              alt=""
+              loading="lazy"
+            />
+          ) : (
+            <Icon size={20} strokeWidth={2} />
+          )}
         </span>
         <span className="tile-text">
           <span className="tile-name">{name}</span>

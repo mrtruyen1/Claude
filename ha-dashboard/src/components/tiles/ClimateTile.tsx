@@ -2,6 +2,7 @@
 
 import { Thermometer, Minus, Plus } from "lucide-react";
 import { isUnavailable } from "@/lib/domain-meta";
+import { chromeIconUrls } from "@/lib/icon-map";
 import type { TileProps } from "./tile-props";
 
 const MODE_LABEL_VI: Record<string, string> = {
@@ -19,6 +20,7 @@ export function ClimateTile({ entityId, name, state, callService }: TileProps) {
   const target = state.attributes.temperature as number | undefined;
   const step = (state.attributes.target_temp_step as number | undefined) ?? 0.5;
   const active = state.state !== "off";
+  const chrome = chromeIconUrls(entityId, "climate");
 
   const setTemp = (next: number) => {
     callService(
@@ -37,7 +39,17 @@ export function ClimateTile({ entityId, name, state, callService }: TileProps) {
     >
       <div className="tile-tap" style={{ cursor: "default" }}>
         <span className="tile-icon">
-          <Thermometer size={20} strokeWidth={2} />
+          {chrome ? (
+            // eslint-disable-next-line @next/next/no-img-element -- served straight from HA's unauthenticated /local/ static host
+            <img
+              className="tile-icon-chrome"
+              src={active ? chrome.on : chrome.off}
+              alt=""
+              loading="lazy"
+            />
+          ) : (
+            <Thermometer size={20} strokeWidth={2} />
+          )}
         </span>
         <span className="tile-text">
           <span className="tile-name">{name}</span>

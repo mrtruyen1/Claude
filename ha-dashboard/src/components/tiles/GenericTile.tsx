@@ -17,6 +17,7 @@ export function GenericTile({ entityId, name, state, callService, domain }: Gene
       icon={domainIcon(domain)}
       name={name}
       domain={domain}
+      entityId={entityId}
       active={on}
       unavailable={unavailable}
       subtitle={state.state}

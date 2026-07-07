@@ -14,6 +14,7 @@ export function LockTile({ entityId, name, state, callService }: TileProps) {
       icon={locked ? Lock : LockOpen}
       name={name}
       domain="lock"
+      entityId={entityId}
       active={!locked}
       unavailable={unavailable}
       subtitle={locked ? "Đã khóa" : "Đang mở"}

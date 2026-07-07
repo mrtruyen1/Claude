@@ -18,6 +18,7 @@ export function LightTile({ entityId, name, state, callService }: TileProps) {
       icon={Lightbulb}
       name={name}
       domain="light"
+      entityId={entityId}
       active={on}
       unavailable={unavailable}
       subtitle={on ? (pct !== null ? `${pct}%` : "Đang bật") : "Đang tắt"}
