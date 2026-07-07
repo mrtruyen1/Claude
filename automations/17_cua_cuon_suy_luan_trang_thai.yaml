@@ -1,0 +1,33 @@
+- id: cua_cuon_suy_luan_trang_thai
+  alias: Cửa cuốn Zigbee - Suy luận trạng thái mở/đóng
+  description: >-
+    Công tắc TS130F không track được vị trí (calibration không ăn, position luôn 0),
+    nên suy luận trạng thái từ hướng chạy motor: UP = đang mở, DOWN = đang đóng.
+    Helper input_boolean.cua_cuon_dang_mo được tile dashboard dùng làm nguồn trạng thái.
+    Lưu ý: mở cửa bằng remote RF bắn thẳng motor thì công tắc không thấy, trạng thái sẽ không cập nhật.
+  triggers:
+    - trigger: state
+      entity_id: sensor.cua_cuon_zigbee_moving
+      to: "UP"
+      id: mo
+    - trigger: state
+      entity_id: sensor.cua_cuon_zigbee_moving
+      to: "DOWN"
+      id: dong
+  actions:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: mo
+          sequence:
+            - action: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.cua_cuon_dang_mo
+        - conditions:
+            - condition: trigger
+              id: dong
+          sequence:
+            - action: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.cua_cuon_dang_mo
+  mode: restart
