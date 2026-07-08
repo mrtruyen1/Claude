@@ -1,0 +1,212 @@
+SmartHome Neon Dark:
+  # ===== Card-mod: thanh tab kiểu pill nút tròn + icon 3D =====
+  card-mod-theme: SmartHome Neon Dark
+  card-mod-root-yaml: |
+    ".": |
+      /* Thanh tab: chiếm hết vùng giữa menu và nút ba chấm, các icon tự dàn đều theo màn hình */
+      app-toolbar {
+        column-gap: 0 !important;
+      }
+      app-toolbar ha-tab-group,
+      ha-tab-group {
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        padding: 7px 8px 4px !important;
+        margin: 7px 0 2px !important;
+        box-shadow: none !important;
+        min-height: 0 !important;
+        flex: 1 1 auto !important;
+        width: calc(100vw - 112px) !important;
+        max-width: calc(100vw - 112px) !important;
+        min-width: 0 !important;
+        --ha-tab-active-text-color: transparent;
+      }
+      /* Mỗi tab: nền tắt giống tile cửa đóng, tab đang chọn chuyển vàng */
+      ha-tab-group-tab {
+        opacity: 1 !important;
+        margin: 0 1px !important;
+        width: clamp(45px, 11.6vw, 56px) !important;
+        height: clamp(45px, 11.6vw, 56px) !important;
+        min-width: clamp(45px, 11.6vw, 56px) !important;
+        border-radius: 16px !important;
+        background: rgba(20,13,45,0.45) !important;
+        border: 1.5px solid rgba(25,199,230,0.86) !important;
+        box-shadow: 0 0 17px rgba(25,199,230,0.32) !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+      }
+      ha-tab-group-tab[active],
+      ha-tab-group-tab[aria-selected=true] {
+        background: linear-gradient(145deg, rgba(255,190,54,0.56), rgba(210,126,18,0.38)) !important;
+        border-color: rgba(218,142,0,0.95) !important;
+        box-shadow: 0 0 14px rgba(218,142,0,0.34), inset 0 0 0 1px rgba(255,225,120,0.12) !important;
+      }
+    "ha-tab-group$": |
+      [part~="nav"] {
+        border: 0 !important;
+        display: flex !important;
+        width: 100% !important;
+      }
+      [part~="tabs"] {
+        display: flex !important;
+        justify-content: space-evenly !important;
+        gap: 2px !important;
+        align-items: center !important;
+        width: 100% !important;
+        flex: 1 1 auto !important;
+      }
+      [part~="active-tab-indicator"] { display: none !important; }
+    "ha-tab-group-tab$": |
+      [part~="base"] {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        height: 100% !important;
+        width: 100% !important;
+        border-radius: 16px !important;
+        position: relative !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+      ::slotted(*) { display: none !important; }
+      [part~="base"]::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        transform: translateY(3px);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 88%;
+        pointer-events: none;
+      }
+      /* Bộ icon tab v3 — SVG chrome-neon, badge số nướng sẵn trong icon T1/T2/T3 */
+      :host([panel="0"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/home_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="0"][active]) [part~="base"]::before,
+      :host([panel="0"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/home_tab3d_on.svg?v=tabv3_1"); }
+      :host([panel="1"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/bed_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="1"][active]) [part~="base"]::before,
+      :host([panel="1"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/bed_tab3d_on.svg?v=tabv3_1"); }
+      :host([panel="2"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t1_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="2"][active]) [part~="base"]::before,
+      :host([panel="2"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t1_tab3d_on.svg?v=tabv3_1"); }
+      :host([panel="3"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t2_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="3"][active]) [part~="base"]::before,
+      :host([panel="3"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t2_tab3d_on.svg?v=tabv3_1"); }
+      :host([panel="4"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t3_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="4"][active]) [part~="base"]::before,
+      :host([panel="4"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t3_tab3d_on.svg?v=tabv3_1"); }
+
+# Base
+  primary-color: "#12f7d5"
+  accent-color: "#12f7d5"
+  dark-primary-color: "#081a26"
+  light-primary-color: "#163247"
+  primary-background-color: "#061722"
+  secondary-background-color: "#0b2231"
+  divider-color: "rgba(255,255,255,0.08)"
+
+# Text
+  primary-text-color: "#f4fbff"
+  secondary-text-color: "#8091a0"
+  disabled-text-color: "#465765"
+  text-primary-color: "#f4fbff"
+
+# App header / sidebar
+  app-header-background-color: "#171717"
+  app-header-text-color: "#f4fbff"
+  app-header-selection-bar-color: "#12f7d5"
+  sidebar-background-color: "#130c28"
+  sidebar-icon-color: "#7fa2bd"
+  sidebar-text-color: "#c3d3e1"
+  sidebar-selected-icon-color: "#ffbe36"
+  sidebar-selected-text-color: "#ffce5c"
+
+# Cards
+  ha-card-background: "linear-gradient(135deg, rgba(18,47,67,0.96), rgba(10,30,43,0.96))"
+  ha-card-border-radius: "24px"
+  ha-card-border-width: "1px"
+  ha-card-border-color: "rgba(18,247,213,0.18)"
+  ha-card-box-shadow: "0 8px 28px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.03)"
+  card-background-color: "#102536"
+  paper-card-background-color: "#102536"
+
+# Controls
+  switch-checked-button-color: "#ffffff"
+  switch-checked-track-color: "#ffd400"
+  switch-unchecked-button-color: "#ffffff"
+  switch-unchecked-track-color: "#405466"
+  paper-toggle-button-checked-button-color: "#ffffff"
+  paper-toggle-button-checked-bar-color: "#ffd400"
+  paper-toggle-button-unchecked-button-color: "#ffffff"
+  paper-toggle-button-unchecked-bar-color: "#405466"
+
+# States
+  state-icon-color: "#6f8292"
+  state-icon-active-color: "#12f7d5"
+  state-light-active-color: "#ffd400"
+  state-switch-active-color: "#ffd400"
+  state-cover-active-color: "#12f7d5"
+  state-climate-auto-color: "#12f7d5"
+  state-climate-cool-color: "#43a7ff"
+  state-unavailable-color: "#5a6875"
+
+# Badges / chips / labels
+  label-badge-background-color: "#102536"
+  label-badge-text-color: "#f4fbff"
+  label-badge-red: "#ff5b5b"
+  label-badge-green: "#12f7d5"
+  label-badge-blue: "#43a7ff"
+  label-badge-yellow: "#ffd400"
+
+# Inputs / dialogs
+  input-fill-color: "#102536"
+  input-ink-color: "#f4fbff"
+  input-label-ink-color: "#8091a0"
+  mdc-theme-primary: "#12f7d5"
+  mdc-theme-secondary: "#ffd400"
+  mdc-theme-background: "#061722"
+  mdc-theme-surface: "#102536"
+  mdc-theme-on-primary: "#021016"
+  mdc-theme-on-secondary: "#021016"
+  mdc-theme-on-surface: "#f4fbff"
+
+# Tables / code / markdown
+  table-row-background-color: "#0b2231"
+  table-row-alternative-background-color: "#102536"
+  markdown-code-background-color: "#071a27"
+  code-editor-background-color: "#071a27"
+
+# Custom common cards
+  mini-media-player-base-color: "#f4fbff"
+  mini-media-player-accent-color: "#12f7d5"
+  mushroom-title-color: "#f4fbff"
+  mushroom-subtitle-color: "#8091a0"
+  mushroom-card-primary-color: "#f4fbff"
+  mushroom-card-secondary-color: "#8091a0"
+  mushroom-chip-background-color: "rgba(16,37,54,0.85)"
+  mushroom-shape-color: "rgba(18,247,213,0.14)"
+  mushroom-shape-icon-color: "#12f7d5"
+  sidebar-menu-button-text-color: "#eaf6ff"
+Flux Glass:
+  app-header-background-color: "#33155f"
+  app-header-text-color: "#ffffff"
+  app-header-selection-color: "#e6ddff"
+  lovelace-background: "linear-gradient(180deg, #33155f 0%, #4a1a63 34%, #611c5d 66%, #7f1f53 100%) fixed"
+  primary-background-color: "#2a1052"
+  ha-card-background: "rgba(255,255,255,0.06)"
+  card-background-color: "rgba(255,255,255,0.06)"
+  ha-card-border-radius: "20px"
+  ha-card-border-width: "1px"
+  ha-card-border-color: "rgba(255,255,255,0.10)"
+  ha-card-box-shadow: "0 4px 14px rgba(0,0,0,0.25)"
+  primary-text-color: "#ffffff"
+  secondary-text-color: "rgba(255,255,255,0.62)"
+  text-primary-color: "#ffffff"
+  disabled-text-color: "rgba(255,255,255,0.40)"
+  primary-color: "#c9b6ff"
+  accent-color: "#ffca28"
+  state-icon-color: "rgba(255,255,255,0.85)"
+  paper-item-icon-color: "rgba(255,255,255,0.80)"
+  divider-color: "rgba(255,255,255,0.12)"

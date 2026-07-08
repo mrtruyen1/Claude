@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+  <linearGradient id="metalV" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8ea1b6"/><stop offset="0.45" stop-color="#46536a"/><stop offset="1" stop-color="#232a37"/>
+  </linearGradient>
+  <linearGradient id="metalLite" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#b9c7d6"/><stop offset="0.5" stop-color="#77879b"/><stop offset="1" stop-color="#3c4654"/>
+  </linearGradient>
+  <linearGradient id="metalDark" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a5666"/><stop offset="1" stop-color="#161b23"/>
+  </linearGradient>
+  <linearGradient id="sideShade" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#000000" stop-opacity="0"/><stop offset="1" stop-color="#000000" stop-opacity="0.42"/>
+  </linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e7fdff"/><stop offset="0.35" stop-color="#7deaff"/><stop offset="1" stop-color="#12a7cf"/>
+  </linearGradient>
+  <linearGradient id="glassRoof" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2feff"/><stop offset="0.4" stop-color="#8ceeff"/><stop offset="1" stop-color="#1fb9de"/>
+  </linearGradient>
+  <radialGradient id="gshadow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#000" stop-opacity="0.5"/><stop offset="0.7" stop-color="#000" stop-opacity="0.28"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#4fe3ff" stop-opacity="0.30"/><stop offset="0.55" stop-color="#4fe3ff" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#4fe3ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="badgeG" cx="0.35" cy="0.3" r="0.9">
+    <stop offset="0" stop-color="#5df5e6"/><stop offset="0.55" stop-color="#14cfc0"/><stop offset="1" stop-color="#079b90"/>
+  </radialGradient>
+  <linearGradient id="badgeRim" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#bffff7"/><stop offset="1" stop-color="#04564f"/>
+  </linearGradient>
+</defs><circle cx="256" cy="250" r="240" fill="url(#halo)"/><ellipse cx="256" cy="452" rx="175" ry="28" fill="url(#gshadow)"/><rect x="229" y="34" width="10" height="62" rx="5" fill="url(#metalLite)"/><circle cx="234" cy="30" r="10" fill="#4fe3ff"/><circle cx="234" cy="30" r="20" fill="url(#halo)"/><rect x="134" y="96" width="200" height="336" rx="18" fill="none" stroke="#4fe3ff" stroke-width="30" stroke-opacity="0.08" stroke-linejoin="round" stroke-linecap="round"/><rect x="134" y="96" width="200" height="336" rx="18" fill="none" stroke="#4fe3ff" stroke-width="18" stroke-opacity="0.15" stroke-linejoin="round" stroke-linecap="round"/><rect x="134" y="96" width="200" height="336" rx="18" fill="none" stroke="#4fe3ff" stroke-width="9" stroke-opacity="0.3" stroke-linejoin="round" stroke-linecap="round"/><rect x="134" y="96" width="200" height="336" rx="18" fill="none" stroke="#4fe3ff" stroke-width="3.5" stroke-opacity="0.75" stroke-linejoin="round" stroke-linecap="round"/><rect x="134" y="96" width="200" height="336" rx="18" fill="url(#metalV)"/><rect x="296" y="96" width="38" height="336" rx="18" fill="url(#sideShade)"/><rect x="122" y="82" width="224" height="24" rx="11" fill="url(#metalLite)"/><rect x="156" y="122" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="122" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="156" y="198" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="198" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="156" y="274" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="274" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="156" y="350" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="350" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="200" y="380" width="60" height="52" rx="8" fill="url(#metalDark)"/><rect x="118" y="426" width="232" height="22" rx="10" fill="url(#metalDark)"/><rect x="134" y="444" width="200" height="5" rx="2.5" fill="#4fe3ff" opacity="0.85"/><polygon points="148,96 190,96 160,432 134,382" fill="#ffffff" opacity="0.06"/>
+<g>
+  <circle cx="398" cy="404" r="62" fill="#000" opacity="0.35"/>
+  <circle cx="398" cy="400" r="58" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="5"/>
+  <path d="M 362.04 383.76 A 41.76 41.76 0 0 1 433.96 383.76 A 66.69999999999999 66.69999999999999 0 0 0 362.04 383.76 Z" fill="#ffffff" opacity="0.30"/>
+  <g transform="translate(398,400) scale(1.0)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20" stroke="#04564f" stroke-width="19" opacity="0.85"/>
+    <path d="M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20" stroke="#ffffff" stroke-width="12"/>
+  </g>
+</g></svg>
