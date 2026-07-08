@@ -10,7 +10,7 @@
 > - **Baseline drift (lành tính):** DSM volume3 32%→**41%** (vẫn <70) · sensor 163→**166** · automations **23 file** (+1: `17_cua_cuon_suy_luan_trang_thai.yaml` — suy luận trạng thái cửa cuốn TS130F từ hướng motor; logic OK) · addon HA **6** (+`Advanced SSH & Web Terminal` stopped) · NVMe Used 11%→12% (+1 benign).
 > - **Xác nhận tốt:** SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Media Errors 0, temp 33–39°C), Btrfs scrub **0 errors** ×3 volume, LVM 53.14%, failed units 0, backup 3 job đúng, Funnel chỉ CT102 + 0 failed SSH, cloudflared 4 conns, Mosquitto 640, MariaDB 476MB, HA valid + 0 repairs/orphans/error/warning, ping 0% loss toàn bộ, Core **2026.7.1**.
 > - **Việc phiên sau:** (1) theo dõi swap (leo lại khi VM103 chạy = benign nếu PSI=0; >3GB reclaim lại); (2) cập nhật DSM Update 3→4 (khi Truyền muốn); (3) theo dõi volume3 (41%).
-> - **CT 114 mới (phiên cùng ngày, sau audit):** LXC `nextjs-dashboard` (Ubuntu 24.04, 2vCPU/2GB/8GB, `192.168.31.115`) — Next.js 16 dashboard tùy chỉnh thay tab Overview, giữ 1 kết nối WebSocket bền tới HA (token server-side, KHÔNG lộ ra browser), SSE đẩy state realtime xuống client. Deploy qua systemd `ha-dashboard.service`, source ở `ha-dashboard/` trong repo này. **Bài học mới (HIGH, đã fix):** code reconnect ban đầu retry auth mỗi 1-2s khi token sai/rỗng → đụng ngưỡng `homeassistant.components.http.ban` (5 lần) → **HA tự ban IP CT114** (403 mọi request, kể cả REST hợp lệ sau đó). Fix: gỡ đúng entry `192.168.31.115` khỏi `/config/ip_bans.yaml` (backup trước, giữ nguyên 3 IP lạ khác đang bị ban) + **full HA restart** (bắt buộc — ban nằm in-memory, sửa file không đủ) + sửa code chỉ retry auth tối đa 2 lần rồi dừng hẳn (không tự ý retry vô hạn khi token sai). **Quy tắc mới:** mọi client mới nói chuyện với HA API/WS phải test auth với đúng token TRƯỚC khi bật vòng lặp reconnect — không để code tự retry nhanh trên lỗi auth.
+> - **CT 114 (nextjs-dashboard) — TẠO RỒI XÓA (2026-07-07):** dashboard Next.js thay Overview, thử nghiệm trong phiên này rồi Truyền quyết định không dùng → đã `pct destroy 114 --purge`, xóa code `ha-dashboard/` khỏi repo. **Bài học chung còn giữ lại (không phụ thuộc CT114):** client mới nói chuyện với HA WebSocket API phải test đúng token TRƯỚC khi bật vòng lặp reconnect — retry nhanh (1-2s) trên `auth_invalid` đụng ngưỡng 5 lần của `homeassistant.components.http.ban` → HA tự ban IP (403 mọi request sau đó, kể cả REST hợp lệ). Gỡ ban = sửa đúng entry trong `/config/ip_bans.yaml` (backup trước) + **full HA restart bắt buộc** (ban nằm in-memory, sửa file không đủ).
 
 ---
 
@@ -80,12 +80,10 @@ Upload file `.md` này + nhắn **"audit"** → AI **tự chạy ngay, không h�
 | **open-webui CT111** | `192.168.31.38` | `Proxmox:ct_exec ctid=111` | — | — | Docker `open-webui:v0.9.6` · port 3000→8080 · compose `/opt/open-webui/` · IP thật `.38` (verify 2026-07-03, tài liệu cũ ghi nhầm `.111`) |
 | **WireGuard CT112** | — | `Proxmox:ct_exec ctid=112` | — | — | VPN cá nhân Truyền — CHỦ ĐÍCH |
 | **cloudflared CT113** | — | `Proxmox:ct_exec ctid=113` | — | — | ready: `curl 127.0.0.1:20241/ready` → 200, conns=4 |
-| **nextjs-dashboard CT114** | `192.168.31.115` | `Proxmox:ct_exec ctid=114` | — | — | Ubuntu 24.04, Node.js 22 · Next.js dashboard thay Overview, systemd `ha-dashboard.service` port **3000**, LAN-only · nguồn `ha-dashboard/` trong repo · dùng HA long-lived token (server-side, trong `/opt/ha-dashboard/.env`, KHÔNG commit) |
 | **Windows VM103** | `192.168.31.19` | (thường stopped) | — | — | IP `.19` trong SSH log = **bình thường**, KHÔNG brute force |
 
 > *CT111 IP thật = `192.168.31.38` (verified 2026-07-03; tài liệu cũ ghi nhầm `.111` trùng VM101). Docker bridge nội bộ `172.17.0.1`/`172.18.0.1`.
-> Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ**.
-> **CT114 đã TÁI SỬ DỤNG** (2026-07-07): trước đây là `openclaw` (đã xóa, từng flag "không còn tồn tại") → nay là `nextjs-dashboard`, KHÔNG liên quan CT114 cũ.
+> Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ** · **CT114** (từng là `openclaw` rồi `nextjs-dashboard`, tạo+xóa lại trong phiên 2026-07-07 — xem bullet ở đầu file).
 
 **Mẫu SSH đúng (chạy bên trong `Proxmox:pve_run`):**
 ```bash
@@ -120,11 +118,10 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
     ├── CT 108 — 9router AI Gateway v0.5.8  192.168.31.108  LLM proxy /v1 :20128
     ├── CT 111 — open-webui v0.9.6     Docker · 3000→8080 · 2GB RAM · ANTHROPIC_API_KEY trong .env
     ├── CT 112 — WireGuard VPN cá nhân (onboot=1) · server 10.6.0.1/24 UDP 51820 · 2 peer · CHỦ ĐÍCH
-    ├── CT 113 — cloudflared (Debian 13) 512M, nesting=1 · native binary + systemd
-    └── CT 114 — nextjs-dashboard (Ubuntu 24.04) 192.168.31.115  2vCPU/2G/8G · Node.js 22 + Next.js 16, systemd `ha-dashboard.service` :3000 LAN-only · dashboard thay Overview, WS bền tới VM101 (thêm 2026-07-07)
+    └── CT 113 — cloudflared (Debian 13) 512M, nesting=1 · native binary + systemd
 ```
 
-**CT đang chạy (dùng cho mọi vòng lặp audit):** `102 104 105 106 107 108 111 112 113 114` (10 CT). **VM:** 100/101 running, 103 thường stopped.
+**CT đang chạy (dùng cho mọi vòng lặp audit):** `102 104 105 106 107 108 111 112 113` (9 CT). **VM:** 100/101 running, 103 thường stopped.
 
 **Disk vật lý passthrough → VM100:** sata3=ST3000VX010 3TB→`sdc` · sata4=Hitachi 4TB→`sdb` · sata5=HGST 4TB→`sda`. Host còn `nvme0n1`.
 
