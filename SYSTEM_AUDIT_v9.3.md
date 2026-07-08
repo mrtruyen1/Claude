@@ -4,11 +4,11 @@
 >
 > **TRẠNG THÁI MỚI NHẤT (phiên 2026-07-08, v9.3 — SAU FIX):**
 > - **PVE 98/100 → 100 sau fix** · **HA 100/100.**
-> - **FIX (MEDIUM · backup gap):** phát hiện **CT114 `nextjs-dashboard` MỚI** (Ubuntu 24.04, `ha-dashboard.service` Next.js, IP `192.168.31.115:3000`, onboot=1, unprivileged, nesting=1, LAN-only — KHÔNG tailscale/funnel nên không public) **không nằm trong bất kỳ backup job nào** (`NO-BACKUP: vmid 114`). Fix = `pvesh set /cluster/backup/backup-ba3eae41-f29f --vmid 101,102,104,105,106,107,108,111,112,113,114` → verify vmid list nay có 114 (weekly Synology chủ nhật 02:00). CT114 chiếm lại VMID của openclaw cũ đã xóa. **Bài học tái khẳng định:** phát hiện CT mới → thêm ngay vào weekly vzdump job. `backup-all.sh` giữ `(102 104 105 106 107 108 111 113)` — CT114 tự chứa trong rootfs nên vzdump full đã đủ, không cần service-data riêng.
+> - **CT114 `nextjs-dashboard` — TẠO RỒI XÓA trong phiên (kết thúc: KHÔNG CÒN):** đầu phiên phát hiện CT114 MỚI (Ubuntu 24.04, `ha-dashboard.service` Next.js, `.115:3000`, LAN-only) thiếu backup → đã thêm vmid 114 vào weekly vzdump job (MEDIUM fix). **Sau đó Truyền XÓA hẳn CT114** (`pct destroy`). Verify dọn sạch: `114.conf` mất, LV `vm-114-disk-0` mất, 0 backup file sót (chưa từng backup), Proxmox **tự gỡ vmid 114** khỏi weekly job (nay lại `...,112,113`), 0 host unit/cron/job nhắc `nextjs/dashboard/114`. → **Trạng thái cuối: 9 LXC** (102 104 105 106 107 108 111 112 113). CT114 chiếm lại VMID openclaw cũ, nay lại trống. **Bài học:** khi destroy CT, Proxmox tự gỡ vmid khỏi backup job — không cần sửa job tay; nhưng vẫn kiểm LV + backup file + host unit sót.
 > - **Host reboot 2 lần hôm nay (BENIGN):** 09:51 (kernel 6.8.12-32) → 15:28 (kernel **6.8.12-33**) = cập nhật kernel + reboot kích hoạt (từ baseline 6.8.12-30). Uptime ~6h. CT105 z2m fail start nhiều lần trong cửa sổ reboot (coordinator SLZB chưa sẵn sàng) rồi active ổn định từ 15:56:59 — giống bài học "fail start transient khi restart".
 > - **open-webui update v0.9.6 → v0.10.2** (hôm nay 11:12) — healthy, HTTP 200, up 6h. Còn snapshot LXC `pre-openwebui-v0102-20260708-111220` (40G) làm rollback point → WATCH, dọn sau khi Truyền xác nhận v0.10.2 ổn định (`pct delsnapshot 111 ...`).
 > - **Xác nhận recorder v9.2.1 GIỮ:** `o_cam_zigbee_20a_linkquality` ngừng ghi từ 07-07 15:58 (row cuối < mốc restart), 12300 rows đang purge. `proxmox_cpu_used` ngừng 07-02, `192_168_31_84_cpu_used` (id chết) ngừng 06-28 — đều purge đúng. 4 linkquality trong `include.entities` (`cau_thang_3/4`, `0xa4c138159e4ff542` Phòng ngủ, `0xa4c138e81699efa4`) vẫn ghi tiếp = mesh-monitor CHỦ ĐÍCH (giữ từ v9.2.1).
-> - **Baseline drift (lành tính):** LVM data% 53→**61.02%** (Watch >60; +CT114 8G + snapshot pre-openwebui 40G) · DSM vol2 66→**67%** vol3 41→**42%** (vẫn <70) · kernel 6.8.12-30→**33** · journal 624→**750MB** (<1GB) · automation domain baseline chỉnh **40→39** (đếm chuẩn: 23 file định nghĩa đúng 39 block, tất cả ON).
+> - **Baseline drift (lành tính):** LVM data% đo lúc audit **61.02%** (khi còn CT114 8G + snapshot pre-openwebui 40G; sau khi xóa CT114 sẽ tụt lại ~vài %) · DSM vol2 66→**67%** vol3 41→**42%** (vẫn <70) · kernel 6.8.12-30→**33** · journal 624→**750MB** (<1GB) · automation domain baseline chỉnh **40→39** (đếm chuẩn: 23 file định nghĩa đúng 39 block, tất cả ON).
 > - **Xác nhận tốt:** SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Media Errors 0, Used 12%, temp 31–38°C), Btrfs scrub **0 errors** ×3 volume, failed units 0, Funnel chỉ CT102 + CT104 tailnet-only + 0 failed SSH, cloudflared 4 conns, Mosquitto 640, MariaDB 477MB, HA valid + 0 repairs/orphans, ping SLZB/Broadlink/ESPHome 0% loss, Zigbee bridge on, Core **2026.7.1**, backup sensor OK/3.76GB.
 > - **Việc phiên sau:** (1) dọn snapshot `pre-openwebui` sau khi v0.10.2 ổn định; (2) theo dõi LVM (61%→fstrim nếu >70); (3) cập nhật DSM Update khi Truyền muốn; (4) theo dõi swap (leo lại khi VM103 chạy = benign nếu PSI=0).
 
@@ -83,7 +83,7 @@ Upload file `.md` này + nhắn **"audit"** → AI **tự chạy ngay, không h�
 | **Windows VM103** | `192.168.31.19` | (thường stopped) | — | — | IP `.19` trong SSH log = **bình thường**, KHÔNG brute force |
 
 > *CT111 IP thật = `192.168.31.38` (verified 2026-07-03; tài liệu cũ ghi nhầm `.111` trùng VM101). Docker bridge nội bộ `172.17.0.1`/`172.18.0.1`.
-> Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ** · **CT114 openclaw**.
+> Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ** · **CT114 openclaw** · **CT114 nextjs-dashboard** (tạo + xóa cùng ngày 2026-07-08; VMID 114 nay trống).
 
 **Mẫu SSH đúng (chạy bên trong `Proxmox:pve_run`):**
 ```bash
@@ -118,11 +118,10 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
     ├── CT 108 — 9router AI Gateway v0.5.8  192.168.31.108  LLM proxy /v1 :20128
     ├── CT 111 — open-webui v0.9.6     Docker · 3000→8080 · 2GB RAM · ANTHROPIC_API_KEY trong .env
     ├── CT 112 — WireGuard VPN cá nhân (onboot=1) · server 10.6.0.1/24 UDP 51820 · 2 peer · CHỦ ĐÍCH
-    ├── CT 113 — cloudflared (Debian 13) 512M, nesting=1 · native binary + systemd
-    └── CT 114 — nextjs-dashboard      192.168.31.115  2048M, swap 512, unprivileged, nesting=1 · Ubuntu 24.04 · `ha-dashboard.service` (Next.js) port 3000 · LAN-only (KHÔNG tailscale/funnel) · onboot=1 · CHIẾM LẠI VMID openclaw cũ · trong weekly vzdump từ v9.3
+    └── CT 113 — cloudflared (Debian 13) 512M, nesting=1 · native binary + systemd
 ```
 
-**CT đang chạy (dùng cho mọi vòng lặp audit):** `102 104 105 106 107 108 111 112 113 114` (10 CT). **VM:** 100/101 running, 103 thường stopped.
+**CT đang chạy (dùng cho mọi vòng lặp audit):** `102 104 105 106 107 108 111 112 113` (9 CT). **VM:** 100/101 running, 103 thường stopped. *(CT114 nextjs-dashboard tồn tại ngắn trong phiên 2026-07-08 rồi bị xóa — xem changelog v9.3.)*
 
 **Disk vật lý passthrough → VM100:** sata3=ST3000VX010 3TB→`sdc` · sata4=Hitachi 4TB→`sdb` · sata5=HGST 4TB→`sda`. Host còn `nvme0n1`.
 
@@ -131,7 +130,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 **HA stack:** Core `2026.7.x` · HAOS `18.x` · Supervisor `2026.06.x` · Python `3.14.x` · DB MariaDB trên **CT107** (LXC, KHÔNG phải addon).
 **Addon HA (5, trong Supervisor):** `Terminal & SSH` · `ESPHome Device Builder` · `MCP Server Dev` · `Nabu Casa Webhook Proxy` · `Studio Code Server`. Mosquitto/MariaDB/Z2M **KHÔNG** phải addon — là LXC riêng. `cloud logged_in=false` = bình thường (đi qua Tailscale + Webhook Proxy).
 
-**Backup Proxmox (đủ 5 lớp — verify v9.1.1):** VM100 daily 02:30 `mode snapshot` → **`local`** keep-last=2 (KHÔNG phải Synology — log vzdump xác nhận đích) · weekly sun 02:00 vmid **`101,102,104,105,106,107,108,111,112,113,114`** → Synology keep-last=3 · job thứ 3 sun 04:00 VM100→local keep-last=1 (chủ đích) · `backup-all.sh` 02:00 ctids **`(102 104 105 106 107 108 111 113)`** (service-data → `/Synology/backups`) · **DSM Task id=8 "Copy Backhup Proxmox sang NAS" daily 06:30** (`rsync -av root@.84:/var/lib/vz/dump/ /volume2/Proxmox/dump/` — pull off-host CHỦ ĐÍCH, không prune) + **PHASE 3 trong `pve-backup-nas-side.sh` 01:00 prune chuỗi VM100 trên NAS keep-7** (thêm v9.1.1). Lưu ý: rsync pull sẽ re-copy MỌI file còn nằm ở local → muốn xóa hẳn 1 backup phải xóa Ở CẢ local lẫn NAS.
+**Backup Proxmox (đủ 5 lớp — verify v9.1.1):** VM100 daily 02:30 `mode snapshot` → **`local`** keep-last=2 (KHÔNG phải Synology — log vzdump xác nhận đích) · weekly sun 02:00 vmid **`101,102,104,105,106,107,108,111,112,113`** → Synology keep-last=3 · job thứ 3 sun 04:00 VM100→local keep-last=1 (chủ đích) · `backup-all.sh` 02:00 ctids **`(102 104 105 106 107 108 111 113)`** (service-data → `/Synology/backups`) · **DSM Task id=8 "Copy Backhup Proxmox sang NAS" daily 06:30** (`rsync -av root@.84:/var/lib/vz/dump/ /volume2/Proxmox/dump/` — pull off-host CHỦ ĐÍCH, không prune) + **PHASE 3 trong `pve-backup-nas-side.sh` 01:00 prune chuỗi VM100 trên NAS keep-7** (thêm v9.1.1). Lưu ý: rsync pull sẽ re-copy MỌI file còn nằm ở local → muốn xóa hẳn 1 backup phải xóa Ở CẢ local lẫn NAS.
 
 ---
 
@@ -183,7 +182,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | Reallocated / Pending / Uncorrectable | **0** mọi disk (host + DSM sata1-4) | >0 = HIGH |
 | NCQ queue_depth | sda/sdb/sdc = **1** (tắt chủ đích, khóa udev+rc.d; `libata.force=noncq` GRUB hiện ABSENT — chấp nhận) | KHÔNG bật lại |
 | ZFS ARC max | 4 GiB (`zfs_arc_max=4294967296`) — host **KHÔNG có pool** (LVM-thin), chỉ phòng hờ | KHÔNG cần zpool scrub |
-| LVM thin `data%` | ~**61%** (v9.3; 53→61 do +CT114 8G + snapshot pre-openwebui 40G; dao động theo VM103) | >60 Watch · >70 fstrim · >80 urgent |
+| LVM thin `data%` | ~**58–61%** (v9.3; đo 61% khi còn CT114; sau xóa CT114 tụt lại; +snapshot pre-openwebui 40G; dao động theo VM103) | >60 Watch · >70 fstrim · >80 urgent |
 | DSM volume1/2/3 | **4% / 67% / 42%** (v9.3; vol3 tăng dần 32→42) | ≥70 Watch · >80 action |
 | DSM Btrfs scrub | **0 errors** mọi volume | >0 = HIGH (bit-rot) → check SMART + cân nhắc replace |
 | mdstat DSM | `[4/26] UUUU` | Bình thường DVA1622 |
@@ -199,7 +198,7 @@ Physical (31 GiB RAM · Xeon E5-2680 v4 · 28 vCPU)
 | MariaDB CT107 dir | ~**474MB** (bảng `statistics` chi phối — long-term, cố ý) | >500MB dir = kiểm tra purge/exclude |
 | open-webui CT111 | `v0.9.6` healthy qua compose | Thấy `:main` → `docker stop/rm open-webui && cd /opt/open-webui && docker compose up -d` |
 | Z2M CT105 | **2.12.1** active, SLZB `.45` ping 0% loss | 2 lần fail start khi update = build transient, benign nếu active sau đó |
-| Backup jobs | Daily VM100 02:30 snapshot (**3.76GB**, sensor HA `OK`) · weekly sun 02:00 vmid `101,102,104,105,106,107,108,111,112,113,114` · sun 04:00 VM100→local (chủ đích) | Thiếu CT mới = backup gap. `mode stop` = reboot DSM mỗi đêm → đổi lại snapshot |
+| Backup jobs | Daily VM100 02:30 snapshot (**3.76GB**, sensor HA `OK`) · weekly sun 02:00 vmid `101,102,104,105,106,107,108,111,112,113` · sun 04:00 VM100→local (chủ đích) | Thiếu CT mới = backup gap. `mode stop` = reboot DSM mỗi đêm → đổi lại snapshot |
 | Public exposure matrix | Funnel: chỉ CT102 · CT104 Serve tailnet-only · CT108 tunnel public off khi require-key off | Public + no auth = HIGH |
 | 2FA `root@pam` | TẮT (LOW chấp nhận — LAN+tailnet) · API token `ha-backup@pve!hatoken` (PVEAuditor) ✅ | — |
 | vmbr0 RX dropped | ~1.15M = **BENIGN** (multicast snooping) | KHÔNG phải lỗi mạng |
@@ -365,7 +364,7 @@ Gọi **`backup_status`** (job + backup mới nhất từng guest + guest thiế
 - [ ] Failed units = 0? NFS online? CT112 WireGuard active = CHỦ ĐÍCH (không flag)?
 - [ ] Funnel: CHỈ CT102. Frigate tailnet-only. 9router không public khi require-key off.
 - [ ] SSH log IP lạ? (`.19` = VM103 bình thường). sshd host root+password = quyết định Truyền, không flag.
-- [ ] Job vzdump vmid = `101,102,104,105,106,107,108,111,112,113,114`? `backup-all.sh` ctids = `(102 104 105 106 107 108 111 113)`?
+- [ ] Job vzdump vmid = `101,102,104,105,106,107,108,111,112,113`? `backup-all.sh` ctids = `(102 104 105 106 107 108 111 113)`?
 ```bash
 pvesm list local | grep vzdump | tail
 pvesh get /cluster/backup --output-format json | grep -E "vmid|schedule"
@@ -706,7 +705,7 @@ volumes:
 
 | Version | Tóm tắt |
 |---|---|
-| **v9.3 (2026-07-08)** | **Audit đầy đủ 2 lớp: PVE 98/100 → 100 sau fix · HA 100/100.** MEDIUM (fixed): **CT114 `nextjs-dashboard` MỚI** (Next.js HA dashboard, `.115:3000`, onboot, unprivileged, LAN-only) không có backup → thêm vmid 114 vào weekly vzdump job (verify list có 114). Host reboot ×2 hôm nay (kernel 6.8.12-30→32→33 + reboot kích hoạt — benign; z2m CT105 fail start transient trong cửa sổ reboot rồi ổn định). open-webui update v0.9.6→**v0.10.2** healthy (còn snapshot rollback `pre-openwebui` 40G — Watch, dọn sau). Xác nhận recorder v9.2.1 GIỮ (o_cam_zigbee_20a ngừng ghi 07-07, đang purge 12300 rows; proxmox_cpu_used/192_168_31_84_cpu_used purge đúng; 4 linkquality mesh-monitor trong include vẫn ghi = chủ đích). Sạch: SMART khớp baseline (UDMA 18/65/0, NVMe 12%/0 err), Btrfs scrub 0 err ×3, 0 failed unit, Funnel chỉ CT102, cloudflared 4 conns, Mosquitto 640, MariaDB 477M, HA valid + 0 repairs/orphans, 23 auto(39 block)/16 script/20 pkg/1 cmdline khớp, ping 0% loss, Zigbee bridge on, Core 2026.7.1. Drift: LVM 53→61% (Watch), DSM vol 4/67/42, journal 750MB, kernel 33, automation baseline 40→39. Dương tính giả loại: `10_Frigate` "mode:restart" (chỉ trong comment, thực là single); `target:` (đều là light/switch/script/button, không phải telegram_bot). |
+| **v9.3 (2026-07-08)** | **Audit đầy đủ 2 lớp: PVE 98/100 → 100 sau fix · HA 100/100.** MEDIUM (fixed): **CT114 `nextjs-dashboard` MỚI** (Next.js HA dashboard, `.115:3000`, onboot, unprivileged, LAN-only) không có backup → thêm vmid 114 vào weekly vzdump job. **Sau đó Truyền XÓA hẳn CT114** (`pct destroy`) → verify sạch: 114.conf/LV vm-114 mất, 0 backup sót, Proxmox tự gỡ vmid 114 khỏi job (nay lại `...,113`), 0 host unit/cron sót → trạng thái cuối **9 LXC**. Bài học: destroy CT thì Proxmox tự gỡ vmid khỏi backup job, vẫn kiểm LV+backup+unit sót. Host reboot ×2 hôm nay (kernel 6.8.12-30→32→33 + reboot kích hoạt — benign; z2m CT105 fail start transient trong cửa sổ reboot rồi ổn định). open-webui update v0.9.6→**v0.10.2** healthy (còn snapshot rollback `pre-openwebui` 40G — Watch, dọn sau). Xác nhận recorder v9.2.1 GIỮ (o_cam_zigbee_20a ngừng ghi 07-07, đang purge 12300 rows; proxmox_cpu_used/192_168_31_84_cpu_used purge đúng; 4 linkquality mesh-monitor trong include vẫn ghi = chủ đích). Sạch: SMART khớp baseline (UDMA 18/65/0, NVMe 12%/0 err), Btrfs scrub 0 err ×3, 0 failed unit, Funnel chỉ CT102, cloudflared 4 conns, Mosquitto 640, MariaDB 477M, HA valid + 0 repairs/orphans, 23 auto(39 block)/16 script/20 pkg/1 cmdline khớp, ping 0% loss, Zigbee bridge on, Core 2026.7.1. Drift: LVM 53→61% (Watch), DSM vol 4/67/42, journal 750MB, kernel 33, automation baseline 40→39. Dương tính giả loại: `10_Frigate` "mode:restart" (chỉ trong comment, thực là single); `target:` (đều là light/switch/script/button, không phải telegram_bot). |
 | **v9.2.1 (2026-07-07)** | **FIX cả 2 (Truyền duyệt "1 2 ok") → PVE 100/100 · HA 100/100.** (1) Reclaim swap **7.1GB→0B**: quy trình rút gọn — available 12Gi>swap+2GB nên bỏ bước hạ/trả balloon (an toàn hơn cho guest); stop pvestatd → swapoff/swapon nohup (68s) → start pvestatd; PSI=0, 0 OOM, HA/DSM 200, available transient 5.9Gi. (2) Exclude `sensor.o_cam_zigbee_20a_linkquality`: phát hiện bị **force re-include** trong `include.entities` dù đã có glob `*_linkquality` → XÓA khỏi include (glob tự bắt), backup + full restart, verify entity sống (state=81) + DB ngừng ghi (row cuối < restart). Bài học: kiểm CẢ khối include, glob exclude vô hiệu khi entity ở include.entities. |
 | **v9.2 (2026-07-07)** | **Audit đầy đủ 2 lớp: PVE 98/100 · HA 100/100** (findings, trước fix). MEDIUM: host swap leo lại **7.1GB** từ 0B DÙ VM103 stopped — PSI=0 + 0 OOM = nguội. **Xác nhận PHASE 3 retention ĐÃ chạy** (07/07 01:00). Drift: DSM vol3 32→41%, sensor 163→166, automations 22→23 (+`17_cua_cuon_suy_luan_trang_thai`), `o_cam_zigbee_20a_linkquality` 6.4k→12279 rows, addon 5→6, NVMe 11→12%. Update DSM 3→4. Sạch: SMART khớp baseline, Btrfs scrub 0 errors ×3, LVM 53.14%, 0 failed unit, backup đúng, Funnel chỉ CT102, cloudflared 4 conns, MariaDB 476MB, HA valid + 0 repairs/orphans, ping 0% loss, Core 2026.7.1. |
 | **v9.1.1 (2026-07-03)** | **FIX cả 2 finding v9.1 → PVE 100/100.** (1) Reclaim swap 6.0GB→0B (quy trình 7 bước mới trong Bài học: stop pvestatd → hạ balloon 101/103 → swapoff/swapon nohup → trả balloon mức cũ KHÔNG max → start pvestatd; 0 OOM; bài học phụ: VM100 DSM balloon không nhả theo lệnh; trả max = swap quay lại ngay). (2) Backup: tìm ra DSM Task id=8 rsync-pull daily 06:30 (chủ đích, không prune) → dọn NAS dump 186G→119G + xóa gốc local (root 61%→50%) + thêm PHASE 3 retention keep-7 vào pve-backup-nas-side.sh. Chờ Truyền: xóa thêm qemu-104/108/103-cũ (~40G)? Ghi nhận: Lynis đã cài + timer daily; cập nhật snapshot fstrim-vms (đã đúng); tài liệu backup 5 lớp + bảng kết nối. |
