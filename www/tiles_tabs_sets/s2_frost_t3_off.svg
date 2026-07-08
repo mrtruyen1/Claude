@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+  <linearGradient id="metalV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,0.34)"/><stop offset="0.5" stop-color="rgba(255,255,255,0.16)"/><stop offset="1" stop-color="rgba(255,255,255,0.07)"/></linearGradient>
+  <linearGradient id="metalLite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,0.55)"/><stop offset="1" stop-color="rgba(255,255,255,0.18)"/></linearGradient>
+  <linearGradient id="metalDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(35,20,70,0.75)"/><stop offset="1" stop-color="rgba(18,10,40,0.85)"/></linearGradient>
+  <linearGradient id="sideShade" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.18"/>
+  </linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(210,190,255,0.16)"/><stop offset="1" stop-color="rgba(150,120,220,0.08)"/></linearGradient>
+  <linearGradient id="glassRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(210,190,255,0.16)"/><stop offset="1" stop-color="rgba(150,120,220,0.08)"/></linearGradient>
+  <radialGradient id="gshadow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#000" stop-opacity="0.5"/><stop offset="0.7" stop-color="#000" stop-opacity="0.28"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#c9b6ff" stop-opacity="0.30"/><stop offset="0.55" stop-color="#c9b6ff" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#c9b6ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="badgeG" cx="0.35" cy="0.3" r="0.9"><stop offset="0" stop-color="#d5c3ff"/><stop offset="0.55" stop-color="#a07bf0"/><stop offset="1" stop-color="#6a3fc4"/></radialGradient>
+  <linearGradient id="badgeRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0e8ff"/><stop offset="1" stop-color="#3a1f78"/></linearGradient>
+</defs><ellipse cx="256" cy="452" rx="175" ry="28" fill="url(#gshadow)"/><rect x="229" y="34" width="10" height="62" rx="5" fill="url(#metalLite)"/><circle cx="234" cy="30" r="10" fill="#5f7286"/><rect x="134" y="96" width="200" height="336" rx="18" fill="url(#metalV)"/><rect x="296" y="96" width="38" height="336" rx="18" fill="url(#sideShade)"/><rect x="122" y="82" width="224" height="24" rx="11" fill="url(#metalLite)"/><rect x="156" y="122" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="238" y="122" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="156" y="198" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="238" y="198" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="156" y="274" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="238" y="274" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="156" y="350" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="238" y="350" width="64" height="52" rx="7" fill="url(#glass)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><rect x="200" y="380" width="60" height="52" rx="8" fill="url(#metalDark)"/><rect x="118" y="426" width="232" height="22" rx="10" fill="url(#metalDark)"/><polygon points="148,96 190,96 160,432 134,382" fill="#ffffff" opacity="0.06"/>
+<g>
+  <circle cx="398" cy="404" r="62" fill="#000" opacity="0.35"/>
+  <circle cx="398" cy="400" r="58" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="5"/>
+  <path d="M 362.04 383.76 A 41.76 41.76 0 0 1 433.96 383.76 A 66.69999999999999 66.69999999999999 0 0 0 362.04 383.76 Z" fill="#ffffff" opacity="0.30"/>
+  <g transform="translate(398,400)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20" stroke="#3a1f78" stroke-width="19" opacity="0.85"/>
+    <path d="M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20" stroke="#ffffff" stroke-width="12"/>
+  </g>
+</g></svg>
