@@ -10,6 +10,7 @@
 > - **Baseline drift (lành tính):** DSM volume3 32%→**41%** (vẫn <70) · sensor 163→**166** · automations **23 file** (+1: `17_cua_cuon_suy_luan_trang_thai.yaml` — suy luận trạng thái cửa cuốn TS130F từ hướng motor; logic OK) · addon HA **6** (+`Advanced SSH & Web Terminal` stopped) · NVMe Used 11%→12% (+1 benign).
 > - **Xác nhận tốt:** SMART 4 ổ khớp baseline (UDMA 18/65/0, NVMe Media Errors 0, temp 33–39°C), Btrfs scrub **0 errors** ×3 volume, LVM 53.14%, failed units 0, backup 3 job đúng, Funnel chỉ CT102 + 0 failed SSH, cloudflared 4 conns, Mosquitto 640, MariaDB 476MB, HA valid + 0 repairs/orphans/error/warning, ping 0% loss toàn bộ, Core **2026.7.1**.
 > - **Việc phiên sau:** (1) theo dõi swap (leo lại khi VM103 chạy = benign nếu PSI=0; >3GB reclaim lại); (2) cập nhật DSM Update 3→4 (khi Truyền muốn); (3) theo dõi volume3 (41%).
+> - **CT 114 (nextjs-dashboard) — TẠO RỒI XÓA (2026-07-07):** dashboard Next.js thay Overview, thử nghiệm trong phiên này rồi Truyền quyết định không dùng → đã `pct destroy 114 --purge`, xóa code `ha-dashboard/` khỏi repo. **Bài học chung còn giữ lại (không phụ thuộc CT114):** client mới nói chuyện với HA WebSocket API phải test đúng token TRƯỚC khi bật vòng lặp reconnect — retry nhanh (1-2s) trên `auth_invalid` đụng ngưỡng 5 lần của `homeassistant.components.http.ban` → HA tự ban IP (403 mọi request sau đó, kể cả REST hợp lệ). Gỡ ban = sửa đúng entry trong `/config/ip_bans.yaml` (backup trước) + **full HA restart bắt buộc** (ban nằm in-memory, sửa file không đủ).
 
 ---
 
@@ -82,7 +83,7 @@ Upload file `.md` này + nhắn **"audit"** → AI **tự chạy ngay, không h�
 | **Windows VM103** | `192.168.31.19` | (thường stopped) | — | — | IP `.19` trong SSH log = **bình thường**, KHÔNG brute force |
 
 > *CT111 IP thật = `192.168.31.38` (verified 2026-07-03; tài liệu cũ ghi nhầm `.111` trùng VM101). Docker bridge nội bộ `172.17.0.1`/`172.18.0.1`.
-> Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ** · **CT114 openclaw**.
+> Đã xóa hẳn (KHÔNG còn tồn tại, không flag): **VM105 n8n** (VMID 105 nay là CT zigbee2mqtt-new) · **CT110 z2m cũ** · **CT114** (từng là `openclaw` rồi `nextjs-dashboard`, tạo+xóa lại trong phiên 2026-07-07 — xem bullet ở đầu file).
 
 **Mẫu SSH đúng (chạy bên trong `Proxmox:pve_run`):**
 ```bash
