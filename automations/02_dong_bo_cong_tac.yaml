@@ -1,0 +1,87 @@
+##################################################################
+# FILE: automations/02_dong_bo_cong_tac.yaml
+# Cập nhật: 2026-05-26 — đổi service: → action: (chuẩn HA 2024.8+)
+#            action chỉ set entity còn lại (không set entity trigger)
+# Cập nhật: 2026-06-28 — thêm for: 00:00:01 vào trigger cau_thang_4_*
+#            lọc ghost pulse do Zigbee mesh yếu (LQI 21-25)
+##################################################################
+
+- alias: Đồng bộ đèn phòng khách
+  id: dong_bo_den_phong_khach
+  mode: single
+  max_exceeded: silent
+  trigger:
+    - platform: state
+      entity_id:
+        - switch.o_cam_zigbee_20a
+        - switch.living_room_lamp_3
+      to:
+        - "on"
+        - "off"
+  condition:
+    - condition: template
+      value_template: >
+        {{ expand('switch.o_cam_zigbee_20a','switch.living_room_lamp_3')
+           | rejectattr('entity_id','equalto',trigger.entity_id)
+           | map(attribute='state') | first != trigger.to_state.state }}
+  action:
+    - action: switch.turn_{{ trigger.to_state.state }}
+      target:
+        entity_id: >
+          {{ expand('switch.o_cam_zigbee_20a','switch.living_room_lamp_3')
+             | rejectattr('entity_id','equalto',trigger.entity_id)
+             | map(attribute='entity_id') | first }}
+
+- alias: Đồng bộ cầu thang tầng 2 và 3
+  id: dong_bo_cau_thang_tang_2_va_3
+  mode: single
+  max_exceeded: silent
+  trigger:
+    - platform: state
+      entity_id:
+        - switch.cau_thang_3
+        - switch.cau_thang_4_left
+      to:
+        - "on"
+        - "off"
+      for: "00:00:01"
+  condition:
+    - condition: template
+      value_template: >
+        {{ expand('switch.cau_thang_3','switch.cau_thang_4_left')
+           | rejectattr('entity_id','equalto',trigger.entity_id)
+           | map(attribute='state') | first != trigger.to_state.state }}
+  action:
+    - action: switch.turn_{{ trigger.to_state.state }}
+      continue_on_error: true
+      target:
+        entity_id: >
+          {{ expand('switch.cau_thang_3','switch.cau_thang_4_left')
+             | rejectattr('entity_id','equalto',trigger.entity_id)
+             | map(attribute='entity_id') | first }}
+
+- alias: Đồng bộ đèn 0 và 1 bếp
+  id: dong_bo_den_bep_0_va_1
+  mode: single
+  max_exceeded: silent
+  trigger:
+    - platform: state
+      entity_id:
+        - switch.kitchen_0
+        - switch.kitchen_1
+      to:
+        - "on"
+        - "off"
+  condition:
+    - condition: template
+      value_template: >
+        {{ expand('switch.kitchen_0','switch.kitchen_1')
+           | rejectattr('entity_id','equalto',trigger.entity_id)
+           | map(attribute='state') | first != trigger.to_state.state }}
+  action:
+    - action: switch.turn_{{ trigger.to_state.state }}
+      target:
+        entity_id: >
+          {{ expand('switch.kitchen_0','switch.kitchen_1')
+             | rejectattr('entity_id','equalto',trigger.entity_id)
+             | map(attribute='entity_id') | first }}
