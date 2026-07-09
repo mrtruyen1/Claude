@@ -34,11 +34,9 @@
   </linearGradient>
 </defs><ellipse cx="256" cy="452" rx="175" ry="28" fill="url(#gshadow)"/><rect x="229" y="34" width="10" height="62" rx="5" fill="url(#metalLite)"/><circle cx="234" cy="30" r="10" fill="#5f7286"/><rect x="134" y="96" width="200" height="336" rx="18" fill="url(#metalV)"/><rect x="296" y="96" width="38" height="336" rx="18" fill="url(#sideShade)"/><rect x="122" y="82" width="224" height="24" rx="11" fill="url(#metalLite)"/><rect x="156" y="122" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="122" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="156" y="198" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="198" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="156" y="274" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="274" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="156" y="350" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="238" y="350" width="64" height="52" rx="7" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="200" y="380" width="60" height="52" rx="8" fill="url(#metalDark)"/><rect x="118" y="426" width="232" height="22" rx="10" fill="url(#metalDark)"/><polygon points="148,96 190,96 160,432 134,382" fill="#ffffff" opacity="0.06"/>
 <g>
-  <circle cx="398" cy="404" r="62" fill="#000" opacity="0.35"/>
-  <circle cx="398" cy="400" r="58" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="5"/>
-  <path d="M 362.04 383.76 A 41.76 41.76 0 0 1 433.96 383.76 A 66.69999999999999 66.69999999999999 0 0 0 362.04 383.76 Z" fill="#ffffff" opacity="0.30"/>
-  <g transform="translate(398,400) scale(1.0)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20" stroke="#04564f" stroke-width="19" opacity="0.85"/>
-    <path d="M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20" stroke="#ffffff" stroke-width="12"/>
-  </g>
+  <ellipse cx="398" cy="405" rx="97" ry="77" fill="#000" opacity="0.35"/>
+  <ellipse cx="398" cy="400" rx="92" ry="72" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="6"/>
+  <path d="M 340.96 379.84 A 66.24 51.839999999999996 0 0 1 455.04 379.84 A 105.8 82.8 0 0 0 340.96 379.84 Z" fill="#ffffff" opacity="0.30"/>
+  <text x="398" y="425.92" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif"
+        font-weight="bold" font-size="111.60000000000001" fill="#ffffff" stroke="#04564f" stroke-width="3.5" paint-order="stroke">T3</text>
 </g></svg>

@@ -80,25 +80,16 @@ def ground(cx=256, cy=452, rx=175, ry=28):
 def spec(points, op=0.10):
     return f'<polygon points="{points}" fill="#ffffff" opacity="{op}"/>'
 
-# hand-drawn numerals (stroke paths, device-independent — no fonts needed)
-NUMS = {
-    1: "M -13,-14 L 1,-27 L 1,27 M -14,27 L 16,27",
-    2: "M -16,-11 A 17,17 0 1 1 13,2 L -17,27 L 19,27",
-    3: "M -14,-16 A 16,16 0 1 1 2,3 M 2,3 A 16.5,16.5 0 1 1 -15,20",
-}
-
-def badge(n: int, cx=398, cy=400, r=58) -> str:
-    s = r / 58.0
-    num = NUMS[n]
+def text_badge(label: str, cx: float, cy: float, rx: float = 92, ry: float = 72) -> str:
+    """Oval badge with baked text label (used for PN and T1/T2/T3) — same size everywhere."""
+    font_size = ry * 1.55
     return f"""
 <g>
-  <circle cx="{cx}" cy="{cy+4}" r="{r+4}" fill="#000" opacity="0.35"/>
-  <circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="5"/>
-  <path d="M {cx-r*0.62} {cy-r*0.28} A {r*0.72} {r*0.72} 0 0 1 {cx+r*0.62} {cy-r*0.28} A {r*1.15} {r*1.15} 0 0 0 {cx-r*0.62} {cy-r*0.28} Z" fill="#ffffff" opacity="0.30"/>
-  <g transform="translate({cx},{cy}) scale({s})" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="{num}" stroke="#04564f" stroke-width="19" opacity="0.85"/>
-    <path d="{num}" stroke="#ffffff" stroke-width="12"/>
-  </g>
+  <ellipse cx="{cx}" cy="{cy+5}" rx="{rx+5}" ry="{ry+5}" fill="#000" opacity="0.35"/>
+  <ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="6"/>
+  <path d="M {cx-rx*0.62} {cy-ry*0.28} A {rx*0.72} {ry*0.72} 0 0 1 {cx+rx*0.62} {cy-ry*0.28} A {rx*1.15} {ry*1.15} 0 0 0 {cx-rx*0.62} {cy-ry*0.28} Z" fill="#ffffff" opacity="0.30"/>
+  <text x="{cx}" y="{cy+ry*0.36}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif"
+        font-weight="bold" font-size="{font_size}" fill="#ffffff" stroke="#04564f" stroke-width="3.5" paint-order="stroke">{label}</text>
 </g>"""
 
 def svg(body: str, on: bool) -> str:
@@ -175,6 +166,7 @@ def bed(on: bool) -> str:
     # footboard post
     b += '<rect x="440" y="226" width="28" height="120" rx="12" fill="url(#metalV)" stroke="url(#metalLite)" stroke-width="3"/>'
     b += f'<circle cx="454" cy="218" r="13" fill="url(#{ "glass" if on else "metalLite"})"/>'
+    b += text_badge("PN", 380, 392)
     return svg(b, on)
 
 # =====================================================================
@@ -240,7 +232,7 @@ def tower(n: int, on: bool) -> str:
         if on:
             b += f'<rect x="{X}" y="{Y+H+12}" width="{W}" height="5" rx="2.5" fill="{CY_MID}" opacity="0.85"/>'
         b += spec(f"{X+14},{Y} {X+56},{Y} {X+26},{Y+H} {X},{Y+H-50}", 0.06)
-    b += badge(n)
+    b += text_badge(f"T{n}", 398, 400)
     return svg(b, on)
 
 # =====================================================================

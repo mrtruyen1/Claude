@@ -404,21 +404,21 @@ ios-dark-mode-blue-red:
         background-size: 104%;
         pointer-events: none;
       }
-      :host([panel="0"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/home_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="0"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/home_tab3d_off.svg?v=tabv3_2"); }
       :host([panel="0"][active]) [part~="base"]::before,
-      :host([panel="0"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/home_tab3d_on.svg?v=tabv3_1"); }
-      :host([panel="1"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/bed_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="0"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/home_tab3d_on.svg?v=tabv3_2"); }
+      :host([panel="1"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/bed_tab3d_off.svg?v=tabv3_2"); }
       :host([panel="1"][active]) [part~="base"]::before,
-      :host([panel="1"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/bed_tab3d_on.svg?v=tabv3_1"); }
-      :host([panel="2"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t1_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="1"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/bed_tab3d_on.svg?v=tabv3_2"); }
+      :host([panel="2"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t1_tab3d_off.svg?v=tabv3_2"); }
       :host([panel="2"][active]) [part~="base"]::before,
-      :host([panel="2"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t1_tab3d_on.svg?v=tabv3_1"); }
-      :host([panel="3"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t2_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="2"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t1_tab3d_on.svg?v=tabv3_2"); }
+      :host([panel="3"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t2_tab3d_off.svg?v=tabv3_2"); }
       :host([panel="3"][active]) [part~="base"]::before,
-      :host([panel="3"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t2_tab3d_on.svg?v=tabv3_1"); }
-      :host([panel="4"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t3_tab3d_off.svg?v=tabv3_1"); }
+      :host([panel="3"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t2_tab3d_on.svg?v=tabv3_2"); }
+      :host([panel="4"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t3_tab3d_off.svg?v=tabv3_2"); }
       :host([panel="4"][active]) [part~="base"]::before,
-      :host([panel="4"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t3_tab3d_on.svg?v=tabv3_1"); }
+      :host([panel="4"][aria-selected="true"]) [part~="base"]::before { background-image: url("/local/tiles_tabs_v3/t3_tab3d_on.svg?v=tabv3_2"); }
   modes:
     dark: {}
   # Global

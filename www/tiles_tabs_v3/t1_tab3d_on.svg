@@ -34,11 +34,9 @@
   </linearGradient>
 </defs><circle cx="256" cy="250" r="240" fill="url(#halo)"/><ellipse cx="256" cy="452" rx="175" ry="28" fill="url(#gshadow)"/><rect x="76" y="172" width="300" height="260" rx="18" fill="none" stroke="#4fe3ff" stroke-width="30" stroke-opacity="0.08" stroke-linejoin="round" stroke-linecap="round"/><rect x="76" y="172" width="300" height="260" rx="18" fill="none" stroke="#4fe3ff" stroke-width="18" stroke-opacity="0.15" stroke-linejoin="round" stroke-linecap="round"/><rect x="76" y="172" width="300" height="260" rx="18" fill="none" stroke="#4fe3ff" stroke-width="9" stroke-opacity="0.3" stroke-linejoin="round" stroke-linecap="round"/><rect x="76" y="172" width="300" height="260" rx="18" fill="none" stroke="#4fe3ff" stroke-width="3.5" stroke-opacity="0.75" stroke-linejoin="round" stroke-linecap="round"/><rect x="76" y="172" width="300" height="260" rx="18" fill="url(#metalV)"/><rect x="330" y="172" width="46" height="260" rx="18" fill="url(#sideShade)"/><rect x="66" y="154" width="320" height="26" rx="12" fill="url(#metalLite)"/><rect x="102" y="202" width="64" height="52" rx="8" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="194" y="202" width="64" height="52" rx="8" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="286" y="202" width="64" height="52" rx="8" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><rect x="90" y="280" width="272" height="20" rx="9" fill="url(#metalLite)"/><rect x="100" y="312" width="150" height="86" rx="8" fill="url(#glass)" stroke="#0b1620" stroke-width="3"/><line x1="175" y1="314" x2="175" y2="396" stroke="#0b1620" stroke-width="5" opacity="0.6"/><rect x="272" y="306" width="62" height="96" rx="8" fill="url(#metalDark)"/><rect x="279" y="313" width="48" height="89" rx="6" fill="url(#glass)"/><rect x="62" y="424" width="328" height="22" rx="10" fill="url(#metalDark)"/><rect x="76" y="442" width="300" height="5" rx="2.5" fill="#4fe3ff" opacity="0.85"/><polygon points="94,172 146,172 110,432 76,392" fill="#ffffff" opacity="0.06"/>
 <g>
-  <circle cx="398" cy="404" r="62" fill="#000" opacity="0.35"/>
-  <circle cx="398" cy="400" r="58" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="5"/>
-  <path d="M 362.04 383.76 A 41.76 41.76 0 0 1 433.96 383.76 A 66.69999999999999 66.69999999999999 0 0 0 362.04 383.76 Z" fill="#ffffff" opacity="0.30"/>
-  <g transform="translate(398,400) scale(1.0)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M -13,-14 L 1,-27 L 1,27 M -14,27 L 16,27" stroke="#04564f" stroke-width="19" opacity="0.85"/>
-    <path d="M -13,-14 L 1,-27 L 1,27 M -14,27 L 16,27" stroke="#ffffff" stroke-width="12"/>
-  </g>
+  <ellipse cx="398" cy="405" rx="97" ry="77" fill="#000" opacity="0.35"/>
+  <ellipse cx="398" cy="400" rx="92" ry="72" fill="url(#badgeG)" stroke="url(#badgeRim)" stroke-width="6"/>
+  <path d="M 340.96 379.84 A 66.24 51.839999999999996 0 0 1 455.04 379.84 A 105.8 82.8 0 0 0 340.96 379.84 Z" fill="#ffffff" opacity="0.30"/>
+  <text x="398" y="425.92" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif"
+        font-weight="bold" font-size="111.60000000000001" fill="#ffffff" stroke="#04564f" stroke-width="3.5" paint-order="stroke">T1</text>
 </g></svg>
