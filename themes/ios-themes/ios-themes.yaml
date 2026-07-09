@@ -332,14 +332,12 @@ ios-dark-mode-blue-red:
       }
       app-toolbar ha-tab-group,
       ha-tab-group {
-        background: rgba(255,255,255,0.07) !important;
-        -webkit-backdrop-filter: blur(18px) !important;
-        backdrop-filter: blur(18px) !important;
-        border: 1px solid rgba(255,255,255,0.16) !important;
-        border-radius: 26px !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
         padding: 7px 8px 4px !important;
         margin: 7px 0 2px !important;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+        box-shadow: none !important;
         min-height: 0 !important;
         flex: 1 1 auto !important;
         width: calc(100vw - 112px) !important;
